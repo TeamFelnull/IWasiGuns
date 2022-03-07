@@ -1,0 +1,43 @@
+modLoader = "javafml"
+loaderVersion = "[40,)"
+#issueTrackerURL = ""
+license = "GNU LGPLv3"
+
+[[mods]]
+modId = "iwasi"
+version = "${version}"
+displayName = "IWasi"
+authors = "MORIMORI0317"
+credits = "FelNull developers"
+description = '''
+The Ikisugi MOD...
+'''
+#logoFile = ""
+
+[[dependencies.iwasi]]
+modId = "forge"
+mandatory = true
+versionRange = "[40,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.iwasi]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.18.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.iwasi]]
+modId = "architectury"
+mandatory = true
+versionRange = "[4.0.29,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.iwasi]]
+modId = "otyacraftengine"
+mandatory = true
+versionRange = "[2.4,)"
+ordering = "NONE"
+side = "BOTH"

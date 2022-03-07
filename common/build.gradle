@@ -1,0 +1,33 @@
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+
+    modApi "dev.architectury:architectury:${rootProject.architectury_version}"
+
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:${rootProject.rei_version}"
+    modApi "me.shedaniel.cloth:cloth-config:${rootProject.cloth_config_version}"
+    modApi "${rootProject.oe_repo_pre}dev.felnull:otyacraftengine:${rootProject.oe_version}"
+
+    implementation "dev.felnull:felnull-java-library:${rootProject.felnull_version}"
+    implementation 'cz.advel.jbullet:jbullet:20101010-1'
+}
+
+architectury {
+    common()
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/iwasi.accesswidener")
+}
+
+publishing {
+    publications {
+        mavenCommon(MavenPublication) {
+            artifactId = rootProject.archives_base_name
+            from components.java
+        }
+    }
+
+    repositories {
+
+    }
+}

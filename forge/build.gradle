@@ -1,0 +1,106 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+loom {
+    forge {
+        mixinConfig "iwasi-common.mixins.json"
+        mixinConfig "iwasi.mixins.json"
+    }
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    forge {
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+    }
+}
+
+configurations {
+    common
+    shadowCommon
+    shadowIn
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+    forgeDependencies.extendsFrom shadowIn
+    shadowCommon.extendsFrom shadowIn
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+
+    modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+
+    modApi "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
+    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}"
+    modApi "${rootProject.oe_repo_pre}dev.felnull:otyacraftengine-forge:${rootProject.oe_version}"
+
+    shadowIn "dev.felnull:felnull-java-library:${rootProject.felnull_version}"
+    shadowIn 'cz.advel.jbullet:jbullet:20101010-1'
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("META-INF/mods.toml") {
+        expand "version": project.version
+    }
+}
+shadowJar {
+    configurations = [project.configurations.shadowIn]
+    relocate 'dev.felnull.fnjl', 'dev.felnull.iwasi.libs.dev.felnull.fnjl'
+}
+shadowJar {
+    exclude "fabric.mod.json"
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowCommon]
+    classifier "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveBaseName = "${rootProject.archives_base_name}-${project.name}-${rootProject.minecraft_version}"
+    classifier null
+}
+
+jar {
+    classifier "dev"
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+publishing {
+    publications {
+        mavenForge(MavenPublication) {
+            artifactId = rootProject.archives_base_name + "-" + project.name
+            from components.java
+        }
+    }
+
+
+    repositories {
+
+    }
+}

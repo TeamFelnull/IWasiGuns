@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "iwasi",
+  "version": "${version}",
+  "name": "IWasi",
+  "description": "The Ikisugi mod...",
+  "authors": [
+    "MORIMORI0317",
+    "FelNull developers"
+  ],
+  "contact": {
+  },
+  "license": "GNU LGPLv3",
+  "icon": "assets/iwasi/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.felnull.iwasi.fabric.IWasiFabric"
+    ],
+    "client": [
+      "dev.felnull.iwasi.fabric.client.IWasiClientFabric"
+    ]
+  },
+  "mixins": [
+    "iwasi.mixins.json",
+    "iwasi-common.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.18.2",
+    "architectury": ">=4.0.29",
+    "cloth-config2": ">=6.2.57",
+    "otyacraftengine": ">=2.4"
+  }
+}
