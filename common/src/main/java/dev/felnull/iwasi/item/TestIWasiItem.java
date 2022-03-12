@@ -21,7 +21,7 @@ public class TestIWasiItem extends Item {
 
         if (!level.isClientSide()) {
             var b = new TestBullet(level);
-            b.setPos(player.position().add(0, 5, 0));
+            b.setPos(player.position().add(0, 0, 0));
             b.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
             level.addFreshEntity(b);
         }

@@ -27,7 +27,7 @@ public class TestBulletRenderer extends EntityRenderer<TestBullet> {
         poseStack.pushPose();
         OERenderUtil.poseRotateAll(poseStack, Mth.lerp(g, entity.xRotO, entity.getXRot()), Mth.lerp(g, entity.yRotO, entity.getYRot()), Mth.lerp(g, entity.zRot0, entity.getZRot()));
         //  poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(g, entity.xRotO, entity.getXRot()) + 90.0F));
-        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(Items.APPLE), ItemTransforms.TransformType.FIXED, i, OverlayTexture.NO_OVERLAY, poseStack, multiBufferSource, entity.getId());
+        Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(Items.IRON_BLOCK), ItemTransforms.TransformType.FIXED, i, OverlayTexture.NO_OVERLAY, poseStack, multiBufferSource, entity.getId());
         poseStack.popPose();
         super.render(entity, f, g, poseStack, multiBufferSource, i);
     }

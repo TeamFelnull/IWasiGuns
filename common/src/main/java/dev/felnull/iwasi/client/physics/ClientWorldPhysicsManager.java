@@ -53,7 +53,10 @@ public class ClientWorldPhysicsManager implements IWorldPhysicsManager {
         });
         rms.forEach(this::remove);
 
+        RIGID_ENTITYS.keySet().forEach(n -> n.setOldRigidState(n.getCurrentRigidState()));
         dynamicsWorld.stepSimulation(1f / 20f, 10);
+        RIGID_ENTITYS.forEach((n, m) -> n.setCurrentRigidState(PhysicsUtil.getRigidState(m)));
+
         lastProsesTime = System.currentTimeMillis() - st;
     }
 
@@ -92,7 +95,8 @@ public class ClientWorldPhysicsManager implements IWorldPhysicsManager {
     @Override
     public void addEntity(@NotNull Entity entity) {
         if (entity instanceof IPhysicsEntity physicsEntity) {
-            var rb = RIGID_ENTITYS.put(physicsEntity, physicsEntity.createRigidBody());
+            var rb = physicsEntity.createRigidBody();
+            RIGID_ENTITYS.put(physicsEntity, rb);
             if (rb != null && dynamicsWorld != null)
                 dynamicsWorld.addRigidBody(rb);
         }
