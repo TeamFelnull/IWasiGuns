@@ -6,6 +6,7 @@ import com.bulletphysics.dynamics.RigidBodyConstructionInfo;
 import com.bulletphysics.linearmath.DefaultMotionState;
 import com.bulletphysics.linearmath.Transform;
 import dev.architectury.networking.NetworkManager;
+import dev.felnull.iwasi.server.physics.ServerWorldPhysicsManager;
 import dev.felnull.iwasi.util.PhysicsUtil;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
@@ -22,11 +23,16 @@ import org.apache.commons.lang3.tuple.Triple;
 import javax.vecmath.Vector3f;
 
 public class TestBullet extends Projectile implements IPhysicsEntity {
+    private static final EntityDataAccessor<Boolean> NO_FIRST_FLG = SynchedEntityData.defineId(TestBullet.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Float> X_POS = SynchedEntityData.defineId(TestBullet.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> Y_POS = SynchedEntityData.defineId(TestBullet.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> Z_POS = SynchedEntityData.defineId(TestBullet.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> X_ROT = SynchedEntityData.defineId(TestBullet.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Float> Y_ROT = SynchedEntityData.defineId(TestBullet.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> Z_ROT = SynchedEntityData.defineId(TestBullet.class, EntityDataSerializers.FLOAT);
     private Vec3 nextPos;
+    private Vec3 nextRot;
+    public float zRot;
     public float zRot0;
     private RigidState rigidState;
     private RigidState oldRigidState;
@@ -42,59 +48,39 @@ public class TestBullet extends Projectile implements IPhysicsEntity {
     @Override
     public void tick() {
         super.tick();
-        //  if (this.isControlledByLocalInstance()) {
-        //      this.setPacketCoordinates(this.getX(), this.getY(), this.getZ());
-        //  }
-       /* if (!level.isClientSide()) {
-            // if (nextPos == null)
-            //      nextPos = position();
+        this.zRot0 = getZRot();
 
-            setPos(getX(), getY() + 0.3, getZ());
-            entityData.set(X_POS, (float) getX());
-            entityData.set(Y_POS, (float) getY());
-            entityData.set(Z_POS, (float) getZ());
-            //setPos(nextPos);
-            // nextPos = new Vec3(getX(), getY() + 0.3, getZ());
-        } else {
-            xo = getX();
-            yo = getY();
-            zo = getZ();
-            setPos(entityData.get(X_POS), entityData.get(Y_POS), entityData.get(Z_POS));
-        }*/
+        updatePhysics();
+    }
+
+    private void updatePhysics() {
         if (!level.isClientSide()) {
-            if (nextPos == null)
-                nextPos = position();
-            setPos(nextPos);
+            if (nextPos != null)
+                setPos(nextPos);
+            if (nextRot != null)
+                setAllRot((float) nextRot.x, (float) nextRot.y, (float) nextRot.z);
 
-            nextPos = new Vec3(getX(), getY() + 0.1, getZ());
-
-            entityData.set(X_POS, (float) nextPos.x);
-            entityData.set(Y_POS, (float) nextPos.y);
-            entityData.set(Z_POS, (float) nextPos.z);
+            ServerWorldPhysicsManager.getInstance().entityTick(this);
+            var rs = getCurrentRigidState();
+            if (rs != null) {
+                nextPos = new Vec3(rs.posX(), rs.posY(), rs.posZ());
+                nextRot = new Vec3(rs.rotX(), rs.rotY(), rs.rotZ());
+            }
+            if (rs != null) {
+                entityData.set(X_POS, rs.posX());
+                entityData.set(Y_POS, rs.posY());
+                entityData.set(Z_POS, rs.posZ());
+                entityData.set(X_ROT, rs.rotX());
+                entityData.set(Y_ROT, rs.rotY());
+                entityData.set(Z_ROT, rs.rotZ());
+            }
+            this.entityData.set(NO_FIRST_FLG, true);
         } else {
-            setPos(entityData.get(X_POS), entityData.get(Y_POS), entityData.get(Z_POS));
+            if (entityData.get(NO_FIRST_FLG)) {
+                setPos(entityData.get(X_POS), entityData.get(Y_POS), entityData.get(Z_POS));
+                setAllRot(entityData.get(X_ROT), entityData.get(Y_ROT), entityData.get(Z_ROT));
+            }
         }
-      /*  zRot0 = getZRot();
-
-        CommonWorldPhysicsManager.getInstance().entityTick(this);
-        var ors = getOldRigidState();
-        if (ors != null) {
-            //  xOld = ors.posX();
-            //  yOld = ors.posY();
-            //  zOld = ors.posZ();
-            //   xRotO = ors.rotX();
-            //   yRotO = ors.rotY();
-            //   zRot0 = ors.rotZ();
-        }
-        var rs = getCurrentRigidState();
-        if (rs != null) {
-            setPos(rs.posX(), rs.posY(), rs.posZ());
-
-            //setPos(getX(), getY() - 0.5f * (level.isClientSide() ? 1 : -1), getZ());
-
-            setAllRot(rs.rotX(), rs.rotY(), rs.rotZ());
-        }
-        //  System.out.println(rs);*/
     }
 
     public void setAllRot(float pitch, float yaw, float roll) {
@@ -107,35 +93,38 @@ public class TestBullet extends Projectile implements IPhysicsEntity {
     }
 
     public float getZRot() {
-        return this.entityData.get(Z_ROT);
+        return zRot;
     }
 
     public void setZRot(float f) {
         if (!Float.isFinite(f)) {
             Util.logAndPauseIfInIde("Invalid entity rotation: " + f + ", discarding.");
         } else {
-            this.entityData.set(Z_ROT, f);
+            zRot = f;
         }
     }
 
     @Override
     protected void defineSynchedData() {
+        this.entityData.define(NO_FIRST_FLG, false);
         this.entityData.define(X_POS, (float) getX());
         this.entityData.define(Y_POS, (float) getY());
         this.entityData.define(Z_POS, (float) getZ());
-        this.entityData.define(Z_ROT, 0f);
+        this.entityData.define(X_ROT, getXRot());
+        this.entityData.define(Y_ROT, getYRot());
+        this.entityData.define(Z_ROT, getZRot());
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        this.entityData.set(Z_ROT, tag.getFloat("ZRot"));
+        this.zRot = tag.getFloat("ZRot");
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
-        tag.putFloat("ZRot", this.entityData.get(Z_ROT));
+        tag.putFloat("ZRot", this.zRot);
     }
 
     @Override

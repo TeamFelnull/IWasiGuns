@@ -4,7 +4,6 @@ import dev.felnull.iwasi.entity.TestBullet;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.EnderpearlItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -20,10 +19,12 @@ public class TestIWasiItem extends Item {
         ItemStack itemStack = player.getItemInHand(interactionHand);
 
         if (!level.isClientSide()) {
-            var b = new TestBullet(level);
-            b.setPos(player.position().add(0, 0, 0));
-            b.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
-            level.addFreshEntity(b);
+            for (int i = 0; i < (player.isCrouching() ? 10 : 1); i++) {
+                var b = new TestBullet(level);
+                b.setPos(player.position().add(0, 5, 0));
+                b.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+                level.addFreshEntity(b);
+            }
         }
 
         return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());

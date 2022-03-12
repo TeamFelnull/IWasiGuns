@@ -40,9 +40,9 @@ public class ServerWorldPhysics {
                 rms.add(n);
         });
         rms.forEach(this::remove);
-        //RIGID_ENTITYS.keySet().forEach(n -> n.setOldRigidState(n.getCurrentRigidState()));
+        RIGID_ENTITYS.keySet().forEach(n -> n.setOldRigidState(n.getCurrentRigidState()));
         dynamicsWorld.stepSimulation(1f / 20f, 10);
-     //   RIGID_ENTITYS.forEach((n, m) -> n.setCurrentRigidState(PhysicsUtil.getRigidState(m)));
+        RIGID_ENTITYS.forEach((n, m) -> n.setCurrentRigidState(PhysicsUtil.getRigidState(m)));
     }
 
     protected void addEntity(IPhysicsEntity physicsEntity) {
