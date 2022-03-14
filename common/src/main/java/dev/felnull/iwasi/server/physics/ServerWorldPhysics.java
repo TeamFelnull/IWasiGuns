@@ -1,18 +1,14 @@
 package dev.felnull.iwasi.server.physics;
 
-import com.bulletphysics.collision.broadphase.BroadphaseInterface;
-import com.bulletphysics.collision.broadphase.DbvtBroadphase;
-import com.bulletphysics.collision.dispatch.CollisionDispatcher;
-import com.bulletphysics.collision.dispatch.DefaultCollisionConfiguration;
-import com.bulletphysics.dynamics.DiscreteDynamicsWorld;
+import com.bulletphysics.dynamics.DynamicsWorld;
 import com.bulletphysics.dynamics.RigidBody;
-import com.bulletphysics.dynamics.constraintsolver.SequentialImpulseConstraintSolver;
 import dev.felnull.iwasi.entity.IPhysicsEntity;
+import dev.felnull.iwasi.physics.RigidState;
+import dev.felnull.iwasi.util.JBulletUtil;
 import dev.felnull.iwasi.util.PhysicsUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 
-import javax.vecmath.Vector3f;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,17 +16,12 @@ import java.util.Map;
 
 public class ServerWorldPhysics {
     private final ServerLevel level;
-    private final DiscreteDynamicsWorld dynamicsWorld;
+    private final DynamicsWorld dynamicsWorld;
     private final Map<IPhysicsEntity, RigidBody> RIGID_ENTITYS = new HashMap<>();
 
     protected ServerWorldPhysics(ServerLevel level) {
         this.level = level;
-        BroadphaseInterface broadphase = new DbvtBroadphase();
-        DefaultCollisionConfiguration collisionConfiguration = new DefaultCollisionConfiguration();
-        CollisionDispatcher dispatcher = new CollisionDispatcher(collisionConfiguration);
-        SequentialImpulseConstraintSolver solver = new SequentialImpulseConstraintSolver();
-        dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-        dynamicsWorld.setGravity(new Vector3f(0, -PhysicsUtil.getDimensionGravity(level.dimension().location()), 0));
+        dynamicsWorld = JBulletUtil.createDynamicsWorld(PhysicsUtil.getDimensionGravity(level.dimension().location()));
     }
 
     protected void tick() {
@@ -41,8 +32,8 @@ public class ServerWorldPhysics {
         });
         rms.forEach(this::remove);
         RIGID_ENTITYS.keySet().forEach(n -> n.setOldRigidState(n.getCurrentRigidState()));
-        dynamicsWorld.stepSimulation(1f / 20f, 10);
-        RIGID_ENTITYS.forEach((n, m) -> n.setCurrentRigidState(PhysicsUtil.getRigidState(m)));
+        JBulletUtil.tickStepSimulation(dynamicsWorld);
+        RIGID_ENTITYS.forEach((n, m) -> n.setCurrentRigidState(RigidState.of(m)));
     }
 
     protected void addEntity(IPhysicsEntity physicsEntity) {

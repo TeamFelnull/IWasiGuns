@@ -1,6 +1,7 @@
 package dev.felnull.iwasi.entity;
 
 import com.bulletphysics.dynamics.RigidBody;
+import dev.felnull.iwasi.physics.RigidState;
 
 public interface IPhysicsEntity {
     public RigidBody createRigidBody();
@@ -13,6 +14,4 @@ public interface IPhysicsEntity {
 
     public void setOldRigidState(RigidState state);
 
-    public static record RigidState(float posX, float posY, float posZ, float rotX, float rotY, float rotZ) {
-    }
 }

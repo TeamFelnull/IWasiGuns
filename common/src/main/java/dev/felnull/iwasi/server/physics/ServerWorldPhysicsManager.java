@@ -1,7 +1,6 @@
 package dev.felnull.iwasi.server.physics;
 
 import dev.felnull.iwasi.entity.IPhysicsEntity;
-import dev.felnull.iwasi.physics.IWorldPhysicsManager;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
@@ -9,9 +8,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServerWorldPhysicsManager implements IWorldPhysicsManager {
+public class ServerWorldPhysicsManager {
     private static final ServerWorldPhysicsManager INSTANCE = new ServerWorldPhysicsManager();
     private final Map<ServerLevel, ServerWorldPhysics> PHYSICS = new HashMap<>();
+
+    public void entityTick(@NotNull Entity entity) {
+        if (entity instanceof IPhysicsEntity) {
+            if (!isEntityExist(entity))
+                addEntity(entity);
+        }
+    }
 
     public static ServerWorldPhysicsManager getInstance() {
         return INSTANCE;
@@ -43,14 +49,12 @@ public class ServerWorldPhysicsManager implements IWorldPhysicsManager {
         PHYSICS.clear();
     }
 
-    @Override
     public boolean isEntityExist(@NotNull Entity entity) {
         if (entity instanceof IPhysicsEntity physicsEntity)
             return isExist((ServerLevel) entity.getLevel(), physicsEntity);
         return false;
     }
 
-    @Override
     public void addEntity(@NotNull Entity entity) {
         if (entity instanceof IPhysicsEntity physicsEntity)
             addEntity((ServerLevel) entity.getLevel(), physicsEntity);
