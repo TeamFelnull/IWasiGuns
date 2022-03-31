@@ -38,7 +38,7 @@ public record RigidRotation(double x, double y, double z, double w) {
 
     public Vector3f toPYRVec3(boolean degrees) {
         var v3 = toVec3(degrees);
-        return new Vector3f(v3.x(), v3.z(), v3.x());
+        return new Vector3f(v3.x(), v3.y(), v3.z());
     }
 
     public static RigidRotation lerp(double f, RigidRotation s, RigidRotation e) {

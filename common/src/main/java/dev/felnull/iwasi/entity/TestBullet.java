@@ -7,6 +7,7 @@ import dev.architectury.networking.NetworkManager;
 import dev.felnull.iwasi.physics.RigidState;
 import dev.felnull.iwasi.server.physics.ServerWorldPhysicsManager;
 import dev.felnull.iwasi.util.JBulletUtil;
+import dev.felnull.iwasi.util.PhysicsUtil;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
@@ -17,6 +18,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 public class TestBullet extends Projectile implements IPhysicsEntity {
     private static final EntityDataAccessor<RigidState> RIGID_STATE = SynchedEntityData.defineId(TestBullet.class, RigidStateEntityDataSerializer.RIGID_STATE);
@@ -38,6 +40,12 @@ public class TestBullet extends Projectile implements IPhysicsEntity {
     public void tick() {
         super.tick();
 
+        // setXRot(0);
+        //setYRot(getYRot() + 5f);
+
+        var pl = level.players().get(0);
+        //System.out.println(pl.getYHeadRot() + ":" + level.isClientSide());
+
         updatePhysics();
     }
 
@@ -45,8 +53,8 @@ public class TestBullet extends Projectile implements IPhysicsEntity {
         if (!level.isClientSide()) {
             if (nextPos != null)
                 setPos(nextPos);
-            if (nextRot != null)
-                setAllRot(nextRot.x(), nextRot.y(), nextRot.z());
+            //   if (nextRot != null)
+            //        setAllRot(nextRot.x(), nextRot.y(), nextRot.z());
 
             ServerWorldPhysicsManager.getInstance().entityTick(this);
             var rs = getOldRigidState();
@@ -62,8 +70,9 @@ public class TestBullet extends Projectile implements IPhysicsEntity {
             oldRigidState = rigidState;
             if (entityData.get(NO_FIRST_FLG)) {
                 rigidState = entityData.get(RIGID_STATE);
+
                 setPos(rigidState.position().toVec3());
-                setAllRot(rigidState.rotation().toPYRVec3(true));
+                //setAllRot(rigidState.rotation().toPYRVec3(true));
             }
         }
     }
@@ -91,12 +100,12 @@ public class TestBullet extends Projectile implements IPhysicsEntity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    protected void readAdditionalSaveData(@NotNull CompoundTag tag) {
         super.readAdditionalSaveData(tag);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    protected void addAdditionalSaveData(@NotNull CompoundTag tag) {
         super.addAdditionalSaveData(tag);
     }
 
@@ -108,7 +117,7 @@ public class TestBullet extends Projectile implements IPhysicsEntity {
     @Override
     public RigidBody createRigidBody() {
         var shape = new BoxShape(new javax.vecmath.Vector3f(1, 1, 1));
-        return JBulletUtil.createRigidBody(1f, shape, new Vector3f((float) getX(), (float) getY(), (float) getZ()), new Vector3f(getXRot(), getYRot(), 0));
+        return JBulletUtil.createRigidBody(1f, shape, new Vector3f((float) getX(), (float) getY(), (float) getZ()), new Vector3f(0, PhysicsUtil.wrapZeroDegrees(360f - (float) getY()), 0));
     }
 
     @Override

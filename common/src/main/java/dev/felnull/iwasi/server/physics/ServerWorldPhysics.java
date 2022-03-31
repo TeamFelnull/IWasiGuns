@@ -43,7 +43,7 @@ public class ServerWorldPhysics {
         if (rb != null)
             dynamicsWorld.addRigidBody(rb);
     }
-
+//(0.0, 0.41960734, 0.0, 0.9077057)
     private void remove(IPhysicsEntity physicsEntity) {
         var rb = RIGID_ENTITYS.remove(physicsEntity);
         if (rb != null)

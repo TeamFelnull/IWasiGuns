@@ -19,6 +19,9 @@
     ],
     "client": [
       "dev.felnull.iwasi.fabric.client.IWasiClientFabric"
+    ],
+    "otyacraftengine_client": [
+      "dev.felnull.iwasi.client.entrypoint.IWOEClientEntryPoint"
     ]
   },
   "mixins": [

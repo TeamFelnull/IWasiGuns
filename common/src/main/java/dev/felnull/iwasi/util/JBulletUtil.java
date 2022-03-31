@@ -15,7 +15,6 @@ import com.bulletphysics.linearmath.Transform;
 import dev.felnull.fnjl.math.FNVec3f;
 import dev.felnull.fnjl.math.FNVec4f;
 
-import javax.vecmath.AxisAngle4d;
 import javax.vecmath.Quat4f;
 import javax.vecmath.Vector3f;
 
@@ -41,7 +40,7 @@ public class JBulletUtil {
         tr.setIdentity();
         tr.origin.set(toJV3(position));
         var v4 = toFV3(degreesRotation).radians().toQuaternion();
-        tr.basis.set(new AxisAngle4d(v4.getX(), v4.getY(), v4.getZ(), v4.getW()));
+        tr.basis.set(new Quat4f(v4.getX(), v4.getY(), v4.getZ(), v4.getW()));
         return new RigidBody(new RigidBodyConstructionInfo(mass, new DefaultMotionState(tr), shape, fallInertia));
     }
 

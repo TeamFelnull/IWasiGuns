@@ -1,9 +1,8 @@
 package dev.felnull.iwasi.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import dev.felnull.iwasi.entity.TestBullet;
-import dev.felnull.iwasi.physics.RigidState;
+import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -25,12 +24,16 @@ public class TestBulletRenderer extends EntityRenderer<TestBullet> {
     @Override
     public void render(TestBullet entity, float f, float g, PoseStack poseStack, @NotNull MultiBufferSource multiBufferSource, int i) {
         poseStack.pushPose();
-        var rs = RigidState.lerp(g, entity.getOldRigidState(), entity.getCurrentRigidState());
+        var rs = entity.getCurrentRigidState();//RigidState.lerp(g, entity.getOldRigidState(), entity.getCurrentRigidState());
         if (rs != null) {
-            var r = rs.rotation();
-            var q = new Quaternion((float) r.x(), (float) r.y(), (float) r.z(), (float) r.w());
+            var r = rs.rotation().toPYRVec3(true);
+            OERenderUtil.poseRotateX(poseStack, r.x());
+            OERenderUtil.poseRotateY(poseStack, r.y());
+            // System.out.println(r.y());
+            // var q = new Quaternion((float) r.x(), (float) r.y(), (float) r.z(), (float) r.w());
+            // System.out.println(PhysicsUtil.wrapZeroDegrees(Minecraft.getInstance().player.getXRot()) + " : " + PhysicsUtil.wrapZeroDegrees(Minecraft.getInstance().player.getYRot()));
 
-            poseStack.mulPose(q);
+            //   poseStack.mulPose(q);
         }
        /* if (entity.getCurrentRigidState() != null && entity.getOldRigidState() != null) {
             var rs = entity.getCurrentRigidState().rotation().toQuaternion();

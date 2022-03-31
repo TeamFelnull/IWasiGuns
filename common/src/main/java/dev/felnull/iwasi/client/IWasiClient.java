@@ -1,7 +1,9 @@
 package dev.felnull.iwasi.client;
 
 import dev.felnull.iwasi.client.handler.ClientHandler;
+import dev.felnull.iwasi.client.handler.RenderHandler;
 import dev.felnull.iwasi.client.renderer.entity.IWEntityRenderers;
+import dev.felnull.iwasi.client.renderer.item.IWItemRenderers;
 import dev.felnull.iwasi.networking.IWPackets;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,5 +18,7 @@ public class IWasiClient {
     public static void init() {
         IWPackets.clientInit();
         ClientHandler.init();
+        RenderHandler.init();
+        IWItemRenderers.init();
     }
 }
