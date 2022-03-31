@@ -2,6 +2,7 @@ package dev.felnull.iwasi.client;
 
 import dev.felnull.iwasi.client.handler.ClientHandler;
 import dev.felnull.iwasi.client.handler.RenderHandler;
+import dev.felnull.iwasi.client.renderer.IWTestRenderers;
 import dev.felnull.iwasi.client.renderer.entity.IWEntityRenderers;
 import dev.felnull.iwasi.client.renderer.item.IWItemRenderers;
 import dev.felnull.iwasi.networking.IWPackets;
@@ -20,5 +21,8 @@ public class IWasiClient {
         ClientHandler.init();
         RenderHandler.init();
         IWItemRenderers.init();
+        IWTestRenderers.init();
+
+
     }
 }
