@@ -24,15 +24,17 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
     private static final float SLIM_TRANS = 0.035f;
 
     private static final MotionPoint HAND_BASE = new MotionPoint(-0.062500015f, -0.47891992f, -0.09528247f, -83.54764f, 173.175f, -0.25074303f, -0.055f, 0.6149996f, 0.0f, false, false, false);
-    private static final MotionPoint HAND_HOLD = new MotionPoint(-0.5250022f, -0.36830327f, 0.15249941f, -86.59672f, 181.76714f, -21.66596f, -0.055f, 0.6149996f, 0.0f, false, false, false);
-    private static final Motion HAND_HOLD_MOTION = Motion.of(HAND_BASE, HAND_HOLD);
+    private static final MotionPoint HAND_HOLD_RIGHT = new MotionPoint(-0.5250022f, -0.3668033f, 0.15249941f, -88.99671f, 180.56714f, -21.35596f, -0.055f, 0.6149996f, 0.0f, false, false, false);
+    private static final MotionPoint HAND_HOLD_LEFT = new MotionPoint(-0.517002f, -0.3668033f, 0.15249941f, -88.99671f, 180.56714f, -21.575954f, -0.055f, 0.6149996f, 0.0f, false, false, false);
+    private static final Motion HAND_HOLD_MOTION_RIGHT = Motion.of(HAND_BASE, HAND_HOLD_RIGHT);
+    private static final Motion HAND_HOLD_MOTION_LEFT = Motion.of(HAND_BASE, HAND_HOLD_LEFT);
 
-    private static final MotionPoint OP_HAND_BASE = new MotionPoint(-0.12500003f, -0.034925662f, 0.080000006f, 0.25074324f, 10.0f, 42.82061f, 0.06249994f, 0.6270069f, 0.0050000004f, false, false, false);
+    private static final MotionPoint OP_HAND_BASE = new MotionPoint(-0.12500003f, -0.034925662f, 0.080000006f, 0.25074324f, 10.0f, 51.82061f, 0.06249994f, 0.6270069f, 0.0050000004f, false, false, false);
     private static final MotionPoint OP_HAND_HOLD = new MotionPoint(-0.12500003f, 0.015074354f, 0.080000006f, 0.25074324f, 10.0f, 35.82061f, 0.06249994f, 0.6270069f, 0.0050000004f, false, false, false);
     private static final Motion OP_HAND_HOLD_MOTION = Motion.of(OP_HAND_BASE, OP_HAND_HOLD);
 
-    private static final MotionPoint GUN_BASE = new MotionPoint(-0.09874919f, 0.54875624f, -0.44717556f, -85.0f, -189.875f, 0.0f, 0.065f, -0.025000002f, 0.24500018f, false, false, false);
-    private static final MotionPoint GUN_HOLD = new MotionPoint(-0.09874919f, 0.54875624f, -0.44717556f, -85.0f, -201.875f, 0.0f, 0.065f, -0.025000002f, 0.24500018f, false, false, false);
+    private static final MotionPoint GUN_BASE = new MotionPoint(0.47500157f, 0.6508932f, 0.14970265f, -85.512436f, -10.5f, 0.0f, -0.5f, -0.14999999f, -0.35000002f, false, false, false);
+    private static final MotionPoint GUN_HOLD = new MotionPoint(0.47500157f, 0.6508932f, 0.14970265f, -88.512436f, -21.5f, 0.0f, -0.5f, -0.14999999f, -0.35000002f, false, false, false);
     private static final Motion GUN_HOLD_MOTION = Motion.of(GUN_BASE, GUN_HOLD);
 
     private static int holdRight;
@@ -48,9 +50,24 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
 
         var vc = multiBufferSource.getBuffer(Sheets.cutoutBlockSheet());
 
+        poseStack.pushPose();
+
+        if (isAdjustmentModel(transformType)) {
+            OERenderUtil.poseTrans16(poseStack, -6.35, -2.0351, -0.8561);
+            OERenderUtil.poseRotateY(poseStack, 180);
+            poseStack.translate(-1f, 0f, -1f);
+
+            OERenderUtil.poseTrans16(poseStack, 1.35 / 2f, 0, 0);
+        }
+
         OERenderUtil.renderModel(poseStack, vc, main, light, overlay);
         OERenderUtil.renderModel(poseStack, vc, slide, light, overlay);
         OERenderUtil.renderModel(poseStack, vc, magazine, light, overlay);
+        poseStack.popPose();
+    }
+
+    private static boolean isAdjustmentModel(ItemTransforms.TransformType transform) {
+        return transform == ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND || transform == ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND || transform == ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND || transform == ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND;
     }
 
     public static void renderHand(PoseStack poseStack, MultiBufferSource multiBufferSource, InteractionHand hand, int packedLight, float partialTicks, float interpolatedPitch, float swingProgress, float equipProgress, ItemStack stack) {
@@ -68,7 +85,7 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
         if (slim)
             poseStack.translate(t * SLIM_TRANS, 0, 0);
 
-        var hbp = HAND_HOLD_MOTION.getPose(hold);
+        var hbp = handFlg ? HAND_HOLD_MOTION_LEFT.getPose(hold) : HAND_HOLD_MOTION_RIGHT.getPose(hold);
         if (handFlg)
             hbp = hbp.reverse();
         hbp.pose(poseStack);
@@ -91,7 +108,13 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
         var gbp = GUN_HOLD_MOTION.getPose(hold);
         if (handFlg)
             gbp = gbp.reverse();
+
         gbp.pose(poseStack);
+
+        //   MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
+
+        if (handFlg)
+            poseStack.translate(1f, 0, 0f);
 
         OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, stack, packedLight);
 
