@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractClientPlayer.class)
 public class AbstractClientPlayerMixin {
-    private static boolean forceSlim = true;
+    private static boolean forceSlim = false;
 
     @Inject(method = "getModelName", at = @At("RETURN"), cancellable = true)
     private void getModelName(CallbackInfoReturnable<String> cir) {
