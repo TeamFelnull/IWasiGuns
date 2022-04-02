@@ -3,7 +3,6 @@ package dev.felnull.iwasi.client.renderer.item;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.model.IWModels;
 import dev.felnull.iwasi.state.IWPlayerState;
-import dev.felnull.otyacraftengine.client.debug.MotionDebug;
 import dev.felnull.otyacraftengine.client.motion.Motion;
 import dev.felnull.otyacraftengine.client.motion.MotionPoint;
 import dev.felnull.otyacraftengine.client.renderer.item.BEWLItemRenderer;
@@ -25,10 +24,12 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
     private static final float SLIM_TRANS = 0.035f;
 
     private static final MotionPoint HAND_BASE = new MotionPoint(-0.062500015f, -0.47891992f, -0.09528247f, -83.54764f, 173.175f, -0.25074303f, -0.055f, 0.6149996f, 0.0f, false, false, false);
-    private static final MotionPoint HAND_HOLD = new MotionPoint(-0.52400213f, -0.36830327f, 0.2524994f, -86.59672f, 181.66713f, -21.66596f, -0.055f, 0.6149996f, 0.0f, false, false, false);
+    private static final MotionPoint HAND_HOLD = new MotionPoint(-0.5250022f, -0.36830327f, 0.15249941f, -86.59672f, 181.76714f, -21.66596f, -0.055f, 0.6149996f, 0.0f, false, false, false);
     private static final Motion HAND_HOLD_MOTION = Motion.of(HAND_BASE, HAND_HOLD);
 
-    private static final MotionPoint OP_HAND_BASE = new MotionPoint(0.26374936f, 0.15050092f, 0.016838621f, -4.4059463f, 15.75f, 38.46692f, 0.05f, -0.10000001f, 0.0f, false, false, false);
+    private static final MotionPoint OP_HAND_BASE = new MotionPoint(-0.12500003f, -0.034925662f, 0.080000006f, 0.25074324f, 10.0f, 42.82061f, 0.06249994f, 0.6270069f, 0.0050000004f, false, false, false);
+    private static final MotionPoint OP_HAND_HOLD = new MotionPoint(-0.12500003f, 0.015074354f, 0.080000006f, 0.25074324f, 10.0f, 35.82061f, 0.06249994f, 0.6270069f, 0.0050000004f, false, false, false);
+    private static final Motion OP_HAND_HOLD_MOTION = Motion.of(OP_HAND_BASE, OP_HAND_HOLD);
 
     private static final MotionPoint GUN_BASE = new MotionPoint(-0.09874919f, 0.54875624f, -0.44717556f, -85.0f, -189.875f, 0.0f, 0.065f, -0.025000002f, 0.24500018f, false, false, false);
     private static final MotionPoint GUN_HOLD = new MotionPoint(-0.09874919f, 0.54875624f, -0.44717556f, -85.0f, -201.875f, 0.0f, 0.065f, -0.025000002f, 0.24500018f, false, false, false);
@@ -67,33 +68,25 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
         if (slim)
             poseStack.translate(t * SLIM_TRANS, 0, 0);
 
-        float hbpval = handFlg ? Mth.lerp(partialTicks, holdLeftOld, holdLeft) : Mth.lerp(partialTicks, holdRightOld, holdRight);
-        var hbp = HAND_HOLD_MOTION.getPose(hbpval / 5f);
+        var hbp = HAND_HOLD_MOTION.getPose(hold);
         if (handFlg)
             hbp = hbp.reverse();
         hbp.pose(poseStack);
 
-        //MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
-
         OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, arm, packedLight);
 
-     /*   poseStack.pushPose();
+        poseStack.pushPose();
 
-        var obp = OP_HAND_BASE.getPose();
+        var ohbp = OP_HAND_HOLD_MOTION.getPose(hold);
         if (handFlg)
-            obp = obp.reverse();
-        obp.pose(poseStack);
+            ohbp = ohbp.reverse();
+        ohbp.pose(poseStack);
 
         OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, opArm, packedLight);
-        poseStack.popPose();*/
+        poseStack.popPose();
 
         if (slim)
             poseStack.translate(t * SLIM_TRANS, 0, 0);
-
-       /* var gbp = GUN_BASE.getPose();
-        if (handFlg)
-            gbp = gbp.reverse();
-        gbp.pose(poseStack);*/
 
         var gbp = GUN_HOLD_MOTION.getPose(hold);
         if (handFlg)
