@@ -9,6 +9,7 @@ public class TestGunItem extends GunItem {
         super(properties);
     }
 
+
     /*@Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand interactionHand) {
         //  if (!level.isClientSide()) {
@@ -20,18 +21,6 @@ public class TestGunItem extends GunItem {
         return super.use(level, player, interactionHand);
     }*/
 
-    public static CompoundTag getGunStateTag(ItemStack stack) {
-        if (stack.getTag() != null)
-            return stack.getTag().getCompound("GunState");
-        return null;
-    }
-
-    public static CompoundTag getOrCreateGunStateTag(ItemStack stack) {
-        var tag = stack.getOrCreateTag();
-        if (!tag.contains("GunState"))
-            tag.put("GunState", new CompoundTag());
-        return tag.getCompound("GunState");
-    }
 /*
     public static boolean isHold(ItemStack itemStack) {
         var tag = getGunStateTag(itemStack);

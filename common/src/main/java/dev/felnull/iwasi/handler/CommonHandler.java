@@ -1,5 +1,6 @@
 package dev.felnull.iwasi.handler;
 
+import dev.felnull.iwasi.state.ActionData;
 import dev.felnull.iwasi.state.IWPlayerData;
 import dev.felnull.otyacraftengine.event.MoreEntityEvent;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -12,6 +13,6 @@ public class CommonHandler {
     }
 
     public static void onDefineSynchedData(@NotNull Entity entity, @NotNull SynchedEntityData entityData) {
-        entityData.define(IWPlayerData.DATA_HOLD, false);
+        entityData.define(IWPlayerData.ACTION_DATA, new ActionData());
     }
 }

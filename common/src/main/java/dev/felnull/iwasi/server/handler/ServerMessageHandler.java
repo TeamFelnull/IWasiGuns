@@ -5,7 +5,7 @@ import dev.felnull.iwasi.networking.IWPackets;
 import dev.felnull.iwasi.state.IWPlayerData;
 
 public class ServerMessageHandler {
-    public static void onHoldInputMessage(IWPackets.HoldInputMessage message, NetworkManager.PacketContext packetContext) {
-        packetContext.queue(() -> packetContext.getPlayer().getEntityData().set(IWPlayerData.DATA_HOLD, message.hold));
+    public static void onActionInputMessage(IWPackets.ActionInputMessage message, NetworkManager.PacketContext packetContext) {
+        packetContext.queue(() -> packetContext.getPlayer().getEntityData().set(IWPlayerData.ACTION_DATA, message.data));
     }
 }
