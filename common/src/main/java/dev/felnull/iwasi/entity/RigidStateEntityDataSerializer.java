@@ -27,4 +27,5 @@ public class RigidStateEntityDataSerializer implements EntityDataSerializer<Rigi
     public RigidState copy(RigidState rigidState) {
         return rigidState.copy();
     }
+
 }

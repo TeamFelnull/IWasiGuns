@@ -2,12 +2,14 @@ package dev.felnull.iwasi.client.renderer.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.model.IWModels;
+import dev.felnull.iwasi.item.gun.GunItem;
 import dev.felnull.iwasi.state.IWPlayerState;
 import dev.felnull.otyacraftengine.client.motion.Motion;
 import dev.felnull.otyacraftengine.client.motion.MotionPoint;
 import dev.felnull.otyacraftengine.client.renderer.item.BEWLItemRenderer;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
+import dev.felnull.otyacraftengine.util.OEEntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -37,10 +39,10 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
     //private static final MotionPoint GUN_HOLD = new MotionPoint(0.47500157f, 0.6508932f, 0.14970265f, -88.512436f, -21.5f, 0.0f, -0.5f, -0.14999999f, -0.35000002f, false, false, false);
     //  private static final Motion GUN_HOLD_MOTION = Motion.of(GUN_BASE, GUN_HOLD);
 
-    private static int holdRight;
     private static int holdLeft;
-    private static int holdRightOld;
+    private static int holdRight;
     private static int holdLeftOld;
+    private static int holdRightOld;
 
     @Override
     public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float f, int light, int overlay) {
@@ -63,7 +65,7 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
         OERenderUtil.renderModel(poseStack, vc, main, light, overlay);
 
         poseStack.pushPose();
-        float sv = IWPlayerState.isPullTrigger(mc.player) ? Math.abs(-0.5f + OERenderUtil.getParSecond(100)) * 2f : 0;
+        float sv = 0;// IWPlayerState.isPullTrigger(mc.player) ? Math.abs(-0.5f + OERenderUtil.getParSecond(100)) * 2f : 0;
         OERenderUtil.poseTrans16(poseStack, 0, 0, 1.625f * sv);
         OERenderUtil.renderModel(poseStack, vc, slide, light, overlay);
         poseStack.popPose();
@@ -79,11 +81,11 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
     public static void renderHand(PoseStack poseStack, MultiBufferSource multiBufferSource, InteractionHand hand, int packedLight, float partialTicks, float interpolatedPitch, float swingProgress, float equipProgress, ItemStack stack) {
         boolean off = hand == InteractionHand.MAIN_HAND;
         HumanoidArm arm = off ? mc.player.getMainArm() : mc.player.getMainArm().getOpposite();
-        HumanoidArm opArm = off ? mc.player.getMainArm().getOpposite() : mc.player.getMainArm();
+        HumanoidArm opArm = arm.getOpposite();
         boolean handFlg = arm == HumanoidArm.LEFT;
         float t = handFlg ? -1f : 1f;
         boolean slim = OEModelUtil.isSlimPlayerModel(mc.player);
-        float hold = (handFlg ? Mth.lerp(partialTicks, holdLeftOld, holdLeft) : Mth.lerp(partialTicks, holdRightOld, holdRight)) / 5f;
+        float hold = getHoldingPar(arm, partialTicks);
 
         poseStack.pushPose();
         OERenderUtil.poseHandItem(poseStack, arm, swingProgress, equipProgress);
@@ -96,7 +98,6 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
             hbp = hbp.reverse();
         hbp.pose(poseStack);
 
-        // MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
 
         OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, arm, packedLight);
 
@@ -136,11 +137,38 @@ public class TestGunItemRenderer implements BEWLItemRenderer {
         holdRightOld = holdRight;
         holdLeftOld = holdLeft;
         if (IWPlayerState.isHolding(mc.player)) {
-            holdRight = Math.min(holdRight + 1, 5);
-            holdLeft = Math.min(holdLeft + 1, 5);
+            holdRight = Math.min(holdRight + 1, getMaxHolding(HumanoidArm.RIGHT));
+            holdLeft = Math.min(holdLeft + 1, getMaxHolding(HumanoidArm.LEFT));
         } else {
             holdRight = Math.max(holdRight - 1, 0);
             holdLeft = Math.max(holdLeft - 1, 0);
         }
+    }
+
+    public static void reset(HumanoidArm arm) {
+        if (arm == HumanoidArm.LEFT) {
+            holdLeftOld = 0;
+            holdLeft = 0;
+        } else {
+            holdRightOld = 0;
+            holdRight = 0;
+        }
+    }
+
+    private static float getHoldingPar(HumanoidArm arm, float delta) {
+        if (arm == HumanoidArm.LEFT) {
+            return Mth.lerp(delta, holdLeftOld, holdLeft) / (float) getMaxHolding(arm);
+        } else {
+            return Mth.lerp(delta, holdRightOld, holdRight) / (float) getMaxHolding(arm);
+        }
+        //int prgress = IWPlayerState.getHoldingProgress(mc.player, getHandByArm(mc.player, arm));
+        //return (float) prgress / (float) getMaxHolding(arm);
+    }
+
+    private static int getMaxHolding(HumanoidArm arm) {
+        var item = mc.player.getItemInHand(OEEntityUtil.getHandByArm(mc.player, arm));
+        if (item.getItem() instanceof GunItem gunItem)
+            return gunItem.getHoldingTime();
+        return 0;
     }
 }

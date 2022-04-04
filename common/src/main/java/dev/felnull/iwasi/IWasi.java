@@ -9,6 +9,7 @@ import dev.felnull.iwasi.entity.RigidStateEntityDataSerializer;
 import dev.felnull.iwasi.handler.CommonHandler;
 import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.iwasi.networking.IWPackets;
+import dev.felnull.iwasi.server.handler.ServerGunHandler;
 import dev.felnull.iwasi.server.handler.ServerHandler;
 
 public class IWasi {
@@ -22,6 +23,7 @@ public class IWasi {
         ActionDataEntityDataSerializer.init();
         CommonHandler.init();
         ServerHandler.init();
+        ServerGunHandler.init();
         EnvExecutor.runInEnv(Env.CLIENT, () -> IWasiClient::preInit);
     }
 }

@@ -5,7 +5,7 @@ import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.architectury.networking.NetworkManager;
 import dev.felnull.iwasi.client.renderer.item.TestGunItemRenderer;
-import dev.felnull.iwasi.client.state.ClientAction;
+import dev.felnull.iwasi.client.gun.ClientAction;
 import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.iwasi.item.gun.GunItem;
 import dev.felnull.iwasi.networking.IWPackets;
@@ -33,7 +33,7 @@ public class ClientHandler {
 
     private static EventResult onChangeHandHeight(InteractionHand hand, ItemStack oldStack, ItemStack newStack) {
         if (oldStack.getItem() instanceof GunItem && newStack.getItem() instanceof GunItem) {
-            if (Objects.equals(GunItem.getUUID(oldStack), GunItem.getUUID(newStack)))
+            if (Objects.equals(GunItem.getTmpUUID(oldStack), GunItem.getTmpUUID(newStack)))
                 return EventResult.interruptFalse();
         }
         return EventResult.pass();

@@ -1,5 +1,6 @@
 package dev.felnull.iwasi.client;
 
+import dev.felnull.iwasi.client.handler.ClientGunHandler;
 import dev.felnull.iwasi.client.handler.ClientHandler;
 import dev.felnull.iwasi.client.handler.RenderHandler;
 import dev.felnull.iwasi.client.renderer.IWTestRenderers;
@@ -17,12 +18,12 @@ public class IWasiClient {
     }
 
     public static void init() {
+        IWKeyMapping.init();
         IWPackets.clientInit();
         ClientHandler.init();
         RenderHandler.init();
+        ClientGunHandler.init();
         IWItemRenderers.init();
         IWTestRenderers.init();
-
-
     }
 }
