@@ -1,6 +1,6 @@
 package dev.felnull.iwasi.mixin;
 
-import dev.felnull.iwasi.server.state.IIWCashPlayer;
+import dev.felnull.iwasi.data.IIWCashPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;

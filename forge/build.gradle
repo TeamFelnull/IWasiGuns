@@ -35,7 +35,6 @@ configurations {
 
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
-
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
@@ -46,7 +45,6 @@ dependencies {
     modApi "${rootProject.oe_repo_pre}dev.felnull:otyacraftengine-forge:${rootProject.oe_version}"
 
     shadowIn "dev.felnull:felnull-java-library:${rootProject.felnull_version}"
-    shadowIn 'cz.advel.jbullet:jbullet:20101010-1'
 }
 
 processResources {
@@ -58,7 +56,7 @@ processResources {
 }
 shadowJar {
     configurations = [project.configurations.shadowIn]
-    relocate 'dev.felnull.fnjl', 'dev.felnull.iwasi.libs.dev.felnull.fnjl'
+    relocate 'dev.felnull.fnjl', 'dev.felnull.iwasi.include.dev.felnull.fnjl'
 }
 shadowJar {
     exclude "fabric.mod.json"
@@ -99,8 +97,6 @@ publishing {
         }
     }
 
-
     repositories {
-
     }
 }

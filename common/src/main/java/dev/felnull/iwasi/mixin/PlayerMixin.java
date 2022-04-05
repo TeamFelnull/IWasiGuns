@@ -1,6 +1,6 @@
 package dev.felnull.iwasi.mixin;
 
-import dev.felnull.iwasi.item.gun.GunItem;
+import dev.felnull.iwasi.item.GunItem;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;

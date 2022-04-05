@@ -6,9 +6,11 @@
   "description": "The Ikisugi mod...",
   "authors": [
     "MORIMORI0317",
+    "Alfort121R",
     "FelNull developers"
   ],
   "contact": {
+    "sources": "https://github.com/TeamFelnull/IWasi"
   },
   "license": "GNU LGPLv3",
   "icon": "assets/iwasi/icon.png",
@@ -31,8 +33,8 @@
   "depends": {
     "fabric": "*",
     "minecraft": ">=1.18.2",
-    "architectury": ">=4.0.29",
+    "architectury": ">=4.1.32",
     "cloth-config2": ">=6.2.57",
-    "otyacraftengine": ">=2.4"
+    "otyacraftengine": ">=2.11-build5"
   }
 }
