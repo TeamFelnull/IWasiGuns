@@ -1,6 +1,7 @@
 package dev.felnull.iwasi.server.handler;
 
 import dev.architectury.event.events.common.TickEvent;
+import dev.felnull.iwasi.data.GunTransData;
 import dev.felnull.iwasi.data.IIWCashPlayer;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.item.GunItem;
@@ -77,14 +78,21 @@ public class ServerHandler {
 
         for (InteractionHand hand : InteractionHand.values()) {
             var item = serverPlayer.getItemInHand(hand);
-            if (!(item.getItem() instanceof GunItem gunItem)) {
-                IWPlayerData.setGunTrans(serverPlayer, hand, null);
+            var gt = IWPlayerData.getGunTransData(player, hand);
+            if (!(item.getItem() instanceof GunItem)) {
+                if (gt.getGunTrans() != null)
+                    setGunTrans(serverPlayer, hand, new GunTransData(null, 0, 0, gt.updateId() + 1));
                 continue;
             }
-            var gsd = IWPlayerData.getGunTransData(serverPlayer, hand);
-            var nd = gsd.tickNext(serverPlayer, hand, item);
-            if (nd != null)
-                IWPlayerData.setGunTransData(serverPlayer, hand, nd);
+            var ng = gt.next(serverPlayer, hand, item);
+            if (ng != null)
+                setGunTrans(serverPlayer, hand, ng);
         }
     }
+
+    private static void setGunTrans(ServerPlayer player, InteractionHand hand, GunTransData gunTransData) {
+        var es = hand == InteractionHand.MAIN_HAND ? IWPlayerData.MAIN_HAND_GUN_TRANS : IWPlayerData.OFF_HAND_GUN_TRANS;
+        player.getEntityData().set(es, gunTransData);
+    }
+
 }

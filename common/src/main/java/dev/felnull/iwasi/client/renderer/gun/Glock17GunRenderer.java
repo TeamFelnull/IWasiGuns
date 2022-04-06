@@ -1,7 +1,6 @@
 package dev.felnull.iwasi.client.renderer.gun;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.felnull.iwasi.client.data.ClientGunTrans;
 import dev.felnull.iwasi.client.model.IWModels;
 import dev.felnull.iwasi.client.motion.gun.Glock17GunMotion;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
@@ -9,10 +8,9 @@ import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
-public class Glock17GunRenderer implements IGunRenderer<Glock17GunMotion> {
+public class Glock17GunRenderer extends IGunRenderer<Glock17GunMotion> {
     @Override
     public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
         var main = OEModelUtil.getModel(IWModels.GLOCK_17_MAIN);

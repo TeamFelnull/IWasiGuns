@@ -1,7 +1,10 @@
 package dev.felnull.iwasi.client.renderer.gun;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.felnull.iwasi.client.data.ClientGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
+import dev.felnull.iwasi.data.IWPlayerData;
+import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import dev.felnull.otyacraftengine.util.OEEntityUtil;
@@ -12,13 +15,13 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 
-public interface IGunRenderer<M extends GunMotion> {
+public abstract class IGunRenderer<M extends GunMotion> {
     Minecraft mc = Minecraft.getInstance();
     float SLIM_TRANS = 0.035f;
 
-    void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay);
+    abstract public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay);
 
-    default void renderHand(M motion, PoseStack poseStack, MultiBufferSource multiBufferSource, InteractionHand hand, int packedLight, float partialTicks, float interpolatedPitch, float swingProgress, float equipProgress, ItemStack stack) {
+    public void renderHand(M motion, PoseStack poseStack, MultiBufferSource multiBufferSource, InteractionHand hand, int packedLight, float partialTicks, float interpolatedPitch, float swingProgress, float equipProgress, ItemStack stack) {
         boolean off = hand == InteractionHand.MAIN_HAND;
         HumanoidArm arm = off ? mc.player.getMainArm() : mc.player.getMainArm().getOpposite();
         boolean slim = OEModelUtil.isSlimPlayerModel(mc.player);
@@ -30,7 +33,9 @@ public interface IGunRenderer<M extends GunMotion> {
         else
             bothHand = false;
 
-        float holdPar = OERenderUtil.getParSecond(1000);
+        var cgt = ClientGunTrans.getGunTrans(hand, partialTicks);
+
+        float holdPar = getHoldParent(cgt, stack, hand);
 
         poseStack.pushPose();
         OERenderUtil.poseHandItem(poseStack, arm, swingProgress, equipProgress);
@@ -60,5 +65,16 @@ public interface IGunRenderer<M extends GunMotion> {
         OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, stack, packedLight);
 
         poseStack.popPose();
+    }
+
+    private float getHoldParent(ClientGunTrans.DeltaGunTransData deltaGunTransData, ItemStack stack, InteractionHand hand) {
+        if (!(stack.getItem() instanceof GunItem gunItem)) return 0f;
+        boolean holding = IWPlayerData.isHolding(mc.player, hand);
+        if (deltaGunTransData.gunTrans() == null)
+            return holding ? 1f : 0f;
+        float holdPar = (deltaGunTransData.progress() / ((float) deltaGunTransData.gunTrans().getProgress(gunItem.getGun(), deltaGunTransData.step()) - 1f));
+        if (holding)
+            holdPar = 1f - holdPar;
+        return holdPar;
     }
 }

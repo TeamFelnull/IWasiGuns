@@ -7,7 +7,6 @@ import dev.felnull.iwasi.item.GunItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.item.ItemStack;
 
 public class ClientGunTrans {
     private static final Minecraft mc = Minecraft.getInstance();
@@ -23,27 +22,37 @@ public class ClientGunTrans {
         }
         for (InteractionHand hand : InteractionHand.values()) {
             var gtd = IWPlayerData.getGunTransData(mc.player, hand);
-            boolean handFlg = hand == InteractionHand.MAIN_HAND;
-            var lgtd = handFlg ? mainHandTrans : offHandTrans;
-            if (lgtd.getGunTrans() != gtd.getGunTrans()) {
-                if (handFlg)
-                    mainHandTrans = gtd;
-                else
-                    offHandTrans = gtd;
-                lgtd = gtd;
-            }
-            if (handFlg) {
-                mainHandTransOld = lgtd;
-            } else {
-                offHandTransOld = lgtd;
-            }
-            var nd = lgtd.tickNext(mc.player, hand, mc.player.getItemInHand(hand));
-            if (nd != null) {
-                if (handFlg)
-                    mainHandTrans = nd;
-                else
-                    offHandTrans = nd;
-            }
+            if (getTrans(hand).updateId() != gtd.updateId())
+                setTrans(hand, gtd);
+            var lst = getTrans(hand);
+            setTransOld(hand, lst);
+            var nd = lst.next(mc.player, hand, mc.player.getItemInHand(hand));
+            if (nd != null)
+                setTrans(hand, new GunTransData(nd.transId(), nd.progress(), nd.step(), lst.updateId()));
+        }
+    }
+
+    private static GunTransData getOldTrans(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandTransOld : offHandTransOld;
+    }
+
+    private static GunTransData getTrans(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandTrans : offHandTrans;
+    }
+
+    private static void setTrans(InteractionHand hand, GunTransData gunTransData) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            mainHandTrans = gunTransData;
+        } else {
+            offHandTrans = gunTransData;
+        }
+    }
+
+    private static void setTransOld(InteractionHand hand, GunTransData gunTransData) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            mainHandTransOld = gunTransData;
+        } else {
+            offHandTransOld = gunTransData;
         }
     }
 
@@ -68,23 +77,18 @@ public class ClientGunTrans {
         offHandTransOld = new GunTransData();
     }
 
-    public static DeltaGunTransData getGunTrans(InteractionHand hand, ItemStack stack, float delta) {
-        if (stack.getItem() instanceof GunItem gunItem) {
-            if (hand == InteractionHand.MAIN_HAND) {
-                if (mainHandTrans.getGunTrans() == mainHandTransOld.getGunTrans() && mainHandTransOld.getGunTrans() != null) {
-                    int tp = mainHandTrans.progress();
-                    int tpo = offHandTransOld.progress();
-                    if (mainHandTransOld.step() != mainHandTrans.step())
-                        tp = offHandTransOld.getGunTrans().getProgress(gunItem.getGun(), mainHandTransOld.step()) - 1;
-                    return new DeltaGunTransData(mainHandTrans.getGunTrans(), Mth.lerp(delta, tpo, tp), mainHandTransOld.step());
-                }
-            } else {
-                if (offHandTrans.getGunTrans() == offHandTransOld.getGunTrans() && offHandTransOld.getGunTrans() != null) {
-                    int tp = offHandTrans.progress();
-                    int tpo = offHandTransOld.progress();
-                    if (offHandTransOld.step() != offHandTrans.step())
-                        tp = offHandTransOld.getGunTrans().getProgress(gunItem.getGun(), offHandTransOld.step()) - 1;
-                    return new DeltaGunTransData(offHandTrans.getGunTrans(), Mth.lerp(delta, tpo, tp), offHandTransOld.step());
+    public static DeltaGunTransData getGunTrans(InteractionHand hand, float delta) {
+        if (mc.player != null) {
+            var stack = mc.player.getItemInHand(hand);
+            if (stack.getItem() instanceof GunItem gunItem) {
+                var lst = getTrans(hand);
+                var old = getOldTrans(hand);
+                if (old.getGunTrans() != null) {
+                    int tp = lst.progress();
+                    int tpo = old.progress();
+                    if (lst.step() != old.step() || lst.getGunTrans() == null)
+                        tp = old.getGunTrans().getProgress(gunItem.getGun(), old.step()) - 1;
+                    return new DeltaGunTransData(lst.getGunTrans(), Mth.lerp(delta, tpo, tp), old.step());
                 }
             }
         }

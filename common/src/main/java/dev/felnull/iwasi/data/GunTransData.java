@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public record GunTransData(int transId, int progress, int step, int updateId) {
+
     public GunTransData(GunTrans gunTrans, int progress, int step, int updateID) {
         this(GunTransRegistry.getId(gunTrans), progress, step, updateID);
     }
@@ -42,26 +43,25 @@ public record GunTransData(int transId, int progress, int step, int updateId) {
         return GunTransRegistry.getById(transId);
     }
 
-
-    public GunTransData tickNext(Player player, InteractionHand hand, ItemStack stack) {
+    @Nullable
+    public GunTransData next(Player player, InteractionHand hand, ItemStack stack) {
         if (!(stack.getItem() instanceof GunItem gunItem)) return null;
-        var gs = getGunTrans();
-        if (gs == null) return null;
+        var gt = getGunTrans();
+        if (gt == null) return null;
         if (player instanceof ServerPlayer serverPlayer)
-            gs.tick(serverPlayer, hand, gunItem.getGun(), stack, progress(), step());
-        int mp = gs.getProgress(gunItem.getGun(), step());
+            gt.tick(serverPlayer, hand, gunItem.getGun(), stack, progress(), step());
+        int mp = gt.getProgress(gunItem.getGun(), step());
         GunTransData nd;
         if (mp - 1 <= progress()) {
             if (player instanceof ServerPlayer serverPlayer)
-                gs.stepEnd(serverPlayer, hand, gunItem.getGun(), stack, step());
-            if (gs.getStep() - 1 > step())
-                nd = new GunTransData(gs, 0, step() + 1, 0);
+                gt.stepEnd(serverPlayer, hand, gunItem.getGun(), stack, step());
+            if (gt.getStep() - 1 > step())
+                nd = new GunTransData(gt, 0, step() + 1, updateId());
             else
-                nd = new GunTransData(null, 0, 0, 0);
+                nd = new GunTransData(null, 0, 0, updateId() + 1);
         } else {
-            nd = new GunTransData(gs, progress() + 1, step(), 0);
+            nd = new GunTransData(gt, progress() + 1, step(), updateId());
         }
         return nd;
     }
-
 }
