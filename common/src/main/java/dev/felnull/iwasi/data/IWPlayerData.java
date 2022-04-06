@@ -43,7 +43,7 @@ public class IWPlayerData {
     }
 
     public static void setGunTrans(@NotNull ServerPlayer player, @NotNull InteractionHand hand, @Nullable GunTrans gunTrans) {
-        setGunTransData(player, hand, new GunTransData(gunTrans, 0, 0));
+        setGunTransData(player, hand, new GunTransData(gunTrans, 0, 0, 0));
     }
 
     public static boolean isHolding(@NotNull Player player, InteractionHand hand) {

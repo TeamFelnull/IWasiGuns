@@ -1,7 +1,6 @@
 package dev.felnull.iwasi.server.handler;
 
 import dev.architectury.event.events.common.TickEvent;
-import dev.felnull.iwasi.data.GunTransData;
 import dev.felnull.iwasi.data.IIWCashPlayer;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.item.GunItem;
@@ -76,7 +75,6 @@ public class ServerHandler {
 
         }
 
-        
         for (InteractionHand hand : InteractionHand.values()) {
             var item = serverPlayer.getItemInHand(hand);
             if (!(item.getItem() instanceof GunItem gunItem)) {
@@ -84,21 +82,9 @@ public class ServerHandler {
                 continue;
             }
             var gsd = IWPlayerData.getGunTransData(serverPlayer, hand);
-            var gs = gsd.getGunTrans();
-            if (gs == null) continue;
-            gs.tick(serverPlayer, hand, gunItem.getGun(), item, gsd.progress(), gsd.step());
-            int mp = gs.getProgress(gunItem.getGun(), gsd.step());
-            GunTransData nd;
-            if (mp - 1 <= gsd.progress()) {
-                gs.stepEnd(serverPlayer, hand, gunItem.getGun(), item, gsd.step());
-                if (gs.getStep() - 1 > gsd.step())
-                    nd = new GunTransData(gs, 0, gsd.step() + 1);
-                else
-                    nd = new GunTransData(null, 0, 0);
-            } else {
-                nd = new GunTransData(gs, gsd.progress() + 1, gsd.step());
-            }
-            IWPlayerData.setGunTransData(serverPlayer, hand, nd);
+            var nd = gsd.tickNext(serverPlayer, hand, item);
+            if (nd != null)
+                IWPlayerData.setGunTransData(serverPlayer, hand, nd);
         }
     }
 }
