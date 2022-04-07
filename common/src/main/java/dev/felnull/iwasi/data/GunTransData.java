@@ -55,10 +55,11 @@ public record GunTransData(int transId, int progress, int step, int updateId) {
         if (mp - 1 <= progress()) {
             if (player instanceof ServerPlayer serverPlayer)
                 gt.stepEnd(serverPlayer, hand, gunItem.getGun(), stack, step());
-            if (gt.getStep() - 1 > step())
-                nd = new GunTransData(gt, 0, step() + 1, updateId());
-            else
+            if (gt.getStep() - 1 > step()) {
+                nd = new GunTransData(gt, 0, step() + 1, updateId() + 1);
+            } else {
                 nd = new GunTransData(null, 0, 0, updateId() + 1);
+            }
         } else {
             nd = new GunTransData(gt, progress() + 1, step(), updateId());
         }

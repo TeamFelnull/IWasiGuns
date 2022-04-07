@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 
 public class ClientAction {
     private static final Minecraft mc = Minecraft.getInstance();
-    private static final boolean toggle = true;
+    private static final boolean toggle = false;
     private static boolean holding;
     private static boolean lastHold;
     private static boolean pullTrigger;

@@ -8,6 +8,7 @@ import dev.felnull.iwasi.item.GunItem;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -39,11 +40,10 @@ public class ServerHandler {
             lastCash.setLastSelected(selected);
         }
 
-        boolean resetMainHand = false;
-        boolean resetOffHand = false;
+        boolean reset = false;
         for (InteractionHand hand : InteractionHand.values()) {
             boolean handFlg = hand == InteractionHand.MAIN_HAND;
-            var lastItem = handFlg ? lastCash.getLastMainHandItem() : lastCash.getLastOffHandItem();
+            var lastItem = lastCash.getLastHandItem(hand);
             var item = serverPlayer.getItemInHand(hand);
             if (item != lastItem) {
                 UUID oid = null;
@@ -52,28 +52,30 @@ public class ServerHandler {
                 UUID nid = null;
                 if (lastItem.getItem() instanceof GunItem)
                     nid = GunItem.getTmpUUID(lastItem);
-                if (!Objects.equals(oid, nid)) {
-                    if (handFlg) {
-                        resetMainHand = true;
-                    } else {
-                        resetOffHand = true;
-                    }
-                }
-
-                if (handFlg) {
-                    lastCash.setLastMainHandItem(item);
-                } else {
-                    lastCash.setLastOffHandItem(item);
-                }
+                if (!Objects.equals(oid, nid))
+                    reset = true;
+                lastCash.setLastHandItem(hand, item);
             }
         }
 
-        if (resetMainHand) {
-
+        if (reset) {
+            for (InteractionHand hand : InteractionHand.values()) {
+                var item = player.getItemInHand(hand);
+                if (item.getItem() instanceof GunItem)
+                    GunItem.resetTmpUUID(item);
+                IWPlayerData.setGunTrans(serverPlayer, hand, null);
+                var es = hand == InteractionHand.MAIN_HAND ? IWPlayerData.MAIN_HAND_HOLDING : IWPlayerData.OFF_HAND_HOLDING;
+                player.getEntityData().set(es, false);
+                lastCash.setLastHold(false);
+            }
         }
 
-        if (resetOffHand) {
-
+        var ca = IWPlayerData.getContinuousAction(serverPlayer);
+        boolean lastHold = lastCash.getLastHold();
+        if (lastHold != ca.hold()) {
+            setHoldTrans(serverPlayer, InteractionHand.MAIN_HAND, serverPlayer.getMainHandItem(), ca.hold());
+            setHoldTrans(serverPlayer, InteractionHand.OFF_HAND, serverPlayer.getOffhandItem(), ca.hold());
+            lastCash.setLastHold(ca.hold());
         }
 
         for (InteractionHand hand : InteractionHand.values()) {
@@ -95,4 +97,19 @@ public class ServerHandler {
         player.getEntityData().set(es, gunTransData);
     }
 
+    private static void setHoldTrans(ServerPlayer player, InteractionHand hand, ItemStack stack, boolean hold) {
+        if (!(stack.getItem() instanceof GunItem gunItem)) return;
+        var holdGT = gunItem.getGun().getHoldTrans();
+        var unHoldGT = gunItem.getGun().getUnHoldTrans();
+        var ogt = IWPlayerData.getGunTransData(player, hand);
+        var hgt = hold ? holdGT : unHoldGT;
+        var gt = ogt.getGunTrans();
+        if (gt == null) {
+            IWPlayerData.setGunTrans(player, hand, hgt);
+            return;
+        }
+        if (gt != unHoldGT && gt != holdGT) return;
+        int ms = hgt.getProgress(gunItem.getGun(), 0);
+        setGunTrans(player, hand, new GunTransData(hgt, ms - 1 - ogt.progress(), 0, ogt.updateId() + 1));
+    }
 }

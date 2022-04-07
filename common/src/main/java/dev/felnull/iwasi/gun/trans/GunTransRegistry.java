@@ -18,7 +18,7 @@ public class GunTransRegistry {
         return trans;
     }
 
-    public static int getId(@NotNull GunTrans trans) {
+    public static int getId(GunTrans trans) {
         return GUN_TRANS.indexOf(trans);
     }
 

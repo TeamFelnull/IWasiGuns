@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GunRendererRegister {
-    private static final Map<Gun, IGunRenderer> GUN_RENDERERS = new HashMap<>();
+    private static final Map<Gun, GunRenderer> GUN_RENDERERS = new HashMap<>();
 
-    public static void register(@NotNull Gun gun, @Nullable IGunRenderer renderer) {
+    public static void register(@NotNull Gun gun, @Nullable GunRenderer renderer) {
         GUN_RENDERERS.put(gun, renderer);
     }
 
     @Nullable
-    public static IGunRenderer getRenderer(Gun gun) {
+    public static GunRenderer getRenderer(Gun gun) {
         return GUN_RENDERERS.get(gun);
     }
 }

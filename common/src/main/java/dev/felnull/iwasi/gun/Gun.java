@@ -32,10 +32,14 @@ public abstract class Gun {
     }
 
     public int getHoldSpeed() {
-        return (int) (getWeight() / 180f);
+        return (int) (getWeight() / 120f);
     }
 
     public GunTrans getHoldTrans() {
         return IWGunTrans.HOLD;
+    }
+
+    public GunTrans getUnHoldTrans() {
+        return IWGunTrans.UN_HOLD;
     }
 }

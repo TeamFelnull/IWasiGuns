@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.client.motion.gun.GunMotionRegister;
 import dev.felnull.iwasi.client.renderer.gun.GunRendererRegister;
-import dev.felnull.iwasi.client.renderer.gun.IGunRenderer;
+import dev.felnull.iwasi.client.renderer.gun.GunRenderer;
 import dev.felnull.iwasi.gun.Gun;
 import dev.felnull.otyacraftengine.client.renderer.item.BEWLItemRenderer;
 import net.minecraft.client.model.HumanoidModel;
@@ -41,7 +41,7 @@ public class GunItemRenderer implements BEWLItemRenderer {
 
     }
 
-    private IGunRenderer getGunRenderer() {
+    private GunRenderer getGunRenderer() {
         return GunRendererRegister.getRenderer(gun);
     }
 

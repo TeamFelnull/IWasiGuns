@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.data.ClientGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.data.IWPlayerData;
+import dev.felnull.iwasi.gun.trans.HoldGunTrans;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
@@ -15,7 +16,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 
-public abstract class IGunRenderer<M extends GunMotion> {
+public abstract class GunRenderer<M extends GunMotion> {
     Minecraft mc = Minecraft.getInstance();
     float SLIM_TRANS = 0.035f;
 
@@ -73,7 +74,7 @@ public abstract class IGunRenderer<M extends GunMotion> {
         if (deltaGunTransData.gunTrans() == null)
             return holding ? 1f : 0f;
         float holdPar = (deltaGunTransData.progress() / ((float) deltaGunTransData.gunTrans().getProgress(gunItem.getGun(), deltaGunTransData.step()) - 1f));
-        if (holding)
+        if (deltaGunTransData.gunTrans() instanceof HoldGunTrans holdGunTrans && holdGunTrans.isRevers())
             holdPar = 1f - holdPar;
         return holdPar;
     }

@@ -46,4 +46,5 @@ public class IWPlayerData {
         var o = getGunTransData(player, hand);
         player.getEntityData().set(es, new GunTransData(gunTrans, 0, 0, o.updateId() + 1));
     }
+
 }

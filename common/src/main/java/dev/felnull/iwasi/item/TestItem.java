@@ -1,8 +1,5 @@
 package dev.felnull.iwasi.item;
 
-import dev.felnull.iwasi.data.IWPlayerData;
-import dev.felnull.iwasi.gun.trans.IWGunTrans;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -20,9 +17,10 @@ public class TestItem extends Item {
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {
         ItemStack itemStack = player.getItemInHand(interactionHand);
 
-        if (!level.isClientSide()) {
-            IWPlayerData.setGunTrans((ServerPlayer) player, interactionHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND, IWGunTrans.HOLD);
-        }
+        /*if (!level.isClientSide()) {
+            var hand = interactionHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
+            IWPlayerData.setHolding((ServerPlayer) player, hand, !IWPlayerData.isHolding(player, hand));
+        }*/
 
         return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
     }

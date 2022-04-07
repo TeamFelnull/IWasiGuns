@@ -26,9 +26,22 @@ public class ClientGunTrans {
                 setTrans(hand, gtd);
             var lst = getTrans(hand);
             setTransOld(hand, lst);
-            var nd = lst.next(mc.player, hand, mc.player.getItemInHand(hand));
-            if (nd != null)
-                setTrans(hand, new GunTransData(nd.transId(), nd.progress(), nd.step(), lst.updateId()));
+            var item = mc.player.getItemInHand(hand);
+            var nd = lst.next(mc.player, hand, item);
+            if (nd != null) {
+                int prg = nd.progress();
+                int nt = gtd.transId();
+                if (lst.step() != nd.step() || lst.getGunTrans() != nd.getGunTrans()) {
+                    if (lst.getGunTrans() != null && item.getItem() instanceof GunItem gunItem) {
+                        prg = lst.getGunTrans().getProgress(gunItem.getGun(), lst.step()) - 1;
+                        nt = lst.transId();
+                    } else {
+                        prg = 0;
+                        nt = -1;
+                    }
+                }
+                setTrans(hand, new GunTransData(nt, prg, lst.step(), lst.updateId()));
+            }
         }
     }
 

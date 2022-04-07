@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.world.item.ItemStack;
 
-public class Glock17GunRenderer extends IGunRenderer<Glock17GunMotion> {
+public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
     @Override
     public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
         var main = OEModelUtil.getModel(IWModels.GLOCK_17_MAIN);

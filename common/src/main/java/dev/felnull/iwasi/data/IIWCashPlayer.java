@@ -1,5 +1,6 @@
 package dev.felnull.iwasi.data;
 
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 public interface IIWCashPlayer {
@@ -7,11 +8,11 @@ public interface IIWCashPlayer {
 
     void setLastSelected(int num);
 
-    ItemStack getLastMainHandItem();
+    ItemStack getLastHandItem(InteractionHand hand);
 
-    ItemStack getLastOffHandItem();
+    void setLastHandItem(InteractionHand hand, ItemStack stack);
 
-    void setLastMainHandItem(ItemStack stack);
+    boolean getLastHold();
 
-    void setLastOffHandItem(ItemStack stack);
+    void setLastHold(boolean hold);
 }
