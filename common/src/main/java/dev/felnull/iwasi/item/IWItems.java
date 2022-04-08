@@ -4,6 +4,7 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.gun.IWGuns;
+import dev.felnull.iwasi.gun.trans.MagazineItem;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.Item;
 
@@ -15,6 +16,8 @@ public class IWItems {
 
     public static final RegistrySupplier<Item> TEST_GUN = register("test_gun", () -> new GunItem(IWGuns.TEST_GUN, new Item.Properties().tab(IWCreativeModeTab.MOD_TAB)));
     public static final RegistrySupplier<Item> GLOCK_17_GUN = register("glock_17", () -> new GunItem(IWGuns.GLOCK_17, new Item.Properties().tab(IWCreativeModeTab.MOD_TAB)));
+
+    public static final RegistrySupplier<Item> GLOCK_17_MAGAZINE= register("glock_17_magazine", () -> new MagazineItem(new Item.Properties().tab(IWCreativeModeTab.MOD_TAB)));
 
     private static RegistrySupplier<Item> register(String name) {
         return register(name, () -> new Item(new Item.Properties().tab(IWCreativeModeTab.MOD_TAB)));

@@ -17,10 +17,14 @@ public class TestItem extends Item {
     public InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {
         ItemStack itemStack = player.getItemInHand(interactionHand);
 
-        /*if (!level.isClientSide()) {
+        if (!level.isClientSide()) {
             var hand = interactionHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-            IWPlayerData.setHolding((ServerPlayer) player, hand, !IWPlayerData.isHolding(player, hand));
-        }*/
+            ItemStack opItemStack = player.getItemInHand(hand);
+            if (opItemStack.getItem() instanceof GunItem gunItem) {
+                var magazine = player.isCrouching() ? ItemStack.EMPTY : new ItemStack(gunItem.getGun().getMagazine());
+                GunItem.setMagazine(player, opItemStack, magazine);
+            }
+        }
 
         return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
     }

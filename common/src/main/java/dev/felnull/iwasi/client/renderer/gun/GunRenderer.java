@@ -17,7 +17,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 
 public abstract class GunRenderer<M extends GunMotion> {
-    Minecraft mc = Minecraft.getInstance();
+    protected static final Minecraft mc = Minecraft.getInstance();
     float SLIM_TRANS = 0.035f;
 
     abstract public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay);
@@ -68,14 +68,21 @@ public abstract class GunRenderer<M extends GunMotion> {
         poseStack.popPose();
     }
 
-    private float getHoldParent(ClientGunTrans.DeltaGunTransData deltaGunTransData, ItemStack stack, InteractionHand hand) {
+    protected float getHoldParent(ClientGunTrans.DeltaGunTransData deltaGunTransData, ItemStack stack, InteractionHand hand) {
         if (!(stack.getItem() instanceof GunItem gunItem)) return 0f;
         boolean holding = IWPlayerData.isHolding(mc.player, hand);
-        if (deltaGunTransData.gunTrans() == null)
+        if (deltaGunTransData.gunTrans() == null || (deltaGunTransData.gunTrans() != gunItem.getGun().getHoldTrans() && deltaGunTransData.gunTrans() != gunItem.getGun().getUnHoldTrans()))
             return holding ? 1f : 0f;
         float holdPar = (deltaGunTransData.progress() / ((float) deltaGunTransData.gunTrans().getProgress(gunItem.getGun(), deltaGunTransData.step()) - 1f));
         if (deltaGunTransData.gunTrans() instanceof HoldGunTrans holdGunTrans && holdGunTrans.isRevers())
             holdPar = 1f - holdPar;
         return holdPar;
+    }
+
+    protected static void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
+        poseStack.pushPose();
+        poseStack.translate(0.5, 0.5, 0.5);
+        mc.getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, light, overlay, poseStack, multiBufferSource, 0);
+        poseStack.popPose();
     }
 }

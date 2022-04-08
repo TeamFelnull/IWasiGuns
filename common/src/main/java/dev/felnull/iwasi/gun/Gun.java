@@ -1,8 +1,11 @@
 package dev.felnull.iwasi.gun;
 
+import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.trans.GunTrans;
+import dev.felnull.iwasi.gun.trans.HoldGunTrans;
 import dev.felnull.iwasi.gun.trans.IWGunTrans;
 import dev.felnull.iwasi.gun.type.GunType;
+import net.minecraft.world.item.Item;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class Gun {
@@ -35,11 +38,15 @@ public abstract class Gun {
         return (int) (getWeight() / 120f);
     }
 
-    public GunTrans getHoldTrans() {
+    public HoldGunTrans getHoldTrans() {
         return IWGunTrans.HOLD;
     }
 
-    public GunTrans getUnHoldTrans() {
+    public HoldGunTrans getUnHoldTrans() {
         return IWGunTrans.UN_HOLD;
     }
+
+    abstract public AbstractReloadGunTrans getReloadTrans();
+
+    abstract public Item getMagazine();
 }

@@ -3,6 +3,7 @@ package dev.felnull.iwasi.client.renderer.gun;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.model.IWModels;
 import dev.felnull.iwasi.client.motion.gun.Glock17GunMotion;
+import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,18 +16,16 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
     public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
         var main = OEModelUtil.getModel(IWModels.GLOCK_17_MAIN);
         var slide = OEModelUtil.getModel(IWModels.GLOCK_17_SLIDE);
-        var magazine = OEModelUtil.getModel(IWModels.GLOCK_17_MAGAZINE);
 
         var vc = multiBufferSource.getBuffer(Sheets.cutoutBlockSheet());
 
         poseStack.pushPose();
 
+        poseStack.pushPose();
         OERenderUtil.poseTrans16(poseStack, -6.35, -2.0351, -0.8561);
         OERenderUtil.poseRotateY(poseStack, 180);
         poseStack.translate(-1f, 0f, -1f);
-
         OERenderUtil.poseTrans16(poseStack, 1.35 / 2f, 0, 0);
-
         OERenderUtil.renderModel(poseStack, vc, main, light, overlay);
 
         poseStack.pushPose();
@@ -35,8 +34,18 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
         OERenderUtil.renderModel(poseStack, vc, slide, light, overlay);
         poseStack.popPose();
 
-        OERenderUtil.renderModel(poseStack, vc, magazine, light, overlay);
+        poseStack.popPose();
+
+        var magazineStack = GunItem.getMagazine(stack);
+        if (!magazineStack.isEmpty()) {
+            poseStack.pushPose();
+            OERenderUtil.poseTrans16(poseStack, -0.1f, -0.45, -0.15f);
+            renderItem(magazineStack, poseStack, multiBufferSource, light, overlay);
+            poseStack.popPose();
+        }
 
         poseStack.popPose();
     }
+
+
 }

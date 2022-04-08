@@ -9,6 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class IWPlayerData {
     public static final EntityDataAccessor<ContinuousActionData> CONTINUOUS_ACTION = SynchedEntityData.defineId(Player.class, IWEntityDataSerializers.CONTINUOUS_ACTION_DATA);
@@ -28,6 +29,11 @@ public class IWPlayerData {
     @NotNull
     public static ContinuousActionData getContinuousAction(@NotNull Player player) {
         return player.getEntityData().get(IWPlayerData.CONTINUOUS_ACTION);
+    }
+
+    @Nullable
+    public static GunTrans getGunTrans(@NotNull Player player, @NotNull InteractionHand hand) {
+        return getGunTransData(player, hand).getGunTrans();
     }
 
     @NotNull
