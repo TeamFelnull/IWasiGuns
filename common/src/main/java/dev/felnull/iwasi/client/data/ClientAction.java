@@ -1,13 +1,13 @@
 package dev.felnull.iwasi.client.data;
 
 import dev.architectury.networking.NetworkManager;
+import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.data.ContinuousActionData;
 import dev.felnull.iwasi.networking.IWPackets;
 import net.minecraft.client.Minecraft;
 
 public class ClientAction {
     private static final Minecraft mc = Minecraft.getInstance();
-    private static final boolean toggle = false;
     private static boolean holding;
     private static boolean lastHold;
     private static boolean pullTrigger;
@@ -18,7 +18,7 @@ public class ClientAction {
             return;
         }
 
-        if (toggle) {
+        if (IWasi.getConfig().toggleHold) {
             boolean n = mc.options.keyUse.isDown();
             if (lastHold != n) {
                 if (n)

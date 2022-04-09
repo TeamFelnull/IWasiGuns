@@ -1,35 +1,37 @@
 package dev.felnull.iwasi.client.motion.gun;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.otyacraftengine.client.motion.Motion;
+import dev.felnull.otyacraftengine.client.motion.MotionPoint;
+import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import net.minecraft.world.entity.HumanoidArm;
 
 public abstract class GunMotion {
+    abstract public MotionPoint getHandFixedMotionPoint(HumanoidArm arm, boolean bothHands, boolean hold);
 
-    public void poseHandHold(PoseStack stack, HumanoidArm arm, boolean bothHands, float hold) {
-        var hbp = getHandHoldMotion(arm, bothHands).getPose(hold);
-        if (arm == HumanoidArm.LEFT)
-            hbp = hbp.reverse();
-        hbp.pose(stack);
+    abstract public MotionPoint getOppositeHandFixedMotionPoint(HumanoidArm arm, boolean hold);
+
+    abstract public MotionPoint getGunFixedMotionPoint(HumanoidArm arm, boolean bothHands, boolean hold);
+
+    abstract public MotionPoint getOppositeItemFixedMotionPoint(HumanoidArm arm, boolean hold);
+
+    public Motion getHandHoldMotion(HumanoidArm arm, boolean bothHands) {
+        return Motion.of(getHandFixedMotionPoint(arm, bothHands, false), getHandFixedMotionPoint(arm, bothHands, true));
     }
 
-    public void poseOppositeHandHold(PoseStack stack, HumanoidArm arm, float hold) {
-        var hbp = getOppositeHandHoldMotion(arm).getPose(hold);
-        if (arm != HumanoidArm.LEFT)
-            hbp = hbp.reverse();
-        hbp.pose(stack);
+    public Motion getOppositeHandHoldMotion(HumanoidArm arm) {
+        return Motion.of(getOppositeHandFixedMotionPoint(arm, false), getOppositeHandFixedMotionPoint(arm, true));
     }
 
-    public void poseGun(PoseStack stack, HumanoidArm arm, boolean bothHands, float hold) {
-        var hbp = getGunMotion(arm, bothHands).getPose(hold);
-        if (arm == HumanoidArm.LEFT)
-            hbp = hbp.reverse();
-        hbp.pose(stack);
+    public Motion getGunHoldMotion(HumanoidArm arm, boolean bothHands) {
+        return Motion.of(getGunFixedMotionPoint(arm, bothHands, false), getGunFixedMotionPoint(arm, bothHands, true));
     }
 
-    abstract protected Motion getHandHoldMotion(HumanoidArm arm, boolean bothHands);
+    public Motion getOppositeItemHoldMotion(HumanoidArm arm) {
+        return Motion.of(getOppositeItemFixedMotionPoint(arm, false), getOppositeItemFixedMotionPoint(arm, true));
+    }
 
-    abstract protected Motion getOppositeHandHoldMotion(HumanoidArm arm);
+    abstract public MotionPose getHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPoint base);
 
-    abstract protected Motion getGunMotion(HumanoidArm arm, boolean bothHands);
+    abstract public MotionPose getOppositeHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPoint base);
 }

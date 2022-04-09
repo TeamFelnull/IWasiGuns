@@ -2,10 +2,17 @@ package dev.felnull.iwasi.client.renderer.gun;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.data.ClientGunTrans;
+import dev.felnull.iwasi.client.data.DeltaGunTransData;
+import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.data.IWPlayerData;
+import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.trans.HoldGunTrans;
+import dev.felnull.iwasi.gun.trans.IWGunTrans;
 import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.item.IWItems;
+import dev.felnull.iwasi.util.IWItemUtil;
+import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import dev.felnull.otyacraftengine.util.OEEntityUtil;
@@ -18,7 +25,7 @@ import net.minecraft.world.item.ItemStack;
 
 public abstract class GunRenderer<M extends GunMotion> {
     protected static final Minecraft mc = Minecraft.getInstance();
-    float SLIM_TRANS = 0.035f;
+    protected static final float SLIM_TRANS = 0.035f / 2f;
 
     abstract public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay);
 
@@ -28,47 +35,136 @@ public abstract class GunRenderer<M extends GunMotion> {
         boolean slim = OEModelUtil.isSlimPlayerModel(mc.player);
         boolean handFlg = arm == HumanoidArm.LEFT;
         float t = handFlg ? -1f : 1f;
-        boolean bothHand;
+        boolean bothHand = false;
+
         if (hand == InteractionHand.MAIN_HAND)
             bothHand = mc.player.getItemInHand(OEEntityUtil.getHandByArm(mc.player, arm.getOpposite())).isEmpty();
-        else
-            bothHand = false;
 
-        var cgt = ClientGunTrans.getGunTrans(hand, partialTicks);
+        var cgtd = ClientGunTrans.getGunTrans(hand, partialTicks);
+       // cgtd = new DeltaGunTransData(IWGunTrans.GLOCK_17_RELOAD, IWGunTrans.GLOCK_17_RELOAD.getProgress(IWItemUtil.getGun(stack), 0), 0);
 
-        float holdPar = getHoldParent(cgt, stack, hand);
+        var cgt = cgtd.gunTrans();
+        var igt = new InfoGunTrans(cgtd, stack);
 
+        if (cgt != null && cgt.isUseBothHand())
+            bothHand = true;
+
+        float holdPar = getHoldParent(cgtd, stack, hand);
         poseStack.pushPose();
         OERenderUtil.poseHandItem(poseStack, arm, swingProgress, equipProgress);
+        poseStack.pushPose();
+
+        poseHand(motion, poseStack, arm, bothHand, holdPar, igt);
+
+        if (slim)
+            poseStack.translate(t * -SLIM_TRANS, 0, 0);
+
+        OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, arm, packedLight);
+
+        poseGun(motion, poseStack, arm, bothHand, holdPar, igt);
         if (slim)
             poseStack.translate(t * SLIM_TRANS, 0, 0);
 
-        motion.poseHandHold(poseStack, arm, bothHand, holdPar);
+        if (handFlg)
+            poseStack.translate(1f, 0, 0f);
+        OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, stack, packedLight);
 
-        OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, arm, packedLight);
+        poseStack.popPose();
 
         if (bothHand) {
             poseStack.pushPose();
             var oparm = arm.getOpposite();
-            motion.poseOppositeHandHold(poseStack, oparm, holdPar);
+            poseOppositeHand(motion, poseStack, oparm, holdPar, igt);
+            // MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
+
+            if (slim)
+                poseStack.translate(t * SLIM_TRANS, 0, 0);
             OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, oparm, packedLight);
+
+            ItemStack opItem = ItemStack.EMPTY;
+            if (cgt instanceof AbstractReloadGunTrans && cgtd.step() == 1)
+                opItem = new ItemStack(IWItems.GLOCK_17_MAGAZINE.get());
+
+            if (!opItem.isEmpty()) {
+                if (handFlg)
+                    poseStack.translate(1f, 0, 0f);
+                poseOppositeItem(motion, poseStack, arm, holdPar, igt);
+                if (slim)
+                    poseStack.translate(t * -SLIM_TRANS, 0, 0);
+                OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, opItem, packedLight);
+            }
             poseStack.popPose();
         }
-
-        if (slim)
-            poseStack.translate(t * SLIM_TRANS, 0, 0);
-
-        motion.poseGun(poseStack, arm, bothHand, holdPar);
-
-        if (handFlg)
-            poseStack.translate(1f, 0, 0f);
-
-        OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, stack, packedLight);
-
         poseStack.popPose();
     }
 
-    protected float getHoldParent(ClientGunTrans.DeltaGunTransData deltaGunTransData, ItemStack stack, InteractionHand hand) {
+    protected void poseHand(M motion, PoseStack stack, HumanoidArm arm, boolean bothHands, float hold, InfoGunTrans gunTrans) {
+        MotionPose pose;
+        var bp = motion.getHandFixedMotionPoint(arm, bothHands, hold > 0.5);
+        if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
+            pose = motion.getHandHoldMotion(arm, bothHands).getPose(hold);
+        } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
+            pose = motion.getHandReloadMotion(arm, gunTrans, bp);
+        } else {
+            pose = bp.getPose();
+        }
+
+        if (arm == HumanoidArm.LEFT)
+            pose = pose.reverse();
+        pose.pose(stack);
+    }
+
+    protected void poseOppositeHand(M motion, PoseStack stack, HumanoidArm arm, float hold, InfoGunTrans gunTrans) {
+        MotionPose pose;
+        var bp = motion.getOppositeHandFixedMotionPoint(arm, hold > 0.5);
+        if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
+            pose = motion.getOppositeHandHoldMotion(arm).getPose(hold);
+        } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
+            pose = motion.getOppositeHandReloadMotion(arm, gunTrans, bp);
+        } else {
+            pose = bp.getPose();
+        }
+
+        if (arm != HumanoidArm.LEFT)
+            pose = pose.reverse();
+        pose.pose(stack);
+    }
+
+    protected void poseGun(M motion, PoseStack stack, HumanoidArm arm, boolean bothHands, float hold, InfoGunTrans gunTrans) {
+        MotionPose pose;
+        var bp = motion.getGunFixedMotionPoint(arm, bothHands, hold > 0.5);
+
+        if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
+            pose = motion.getGunHoldMotion(arm, bothHands).getPose(hold);
+        } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
+            pose = bp.getPose();
+        } else {
+            pose = bp.getPose();
+        }
+
+        if (arm == HumanoidArm.LEFT)
+            pose = pose.reverse();
+        pose.pose(stack);
+    }
+
+    protected void poseOppositeItem(M motion, PoseStack stack, HumanoidArm arm, float hold, InfoGunTrans gunTrans) {
+        MotionPose pose;
+        var bp = motion.getOppositeItemFixedMotionPoint(arm, hold > 0.5);
+
+        if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
+            pose = motion.getOppositeItemHoldMotion(arm).getPose(hold);
+        } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
+            pose = bp.getPose();
+        } else {
+            pose = bp.getPose();
+        }
+
+        if (arm == HumanoidArm.LEFT)
+            pose = pose.reverse();
+        pose.pose(stack);
+    }
+
+    protected float getHoldParent(DeltaGunTransData deltaGunTransData, ItemStack stack, InteractionHand hand) {
         if (!(stack.getItem() instanceof GunItem gunItem)) return 0f;
         boolean holding = IWPlayerData.isHolding(mc.player, hand);
         if (deltaGunTransData.gunTrans() == null || (deltaGunTransData.gunTrans() != gunItem.getGun().getHoldTrans() && deltaGunTransData.gunTrans() != gunItem.getGun().getUnHoldTrans()))

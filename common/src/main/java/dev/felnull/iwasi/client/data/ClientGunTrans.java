@@ -107,7 +107,4 @@ public class ClientGunTrans {
         }
         return new DeltaGunTransData(null, 0, 0);
     }
-
-    public record DeltaGunTransData(GunTrans gunTrans, float progress, int step) {
-    }
 }

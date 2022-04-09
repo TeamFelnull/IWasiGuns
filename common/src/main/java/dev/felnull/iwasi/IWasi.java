@@ -9,9 +9,12 @@ import dev.felnull.iwasi.handler.CommonHandler;
 import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.iwasi.networking.IWPackets;
 import dev.felnull.iwasi.server.handler.ServerHandler;
+import me.shedaniel.autoconfig.AutoConfig;
+import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 
 public class IWasi {
     public static final String MODID = "iwasi";
+    private static final IWConfig CONFIG = AutoConfig.register(IWConfig.class, Toml4jConfigSerializer::new).getConfig();
 
     public static void init() {
         IWPackets.init();
@@ -21,5 +24,9 @@ public class IWasi {
         CommonHandler.init();
         ServerHandler.init();
         EnvExecutor.runInEnv(Env.CLIENT, () -> IWasiClient::preInit);
+    }
+
+    public static IWConfig getConfig() {
+        return CONFIG;
     }
 }
