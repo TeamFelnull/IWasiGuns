@@ -4,9 +4,14 @@ import dev.felnull.iwasi.data.GunTransData;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.gun.trans.GunTrans;
 import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.Objects;
+import java.util.UUID;
 
 public class ClientGunTrans {
     private static final Minecraft mc = Minecraft.getInstance();
@@ -14,6 +19,8 @@ public class ClientGunTrans {
     private static GunTransData offHandTrans = new GunTransData();
     private static GunTransData mainHandTransOld = new GunTransData();
     private static GunTransData offHandTransOld = new GunTransData();
+    private static UUID lastMainHandId;
+    private static UUID lastOffHandId;
 
     public static void tick() {
         if (mc.level == null || mc.player == null) {
@@ -21,12 +28,22 @@ public class ClientGunTrans {
             return;
         }
         for (InteractionHand hand : InteractionHand.values()) {
+            UUID lastId = hand == InteractionHand.MAIN_HAND ? lastMainHandId : lastOffHandId;
+            ItemStack item = mc.player.getItemInHand(hand);
+            var id = IWItemUtil.getGunTmpID(item);
+            if (!Objects.equals(lastId, id)) {
+                if (hand == InteractionHand.MAIN_HAND)
+                    lastMainHandId = id;
+                else
+                    lastOffHandId = id;
+                reset(hand, null, true);
+            }
+
             var gtd = IWPlayerData.getGunTransData(mc.player, hand);
             if (getTrans(hand).updateId() != gtd.updateId())
                 setTrans(hand, gtd);
             var lst = getTrans(hand);
             setTransOld(hand, lst);
-            var item = mc.player.getItemInHand(hand);
             var nd = lst.next(mc.player, hand, item);
             if (nd != null) {
                 int prg = nd.progress();
@@ -69,14 +86,14 @@ public class ClientGunTrans {
         }
     }
 
-    public static void reset(InteractionHand hand, GunTrans trans) {
+    public static void reset(InteractionHand hand, GunTrans trans, boolean force) {
         if (hand == InteractionHand.MAIN_HAND) {
-            if (mainHandTrans.getGunTrans() == trans) {
+            if (force || mainHandTrans.getGunTrans() == trans) {
                 mainHandTrans = new GunTransData();
                 mainHandTransOld = new GunTransData();
             }
         } else {
-            if (offHandTrans.getGunTrans() == trans) {
+            if (force || offHandTrans.getGunTrans() == trans) {
                 offHandTrans = new GunTransData();
                 offHandTransOld = new GunTransData();
             }

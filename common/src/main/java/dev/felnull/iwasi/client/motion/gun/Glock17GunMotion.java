@@ -19,11 +19,13 @@ public class Glock17GunMotion extends GunMotion {
 
     private static final MotionPoint GUN_BASE = new MotionPoint(0.47500157f, 0.6508932f, 0.14970265f, -85.512436f, -10.5f, 0.0f, -0.5f, -0.14999999f, -0.35000002f, false, false, false);
 
-    private static final MotionPoint OP_ITEM_BASE = new MotionPoint(0.5350002f, 0.89148116f, -0.014687516f, -76.299675f, 0.0f, 0.0f, -0.48999998f, -0.21000001f, -0.315f, false, false, false);
+    private static final MotionPoint OP_ITEM_BASE = new MotionPoint(0.45750028f, 0.87901837f, 0.060312465f, -96.51788f, 47.450016f, 35.36559f, -0.48999998f, -0.21000001f, -0.315f, false, false, false);
 
     private static final ResourceLocation HAND_RELOAD_MOTION = new ResourceLocation(IWasi.MODID, "glock_17/hand_reload");
 
     private static final ResourceLocation OP_HAND_RELOAD_MOTION = new ResourceLocation(IWasi.MODID, "glock_17/opposite_hand_reload");
+
+    private static final MotionPoint OP_HAND_HIDE = new MotionPoint(-0.9300009f, -0.966556f, -0.044355575f, -87.54647f, -181.9746f, 40.24339f, 0.069000006f, 0.6063378f, -1.4881045E-4f, false, false, false);
 
     @Override
     public MotionPoint getHandFixedMotionPoint(HumanoidArm arm, boolean bothHands, boolean hold) {
@@ -71,4 +73,10 @@ public class Glock17GunMotion extends GunMotion {
     public MotionPoint getOppositeItemFixedMotionPoint(HumanoidArm arm, boolean hold) {
         return OP_ITEM_BASE;
     }
+
+    @Override
+    public MotionPoint getOppositeHandHideMotionPoint(HumanoidArm arm) {
+        return OP_HAND_HIDE;
+    }
+
 }

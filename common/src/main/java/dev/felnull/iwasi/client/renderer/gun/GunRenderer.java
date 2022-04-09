@@ -8,10 +8,8 @@ import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.trans.HoldGunTrans;
-import dev.felnull.iwasi.gun.trans.IWGunTrans;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.item.IWItems;
-import dev.felnull.iwasi.util.IWItemUtil;
 import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
@@ -40,8 +38,11 @@ public abstract class GunRenderer<M extends GunMotion> {
         if (hand == InteractionHand.MAIN_HAND)
             bothHand = mc.player.getItemInHand(OEEntityUtil.getHandByArm(mc.player, arm.getOpposite())).isEmpty();
 
+        boolean hideOp = hand == InteractionHand.OFF_HAND || !bothHand;
+
         var cgtd = ClientGunTrans.getGunTrans(hand, partialTicks);
-       // cgtd = new DeltaGunTransData(IWGunTrans.GLOCK_17_RELOAD, IWGunTrans.GLOCK_17_RELOAD.getProgress(IWItemUtil.getGun(stack), 0), 0);
+        //  cgtd = new DeltaGunTransData(IWGunTrans.GLOCK_17_RELOAD, 2f, 1);
+//IWGunTrans.GLOCK_17_RELOAD.getProgress(IWItemUtil.getGun(stack), 1)
 
         var cgt = cgtd.gunTrans();
         var igt = new InfoGunTrans(cgtd, stack);
@@ -74,21 +75,21 @@ public abstract class GunRenderer<M extends GunMotion> {
         if (bothHand) {
             poseStack.pushPose();
             var oparm = arm.getOpposite();
-            poseOppositeHand(motion, poseStack, oparm, holdPar, igt);
-            // MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
+            poseOppositeHand(motion, poseStack, oparm, holdPar, igt, hideOp);
 
             if (slim)
                 poseStack.translate(t * SLIM_TRANS, 0, 0);
             OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, oparm, packedLight);
 
             ItemStack opItem = ItemStack.EMPTY;
-            if (cgt instanceof AbstractReloadGunTrans && cgtd.step() == 1)
+            if (cgt instanceof AbstractReloadGunTrans && (cgtd.step() == 1 || cgtd.step() == 2))
                 opItem = new ItemStack(IWItems.GLOCK_17_MAGAZINE.get());
 
             if (!opItem.isEmpty()) {
                 if (handFlg)
                     poseStack.translate(1f, 0, 0f);
                 poseOppositeItem(motion, poseStack, arm, holdPar, igt);
+
                 if (slim)
                     poseStack.translate(t * -SLIM_TRANS, 0, 0);
                 OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, opItem, packedLight);
@@ -114,9 +115,10 @@ public abstract class GunRenderer<M extends GunMotion> {
         pose.pose(stack);
     }
 
-    protected void poseOppositeHand(M motion, PoseStack stack, HumanoidArm arm, float hold, InfoGunTrans gunTrans) {
+    protected void poseOppositeHand(M motion, PoseStack stack, HumanoidArm arm, float hold, InfoGunTrans gunTrans, boolean hide) {
         MotionPose pose;
-        var bp = motion.getOppositeHandFixedMotionPoint(arm, hold > 0.5);
+        var bp = hide ? motion.getOppositeHandHideMotionPoint(arm) : motion.getOppositeHandFixedMotionPoint(arm, hold > 0.5);
+
         if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
             pose = motion.getOppositeHandHoldMotion(arm).getPose(hold);
         } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {

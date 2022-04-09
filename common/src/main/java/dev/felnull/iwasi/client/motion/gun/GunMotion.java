@@ -7,6 +7,7 @@ import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import net.minecraft.world.entity.HumanoidArm;
 
 public abstract class GunMotion {
+
     abstract public MotionPoint getHandFixedMotionPoint(HumanoidArm arm, boolean bothHands, boolean hold);
 
     abstract public MotionPoint getOppositeHandFixedMotionPoint(HumanoidArm arm, boolean hold);
@@ -34,4 +35,6 @@ public abstract class GunMotion {
     abstract public MotionPose getHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPoint base);
 
     abstract public MotionPose getOppositeHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPoint base);
+
+    abstract public MotionPoint getOppositeHandHideMotionPoint(HumanoidArm arm);
 }
