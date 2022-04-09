@@ -2,6 +2,7 @@ package dev.felnull.iwasi.client.motion.gun;
 
 import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.client.data.InfoGunTrans;
+import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.otyacraftengine.client.motion.MotionManager;
 import dev.felnull.otyacraftengine.client.motion.MotionPoint;
 import dev.felnull.otyacraftengine.client.motion.MotionPose;
@@ -28,26 +29,7 @@ public class Glock17GunMotion extends GunMotion {
     private static final MotionPoint OP_HAND_HIDE = new MotionPoint(-0.9300009f, -0.966556f, -0.044355575f, -87.54647f, -181.9746f, 40.24339f, 0.069000006f, 0.6063378f, -1.4881045E-4f, false, false, false);
 
     @Override
-    public MotionPoint getHandFixedMotionPoint(HumanoidArm arm, boolean bothHands, boolean hold) {
-        if (hold)
-            return arm == HumanoidArm.LEFT ? HAND_HOLD_LEFT : HAND_HOLD_RIGHT;
-        return HAND_BASE;
-    }
-
-    @Override
-    public MotionPoint getOppositeHandFixedMotionPoint(HumanoidArm arm, boolean hold) {
-        if (hold)
-            return OP_HAND_HOLD;
-        return OP_HAND_BASE;
-    }
-
-    @Override
-    public MotionPoint getGunFixedMotionPoint(HumanoidArm arm, boolean bothHands, boolean hold) {
-        return GUN_BASE;
-    }
-
-    @Override
-    public MotionPose getHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPoint base) {
+    public MotionPose getHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base) {
         var gtd = infoGunTrans.gunTransData();
         var mt = MotionManager.getInstance().getMotion(HAND_RELOAD_MOTION);
         if (gtd.step() == 0)
@@ -64,9 +46,28 @@ public class Glock17GunMotion extends GunMotion {
     }
 
     @Override
-    public MotionPose getOppositeHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPoint base) {
+    public MotionPose getOppositeHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base) {
         var gtd = infoGunTrans.gunTransData();
         return MotionManager.getInstance().getMotion(OP_HAND_RELOAD_MOTION).getPose(infoGunTrans.progressPar(), MotionSwapper.swapStartAndEnd(base, base), gtd.step(), gtd.step() + 1);
+    }
+
+    @Override
+    public MotionPoint getHandFixedMotionPoint(HumanoidArm arm, boolean bothHands, HoldType holdType) {
+        if (holdType == HoldType.HOLD)
+            return arm == HumanoidArm.LEFT ? HAND_HOLD_LEFT : HAND_HOLD_RIGHT;
+        return HAND_BASE;
+    }
+
+    @Override
+    public MotionPoint getOppositeHandFixedMotionPoint(HumanoidArm arm, HoldType holdType) {
+        if (holdType == HoldType.HOLD)
+            return OP_HAND_HOLD;
+        return OP_HAND_BASE;
+    }
+
+    @Override
+    public MotionPoint getGunFixedMotionPoint(HumanoidArm arm, boolean bothHands, HoldType holdType) {
+        return GUN_BASE;
     }
 
     @Override

@@ -1,13 +1,13 @@
 package dev.felnull.iwasi.mixin;
 
-import dev.felnull.iwasi.data.IIWCashPlayer;
+import dev.felnull.iwasi.entity.IIWCashServerPlayer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(ServerPlayer.class)
-public class ServerPlayerMixin implements IIWCashPlayer {
+public class ServerPlayerMixin implements IIWCashServerPlayer {
     private int lastSelected = -1;
     private ItemStack lastMainHandItem = ItemStack.EMPTY;
     private ItemStack lastOffHandItem = ItemStack.EMPTY;
@@ -38,12 +38,12 @@ public class ServerPlayerMixin implements IIWCashPlayer {
     }
 
     @Override
-    public boolean getLastHold() {
+    public boolean getLastContinuousHold() {
         return lastHold;
     }
 
     @Override
-    public void setLastHold(boolean hold) {
+    public void setLastContinuousHold(boolean hold) {
         lastHold = hold;
     }
 }

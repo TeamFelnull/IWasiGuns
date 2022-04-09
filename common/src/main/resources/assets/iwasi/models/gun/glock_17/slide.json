@@ -1,9 +1,9 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "iwasi:/item/gun/glock_17/gray2",
-		"4": "iwasi:/item/gun/glock_17/gray4",
-		"particle": "iwasi:/item/gun/glock_17/gray1"
+		"1": "iwasi:item/gun/glock_17/gray2",
+		"4": "iwasi:item/gun/glock_17/gray4",
+		"particle": "iwasi:item/gun/glock_17/gray1"
 	},
 	"elements": [
 		{

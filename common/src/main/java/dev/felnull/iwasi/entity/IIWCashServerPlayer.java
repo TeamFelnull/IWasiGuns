@@ -1,9 +1,9 @@
-package dev.felnull.iwasi.data;
+package dev.felnull.iwasi.entity;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
-public interface IIWCashPlayer {
+public interface IIWCashServerPlayer {
     int getLastSelected();
 
     void setLastSelected(int num);
@@ -12,7 +12,7 @@ public interface IIWCashPlayer {
 
     void setLastHandItem(InteractionHand hand, ItemStack stack);
 
-    boolean getLastHold();
+    boolean getLastContinuousHold();
 
-    void setLastHold(boolean hold);
+    void setLastContinuousHold(boolean hold);
 }

@@ -10,14 +10,21 @@ import java.util.UUID;
 
 public class IWItemUtil {
     @NotNull
-    public static Gun getGun(ItemStack stack) {
+    public static Gun getGun(@NotNull ItemStack stack) {
         if (stack.getItem() instanceof GunItem gunItem)
             return gunItem.getGun();
         throw new IllegalStateException("Not gun item");
     }
 
     @Nullable
-    public static UUID getGunTmpID(ItemStack stack) {
+    public static Gun getGunNullable(@NotNull ItemStack stack) {
+        if (stack.getItem() instanceof GunItem gunItem)
+            return gunItem.getGun();
+        return null;
+    }
+
+    @Nullable
+    public static UUID getGunTmpID(@NotNull ItemStack stack) {
         if (stack.getItem() instanceof GunItem)
             return GunItem.getTmpUUID(stack);
         return null;

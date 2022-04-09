@@ -2,13 +2,11 @@ package dev.felnull.iwasi.client.renderer.gun;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.data.ClientGunTrans;
-import dev.felnull.iwasi.client.data.DeltaGunTransData;
 import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.trans.HoldGunTrans;
-import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
@@ -50,7 +48,7 @@ public abstract class GunRenderer<M extends GunMotion> {
         if (cgt != null && cgt.isUseBothHand())
             bothHand = true;
 
-        float holdPar = getHoldParent(cgtd, stack, hand);
+        float holdPar = getHoldParent(stack, hand, partialTicks);
         poseStack.pushPose();
         OERenderUtil.poseHandItem(poseStack, arm, swingProgress, equipProgress);
         poseStack.pushPose();
@@ -100,31 +98,21 @@ public abstract class GunRenderer<M extends GunMotion> {
     }
 
     protected void poseHand(M motion, PoseStack stack, HumanoidArm arm, boolean bothHands, float hold, InfoGunTrans gunTrans) {
-        MotionPose pose;
-        var bp = motion.getHandFixedMotionPoint(arm, bothHands, hold > 0.5);
-        if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
-            pose = motion.getHandHoldMotion(arm, bothHands).getPose(hold);
-        } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
-            pose = motion.getHandReloadMotion(arm, gunTrans, bp);
-        } else {
-            pose = bp.getPose();
-        }
+        MotionPose pose = motion.getHandHoldMotion(arm, bothHands, IWPlayerData.getPreHold(mc.player), IWPlayerData.getLastHold(mc.player)).getPose(hold);
 
+        if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
+            pose = motion.getHandReloadMotion(arm, gunTrans, pose);
+        }
         if (arm == HumanoidArm.LEFT)
             pose = pose.reverse();
         pose.pose(stack);
     }
 
     protected void poseOppositeHand(M motion, PoseStack stack, HumanoidArm arm, float hold, InfoGunTrans gunTrans, boolean hide) {
-        MotionPose pose;
-        var bp = hide ? motion.getOppositeHandHideMotionPoint(arm) : motion.getOppositeHandFixedMotionPoint(arm, hold > 0.5);
+        MotionPose pose = hide ? motion.getOppositeHandHideMotionPoint(arm).getPose() : motion.getOppositeHandHoldMotion(arm, IWPlayerData.getPreHold(mc.player), IWPlayerData.getLastHold(mc.player)).getPose(hold);
 
-        if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
-            pose = motion.getOppositeHandHoldMotion(arm).getPose(hold);
-        } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
-            pose = motion.getOppositeHandReloadMotion(arm, gunTrans, bp);
-        } else {
-            pose = bp.getPose();
+        if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
+            pose = motion.getOppositeHandReloadMotion(arm, gunTrans, pose);
         }
 
         if (arm != HumanoidArm.LEFT)
@@ -134,10 +122,10 @@ public abstract class GunRenderer<M extends GunMotion> {
 
     protected void poseGun(M motion, PoseStack stack, HumanoidArm arm, boolean bothHands, float hold, InfoGunTrans gunTrans) {
         MotionPose pose;
-        var bp = motion.getGunFixedMotionPoint(arm, bothHands, hold > 0.5);
+        var bp = motion.getGunFixedMotionPoint(arm, bothHands, IWPlayerData.getLastHold(mc.player));
 
         if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
-            pose = motion.getGunHoldMotion(arm, bothHands).getPose(hold);
+            pose = motion.getGunHoldMotion(arm, bothHands, IWPlayerData.getPreHold(mc.player), IWPlayerData.getHold(mc.player)).getPose(hold);
         } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
             pose = bp.getPose();
         } else {
@@ -166,15 +154,16 @@ public abstract class GunRenderer<M extends GunMotion> {
         pose.pose(stack);
     }
 
-    protected float getHoldParent(DeltaGunTransData deltaGunTransData, ItemStack stack, InteractionHand hand) {
-        if (!(stack.getItem() instanceof GunItem gunItem)) return 0f;
+    protected float getHoldParent(ItemStack stack, InteractionHand hand, float delta) {
+        return IWPlayerData.getHoldProgress(mc.player, hand, delta);
+       /* if (!(stack.getItem() instanceof GunItem gunItem)) return 0f;
         boolean holding = IWPlayerData.isHolding(mc.player, hand);
         if (deltaGunTransData.gunTrans() == null || (deltaGunTransData.gunTrans() != gunItem.getGun().getHoldTrans() && deltaGunTransData.gunTrans() != gunItem.getGun().getUnHoldTrans()))
             return holding ? 1f : 0f;
         float holdPar = (deltaGunTransData.progress() / ((float) deltaGunTransData.gunTrans().getProgress(gunItem.getGun(), deltaGunTransData.step()) - 1f));
         if (deltaGunTransData.gunTrans() instanceof HoldGunTrans holdGunTrans && holdGunTrans.isRevers())
             holdPar = 1f - holdPar;
-        return holdPar;
+        return holdPar;*/
     }
 
     protected static void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
