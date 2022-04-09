@@ -1,7 +1,7 @@
 package dev.felnull.iwasi.gun;
 
+import com.mojang.math.Vector3f;
 import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
-import dev.felnull.iwasi.gun.trans.GunTrans;
 import dev.felnull.iwasi.gun.trans.HoldGunTrans;
 import dev.felnull.iwasi.gun.trans.IWGunTrans;
 import dev.felnull.iwasi.gun.type.GunType;
@@ -44,6 +44,10 @@ public abstract class Gun {
 
     public HoldGunTrans getUnHoldTrans() {
         return IWGunTrans.UN_HOLD;
+    }
+
+    public Vector3f getSize() {
+        return properties.size();
     }
 
     abstract public AbstractReloadGunTrans getReloadTrans();

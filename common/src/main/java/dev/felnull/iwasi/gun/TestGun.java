@@ -8,7 +8,7 @@ import net.minecraft.world.item.Items;
 
 public class TestGun extends Gun {
     public TestGun() {
-        super(IWGunTypes.HAND_GUN, new GunProperties.Builder().create());
+        super(IWGunTypes.HAND_GUN, new GunProperties.Builder().setSize16(1.4f, 5.6f, 8.175f).create());
     }
 
     @Override

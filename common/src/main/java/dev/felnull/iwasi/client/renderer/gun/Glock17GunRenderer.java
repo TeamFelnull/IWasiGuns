@@ -25,7 +25,7 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
         OERenderUtil.poseTrans16(poseStack, -6.35, -2.0351, -0.8561);
         OERenderUtil.poseRotateY(poseStack, 180);
         poseStack.translate(-1f, 0f, -1f);
-        OERenderUtil.poseTrans16(poseStack, 1.35 / 2f, 0, 0);
+        OERenderUtil.poseTrans16(poseStack, 1.35f / 2f, 0, 0);
         OERenderUtil.renderModel(poseStack, vc, main, light, overlay);
 
         poseStack.pushPose();

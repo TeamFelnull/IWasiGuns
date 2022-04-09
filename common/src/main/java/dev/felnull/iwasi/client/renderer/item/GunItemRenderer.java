@@ -7,6 +7,7 @@ import dev.felnull.iwasi.client.renderer.gun.GunRenderer;
 import dev.felnull.iwasi.client.renderer.gun.GunRendererRegister;
 import dev.felnull.iwasi.gun.Gun;
 import dev.felnull.otyacraftengine.client.renderer.item.BEWLItemRenderer;
+import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GunItemRenderer implements BEWLItemRenderer {
+    private static final float guiSize = 1f - 1f / 6f;
     public static final Map<Gun, GunItemRenderer> GUN_ITEM_RENDERERS = new HashMap<>();
     protected final Gun gun;
 
@@ -29,7 +31,25 @@ public class GunItemRenderer implements BEWLItemRenderer {
 
     @Override
     public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float f, int light, int overlay) {
+        poseStack.pushPose();
+        if (transformType == ItemTransforms.TransformType.GUI) {
+            var size = gun.getSize();
+            float sc;
+            float xs = 0;
+            float ys = 0;
+            if (size.z() > size.y()) {
+                sc = guiSize / size.z();
+                ys = (size.y() / 2f) / sc;
+            } else {
+                sc = guiSize / size.y();
+                xs = (size.z() / 2f) / sc;
+            }
+            poseStack.translate((1f - 1f / 12f) - xs, (1f / 12f) + ys, 0f);
+            OERenderUtil.poseScaleAll(poseStack, sc);
+            OERenderUtil.poseRotateY(poseStack, -90);
+        }
         getGunRenderer().render(stack, transformType, poseStack, multiBufferSource, f, light, overlay);
+        poseStack.popPose();
     }
 
 
