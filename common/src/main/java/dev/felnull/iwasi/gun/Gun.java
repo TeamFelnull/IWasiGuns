@@ -35,7 +35,7 @@ public abstract class Gun {
     }
 
     public int getHoldSpeed() {
-        return (int) (getWeight() / 120f);
+        return (int) (getWeight() / 200f);
     }
 
     public HoldGunTrans getHoldTrans() {

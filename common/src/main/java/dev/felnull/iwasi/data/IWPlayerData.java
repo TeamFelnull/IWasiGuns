@@ -64,11 +64,6 @@ public class IWPlayerData {
         return player.getEntityData().get(es);
     }
 
-    /*public static boolean isHolding(@NotNull Player player, InteractionHand hand) {
-        var es = hand == InteractionHand.MAIN_HAND ? MAIN_HAND_HOLDING : OFF_HAND_HOLDING;
-        return player.getEntityData().get(es);
-    }*/
-
     public static void setGunTrans(@NotNull ServerPlayer player, InteractionHand hand, GunTrans gunTrans) {
         var es = hand == InteractionHand.MAIN_HAND ? MAIN_HAND_GUN_TRANS : OFF_HAND_GUN_TRANS;
         var o = getGunTransData(player, hand);

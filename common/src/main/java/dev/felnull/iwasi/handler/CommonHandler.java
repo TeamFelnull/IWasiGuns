@@ -13,6 +13,8 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class CommonHandler {
+    private static final int holdGraceTime = 20 * 3;
+
     public static void init() {
         MoreEntityEvent.ENTITY_DEFINE_SYNCHED_DATA.register(CommonHandler::onDefineSynchedData);
         TickEvent.PLAYER_POST.register(CommonHandler::onPlayerTick);
@@ -30,7 +32,7 @@ public class CommonHandler {
 
     private static void onPlayerTick(Player player) {
         var data = (IIWDataPlayer) player;
-        var holdType = IWPlayerData.getHold(player);
+        var holdType = data.getHoldType();
 
         if (data.getLastHoldType() != holdType) {
             data.setHoldProgress(0);
@@ -42,6 +44,13 @@ public class CommonHandler {
         data.setHoldProgressOld(data.getHoldProgress());
         if (IWPlayerData.getMaxHoldProgress(player) > data.getHoldProgress())
             data.setHoldProgress(data.getHoldProgress() + 1);
+
+        if (data.getHoldGrace() > 0)
+            data.setHoldGrace(data.getHoldGrace() - 1);
+
+        var ca = IWPlayerData.getContinuousAction(player);
+        if (ca.pullTrigger())
+            data.setHoldGrace(holdGraceTime);
     }
 
 }

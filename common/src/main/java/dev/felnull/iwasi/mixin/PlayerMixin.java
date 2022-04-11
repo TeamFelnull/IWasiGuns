@@ -1,6 +1,7 @@
 package dev.felnull.iwasi.mixin;
 
 import dev.felnull.iwasi.data.HoldType;
+import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,6 +23,7 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     private int holdProgressOld;
     private HoldType lastHoldType = HoldType.NONE;
     private HoldType preHoldType = HoldType.NONE;
+    private int holdGrace;
 
     @Inject(method = "setItemSlot", at = @At("HEAD"))
     private void setItemSlot(EquipmentSlot equipmentSlot, ItemStack itemStack, CallbackInfo ci) {
@@ -74,5 +76,20 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     @Override
     public void setPreHoldType(HoldType holdType) {
         preHoldType = holdType;
+    }
+
+    @Override
+    public HoldType getHoldType() {
+        return IWPlayerData.getHold((Player) (Object) this);
+    }
+
+    @Override
+    public void setHoldGrace(int grace) {
+        holdGrace = grace;
+    }
+
+    @Override
+    public int getHoldGrace() {
+        return holdGrace;
     }
 }

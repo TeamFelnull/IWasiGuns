@@ -24,19 +24,21 @@ public class ServerHandler {
 
         var continuousAction = IWPlayerData.getContinuousAction(player);
         boolean canChangeHold = canChangeHold(player);
+        var data = (IIWDataPlayer) player;
+
         if (lastCash.getLastContinuousHold() != continuousAction.hold() && canChangeHold) {
-            IWPlayerData.setHold(serverPlayer, continuousAction.hold() ? HoldType.HOLD : HoldType.NONE);
+            IWPlayerData.setHold(serverPlayer, HoldType.getIdeal(continuousAction.hold(), player.isSprinting(), data.getHoldGrace()));
             lastCash.setLastContinuousHold(continuousAction.hold());
         }
 
-      /*  for (InteractionHand hand : InteractionHand.values()) {
+        for (InteractionHand hand : InteractionHand.values()) {
             var item = serverPlayer.getItemInHand(hand);
             if (item.getItem() instanceof GunItem) {
                 if (GunItem.getTmpUUID(item) == null)
                     GunItem.resetTmpUUID(item);
             }
         }
-        var lastCash = (IIWCashServerPlayer) serverPlayer;
+
         int selected = serverPlayer.getInventory().selected;
 
         if (selected != lastCash.getLastSelected()) {
@@ -48,7 +50,7 @@ public class ServerHandler {
                 GunItem.resetTmpUUID(item);
             lastCash.setLastSelected(selected);
         }
-
+  /*
         boolean reset = false;
         for (InteractionHand hand : InteractionHand.values()) {
             boolean handFlg = hand == InteractionHand.MAIN_HAND;
