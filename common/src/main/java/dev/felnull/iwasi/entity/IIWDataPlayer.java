@@ -1,7 +1,9 @@
 package dev.felnull.iwasi.entity;
 
+import dev.felnull.iwasi.data.GunTransData;
 import dev.felnull.iwasi.data.HoldType;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 
 public interface IIWDataPlayer {
     int getHoldProgress();
@@ -29,4 +31,12 @@ public interface IIWDataPlayer {
     int getHoldGrace();
 
     void setHoldGrace(int grace);
+
+    GunTransData getGunTrans(InteractionHand hand);
+
+    void setGunTrans(InteractionHand hand, GunTransData gunTransData);
+
+    GunTransData getGunTransOld(InteractionHand hand);
+
+    void setGunTransOld(InteractionHand hand, GunTransData gunTransData);
 }

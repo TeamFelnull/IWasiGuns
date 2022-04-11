@@ -1,9 +1,9 @@
 package dev.felnull.iwasi.client.renderer.gun;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.felnull.iwasi.client.data.ClientGunTrans;
 import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
+import dev.felnull.iwasi.client.util.IWClientPlayerData;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.trans.HoldGunTrans;
@@ -38,7 +38,7 @@ public abstract class GunRenderer<M extends GunMotion> {
 
         boolean hideOp = hand == InteractionHand.OFF_HAND || !bothHand;
 
-        var cgtd = ClientGunTrans.getGunTrans(hand, partialTicks);
+        var cgtd = IWClientPlayerData.getGunTransData(mc.player, hand, partialTicks);
         //  cgtd = new DeltaGunTransData(IWGunTrans.GLOCK_17_RELOAD, 2f, 1);
 //IWGunTrans.GLOCK_17_RELOAD.getProgress(IWItemUtil.getGun(stack), 1)
 

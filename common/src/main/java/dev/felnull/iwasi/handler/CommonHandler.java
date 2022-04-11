@@ -6,8 +6,11 @@ import dev.felnull.iwasi.data.GunTransData;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
+import dev.felnull.iwasi.util.IWItemUtil;
 import dev.felnull.otyacraftengine.event.MoreEntityEvent;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -26,8 +29,6 @@ public class CommonHandler {
         entityData.define(IWPlayerData.MAIN_HAND_GUN_TRANS, new GunTransData());
         entityData.define(IWPlayerData.OFF_HAND_GUN_TRANS, new GunTransData());
         entityData.define(IWPlayerData.HOLDING, HoldType.NONE);
-        entityData.define(IWPlayerData.MAIN_HAND_HOLDING, false);
-        entityData.define(IWPlayerData.OFF_HAND_HOLDING, false);
     }
 
     private static void onPlayerTick(Player player) {
@@ -51,6 +52,40 @@ public class CommonHandler {
         var ca = IWPlayerData.getContinuousAction(player);
         if (ca.pullTrigger())
             data.setHoldGrace(holdGraceTime);
+
+
+        for (InteractionHand hand : InteractionHand.values()) {
+            var gd = data.getGunTrans(hand);
+            var gt = gd.getGunTrans();
+            var item = player.getItemInHand(hand);
+            var gun = IWItemUtil.getGunNullable(item);
+            data.setGunTransOld(hand, gd);
+            if (gun == null) {
+                data.setGunTrans(hand, new GunTransData(null, 0, 0, gd.updateId() + 1));
+                continue;
+            }
+            if (gt == null) continue;
+            if (player instanceof ServerPlayer serverPlayer)
+                gt.tick(serverPlayer, hand, gun, item, gd.progress(), gd.step());
+
+            int mp = gt.getProgress(gun, gd.step());
+
+            GunTransData nd = null;
+            if (mp - 1 <= gd.progress()) {
+                if (player instanceof ServerPlayer serverPlayer) {
+                    gt.stepEnd(serverPlayer, hand, gun, item, gd.step());
+                    if (gt.getStep() - 1 > gd.step()) {
+                        nd = new GunTransData(gt, 0, gd.step() + 1, gd.updateId() + 1);
+                    } else {
+                        nd = new GunTransData(null, 0, 0, gd.updateId() + 1);
+                    }
+                }
+            } else {
+                nd = new GunTransData(gt, gd.progress() + 1, gd.step(), gd.updateId());
+            }
+            if (nd != null)
+                data.setGunTrans(hand, nd);
+        }
     }
 
 }

@@ -5,7 +5,6 @@ import dev.felnull.iwasi.entity.IWEntityDataSerializers;
 import dev.felnull.iwasi.gun.trans.GunTrans;
 import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -18,8 +17,6 @@ public class IWPlayerData {
     public static final EntityDataAccessor<GunTransData> MAIN_HAND_GUN_TRANS = SynchedEntityData.defineId(Player.class, IWEntityDataSerializers.GUN_TRANS_DATA);
     public static final EntityDataAccessor<GunTransData> OFF_HAND_GUN_TRANS = SynchedEntityData.defineId(Player.class, IWEntityDataSerializers.GUN_TRANS_DATA);
     public static final EntityDataAccessor<HoldType> HOLDING = SynchedEntityData.defineId(Player.class, IWEntityDataSerializers.HOLD_TYPE_DATA);
-    public static final EntityDataAccessor<Boolean> MAIN_HAND_HOLDING = SynchedEntityData.defineId(Player.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> OFF_HAND_HOLDING = SynchedEntityData.defineId(Player.class, EntityDataSerializers.BOOLEAN);
 
     public static boolean isPutHold(@NotNull Player player) {
         return getContinuousAction(player).hold();
@@ -68,6 +65,11 @@ public class IWPlayerData {
         var es = hand == InteractionHand.MAIN_HAND ? MAIN_HAND_GUN_TRANS : OFF_HAND_GUN_TRANS;
         var o = getGunTransData(player, hand);
         player.getEntityData().set(es, new GunTransData(gunTrans, 0, 0, o.updateId() + 1));
+    }
+
+    public static void setGunTransData(@NotNull ServerPlayer player, InteractionHand hand, GunTransData gunTransData) {
+        var es = hand == InteractionHand.MAIN_HAND ? MAIN_HAND_GUN_TRANS : OFF_HAND_GUN_TRANS;
+        player.getEntityData().set(es, gunTransData);
     }
 
     public static int getMaxHoldProgress(@NotNull Player player) {

@@ -1,10 +1,12 @@
 package dev.felnull.iwasi.mixin;
 
+import dev.felnull.iwasi.data.GunTransData;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +26,8 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     private HoldType lastHoldType = HoldType.NONE;
     private HoldType preHoldType = HoldType.NONE;
     private int holdGrace;
+    private GunTransData mainHandGunTransOld = new GunTransData();
+    private GunTransData offHandGunTransOld = new GunTransData();
 
     @Inject(method = "setItemSlot", at = @At("HEAD"))
     private void setItemSlot(EquipmentSlot equipmentSlot, ItemStack itemStack, CallbackInfo ci) {
@@ -91,5 +95,30 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     @Override
     public int getHoldGrace() {
         return holdGrace;
+    }
+
+    @Override
+    public GunTransData getGunTrans(InteractionHand hand) {
+        return IWPlayerData.getGunTransData((Player) (Object) this, hand);
+    }
+
+    @Override
+    public void setGunTrans(InteractionHand hand, GunTransData gunTransData) {
+        if ((Object) this instanceof ServerPlayer serverPlayer)
+            IWPlayerData.setGunTransData(serverPlayer, hand, gunTransData);
+    }
+
+    @Override
+    public GunTransData getGunTransOld(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandGunTransOld : offHandGunTransOld;
+    }
+
+    @Override
+    public void setGunTransOld(InteractionHand hand, GunTransData gunTransData) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            mainHandGunTransOld = gunTransData;
+        } else {
+            offHandGunTransOld = gunTransData;
+        }
     }
 }
