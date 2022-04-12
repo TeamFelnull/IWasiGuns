@@ -27,7 +27,7 @@ public class ServerHandler {
         var data = (IIWDataPlayer) player;
 
         if (lastCash.getLastContinuousHold() != continuousAction.hold() && canChangeHold) {
-            IWPlayerData.setHold(serverPlayer, HoldType.getIdeal(continuousAction.hold(), player.isSprinting(), data.getHoldGrace()));
+            data.setHoldType(HoldType.getIdeal(continuousAction.hold(), player.isSprinting(), data.getHoldGrace()));
             lastCash.setLastContinuousHold(continuousAction.hold());
         }
 

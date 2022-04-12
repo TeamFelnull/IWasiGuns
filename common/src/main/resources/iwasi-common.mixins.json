@@ -6,6 +6,9 @@
   "client": [
     "client.AbstractClientPlayerMixin",
     "client.DefaultPlayerSkinMixin",
+    "client.ItemRendererMixin",
+    "client.ItemStackMixin",
+    "client.LivingEntityMixin",
     "client.LocalPlayerMixin"
   ],
   "mixins": [

@@ -1,6 +1,8 @@
 package dev.felnull.iwasi.client.renderer.item;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.felnull.iwasi.client.data.IEntityHandRenderItem;
+import dev.felnull.iwasi.client.entity.IClientItemHandRenderEntity;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.client.motion.gun.GunMotionRegister;
 import dev.felnull.iwasi.client.renderer.gun.GunRenderer;
@@ -8,6 +10,7 @@ import dev.felnull.iwasi.client.renderer.gun.GunRendererRegister;
 import dev.felnull.iwasi.gun.Gun;
 import dev.felnull.otyacraftengine.client.renderer.item.BEWLItemRenderer;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
+import dev.felnull.otyacraftengine.util.OEEntityUtil;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -48,7 +51,21 @@ public class GunItemRenderer implements BEWLItemRenderer {
             OERenderUtil.poseScaleAll(poseStack, sc);
             OERenderUtil.poseRotateY(poseStack, -90);
         }
-        getGunRenderer().render(stack, transformType, poseStack, multiBufferSource, f, light, overlay);
+        ItemStack stackOld = ItemStack.EMPTY;
+        var arm = getArmByTransform(transformType);
+        var entity = ((IEntityHandRenderItem) (Object) stack).getRenderEntity();
+        if (arm != null && entity != null) {
+            IClientItemHandRenderEntity renderEntity = (IClientItemHandRenderEntity) entity;
+            var hand = OEEntityUtil.getHandByArm(entity, arm);
+            var item = renderEntity.getLastHandItem(hand);
+            var itemOld = renderEntity.getLastHandItemOld(hand);
+            if (!item.isEmpty() && !itemOld.isEmpty()) {
+                stackOld = itemOld;
+                stack = item;
+            }
+        }
+
+        getGunRenderer().render(stack, stackOld, transformType, poseStack, multiBufferSource, f, light, overlay);
         poseStack.popPose();
     }
 
@@ -67,5 +84,13 @@ public class GunItemRenderer implements BEWLItemRenderer {
 
     private GunMotion getGunMotion() {
         return GunMotionRegister.getMotion(gun);
+    }
+
+    private static HumanoidArm getArmByTransform(ItemTransforms.TransformType transformType) {
+        return switch (transformType) {
+            case FIRST_PERSON_LEFT_HAND, THIRD_PERSON_LEFT_HAND -> HumanoidArm.LEFT;
+            case FIRST_PERSON_RIGHT_HAND, THIRD_PERSON_RIGHT_HAND -> HumanoidArm.RIGHT;
+            default -> null;
+        };
     }
 }

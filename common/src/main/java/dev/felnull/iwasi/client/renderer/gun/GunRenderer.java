@@ -23,7 +23,7 @@ public abstract class GunRenderer<M extends GunMotion> {
     protected static final Minecraft mc = Minecraft.getInstance();
     protected static final float SLIM_TRANS = 0.035f / 2f;
 
-    abstract public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay);
+    abstract public void render(ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay);
 
     public void renderHand(M motion, PoseStack poseStack, MultiBufferSource multiBufferSource, InteractionHand hand, int packedLight, float partialTicks, float interpolatedPitch, float swingProgress, float equipProgress, ItemStack stack) {
         boolean off = hand == InteractionHand.MAIN_HAND;

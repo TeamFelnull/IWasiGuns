@@ -6,11 +6,13 @@ import dev.felnull.iwasi.data.GunTransData;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
+import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.util.IWItemUtil;
 import dev.felnull.otyacraftengine.event.MoreEntityEvent;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -36,8 +38,9 @@ public class CommonHandler {
         var holdType = data.getHoldType();
 
         if (data.getLastHoldType() != holdType) {
-            data.setHoldProgress(0);
-            data.setHoldProgressOld(0);
+            int retv = IWPlayerData.getMaxHoldProgress(player) - data.getHoldProgress();
+            data.setHoldProgress(retv);
+            data.setHoldProgressOld(retv);
             data.setPreHoldType(data.getLastHoldType());
             data.setLastHoldType(holdType);
         }
@@ -49,9 +52,36 @@ public class CommonHandler {
         if (data.getHoldGrace() > 0)
             data.setHoldGrace(data.getHoldGrace() - 1);
 
-        var ca = IWPlayerData.getContinuousAction(player);
-        if (ca.pullTrigger())
+        if (data.isPullTrigger())
             data.setHoldGrace(holdGraceTime);
+
+        for (InteractionHand hand : InteractionHand.values()) {
+            var item = player.getItemInHand(hand);
+            var gun = IWItemUtil.getGunNullable(item);
+            if (gun == null) continue;
+            int sc = GunItem.getShotCoolDown(item);
+            boolean shot = false;
+            if (data.isPullTrigger()) {
+                if (data.getGunTrans(hand).getGunTrans() == null && (data.getHoldProgress() == 0 || data.getHoldProgress() >= gun.getHoldSpeed()) && sc <= 0 && (gun.getMaxContinuousShotCount() <= 0 || GunItem.getContinuousShotCount(item) < gun.getMaxContinuousShotCount())) {
+                    var sret = gun.shot(player.level, player, hand, item);
+                    if (sret == InteractionResult.SUCCESS) {
+                        shot = true;
+                        if (!player.level.isClientSide()) {
+                            GunItem.setContinuousShotCount(item, GunItem.getContinuousShotCount(item) + 1);
+                        }
+                    }
+                }
+            } else {
+                GunItem.setContinuousShotCount(item, 0);
+            }
+
+            if (shot) {
+                GunItem.setShotCoolDown(item, gun.getShotCoolDown());
+            } else {
+                if (sc >= 1)
+                    GunItem.setShotCoolDown(item, sc - 1);
+            }
+        }
 
 
         for (InteractionHand hand : InteractionHand.values()) {

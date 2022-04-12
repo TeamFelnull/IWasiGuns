@@ -25,5 +25,6 @@ public class Glock17MagazineItemRenderer implements BEWLItemRenderer {
 
         OERenderUtil.renderModel(poseStack, vc, model, light, overlay);
         poseStack.popPose();
+        
     }
 }

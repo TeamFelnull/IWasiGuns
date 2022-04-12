@@ -109,6 +109,12 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     }
 
     @Override
+    public void setHoldType(HoldType holdType) {
+        if ((Object) this instanceof ServerPlayer serverPlayer && getHoldProgress() >= IWPlayerData.getMaxHoldProgress(serverPlayer))
+            IWPlayerData.setHold(serverPlayer, holdType);
+    }
+
+    @Override
     public GunTransData getGunTransOld(InteractionHand hand) {
         return hand == InteractionHand.MAIN_HAND ? mainHandGunTransOld : offHandGunTransOld;
     }
@@ -120,5 +126,10 @@ public abstract class PlayerMixin implements IIWDataPlayer {
         } else {
             offHandGunTransOld = gunTransData;
         }
+    }
+
+    @Override
+    public boolean isPullTrigger() {
+        return IWPlayerData.isPullTrigger((Player) (Object) this);
     }
 }

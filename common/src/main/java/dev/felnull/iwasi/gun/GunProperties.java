@@ -5,18 +5,21 @@ import com.mojang.math.Vector3f;
 /**
  * 銃のプロパティ
  *
- * @param chamberCapacity 薬室内の装弾数
- * @param shotCoolDown    発射後のクールダウン
- * @param weight          重さ(g)
- * @param size            銃サイズ
+ * @param chamberCapacity     薬室内の装弾数
+ * @param shotCoolDown        発射後のクールダウン
+ * @param weight              重さ(g)
+ * @param size                銃サイズ
+ * @param maxContinuousShotCount 最大連続射出数(0以下で無限)
  */
-public record GunProperties(int chamberCapacity, int shotCoolDown, float weight, Vector3f size) {
+public record GunProperties(int chamberCapacity, int shotCoolDown, float weight, Vector3f size,
+                            int maxContinuousShotCount) {
 
     public static class Builder {
         private final Vector3f size = new Vector3f(1f, 1f, 1f);
         private int chamberCapacity = 1;
         private int shotCoolDown = 3;
         private float weight = 500;
+        private int maxContinuousShotCount = -1;
 
         public Builder setChamberCapacity(int chamberCapacity) {
             this.chamberCapacity = chamberCapacity;
@@ -44,9 +47,13 @@ public record GunProperties(int chamberCapacity, int shotCoolDown, float weight,
             return this;
         }
 
+        public Builder setMaxContinuousShotCount(int count) {
+            this.maxContinuousShotCount = count;
+            return this;
+        }
 
         public GunProperties create() {
-            return new GunProperties(chamberCapacity, shotCoolDown, weight, size);
+            return new GunProperties(chamberCapacity, shotCoolDown, weight, size, maxContinuousShotCount);
         }
     }
 }

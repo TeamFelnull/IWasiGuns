@@ -28,6 +28,8 @@ public interface IIWDataPlayer {
 
     HoldType getHoldType();
 
+    void setHoldType(HoldType holdType);
+
     int getHoldGrace();
 
     void setHoldGrace(int grace);
@@ -39,4 +41,6 @@ public interface IIWDataPlayer {
     GunTransData getGunTransOld(InteractionHand hand);
 
     void setGunTransOld(InteractionHand hand, GunTransData gunTransData);
+
+    boolean isPullTrigger();
 }

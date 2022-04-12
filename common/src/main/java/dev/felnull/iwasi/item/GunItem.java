@@ -96,4 +96,26 @@ public class GunItem extends Item {
     public static boolean canReload(ItemStack itemStack) {
         return true;
     }
+
+    public static int getContinuousShotCount(ItemStack itemStack) {
+        var tag = getGunTag(itemStack);
+        if (tag != null)
+            return tag.getInt("ContinuousShotCount");
+        return 0;
+    }
+
+    public static void setContinuousShotCount(ItemStack itemStack, int count) {
+        getOrCreateGunTag(itemStack).putInt("ContinuousShotCount", count);
+    }
+
+    public static int getShotCoolDown(ItemStack itemStack) {
+        var tag = getGunTag(itemStack);
+        if (tag != null)
+            return tag.getInt("ShotCoolDown");
+        return 0;
+    }
+
+    public static void setShotCoolDown(ItemStack itemStack, int count) {
+        getOrCreateGunTag(itemStack).putInt("ShotCoolDown", count);
+    }
 }

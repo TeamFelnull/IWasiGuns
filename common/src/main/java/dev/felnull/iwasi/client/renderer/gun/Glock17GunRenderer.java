@@ -13,7 +13,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
     @Override
-    public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
+    public void render(ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
         var main = OEModelUtil.getModel(IWModels.GLOCK_17_MAIN);
         var slide = OEModelUtil.getModel(IWModels.GLOCK_17_SLIDE);
 

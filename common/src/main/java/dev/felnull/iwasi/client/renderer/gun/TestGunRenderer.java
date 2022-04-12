@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class TestGunRenderer extends GunRenderer<TestGunMotion> {
     @Override
-    public void render(ItemStack stack, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
+    public void render(ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
         var model = OEModelUtil.getModel(IWModels.TEST_GUN);
         var vc = multiBufferSource.getBuffer(Sheets.cutoutBlockSheet());
         poseStack.pushPose();

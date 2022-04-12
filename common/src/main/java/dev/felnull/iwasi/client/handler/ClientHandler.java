@@ -4,16 +4,20 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.felnull.iwasi.client.data.ClientAction;
+import dev.felnull.iwasi.client.entity.IClientItemHandRenderEntity;
 import dev.felnull.iwasi.client.renderer.item.GunItemRenderer;
+import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.otyacraftengine.client.event.ClientEvent;
+import dev.felnull.otyacraftengine.event.MoreEntityEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +36,19 @@ public class ClientHandler {
         ClientEvent.POSE_HUMANOID_ARM.register(ClientHandler::onPoseHumanoidArm);
         ClientEvent.EVALUATE_RENDER_HANDS.register(ClientHandler::onEvaluateRenderHands);
         TickEvent.PLAYER_PRE.register(ClientHandler::onPlayerTick);
+        MoreEntityEvent.ENTITY_TICK.register(ClientHandler::onEntityTick);
+    }
+
+    private static EventResult onEntityTick(Entity entity) {
+        if (!entity.level.isClientSide()) return EventResult.pass();
+        if (entity instanceof LivingEntity livingEntity) {
+            IClientItemHandRenderEntity handRender = (IClientItemHandRenderEntity) livingEntity;
+            for (InteractionHand hand : InteractionHand.values()) {
+                handRender.setLastHandItemOld(hand, handRender.getLastHandItem(hand));
+                handRender.setLastHandItem(hand, livingEntity.getItemInHand(hand).copy());
+            }
+        }
+        return EventResult.pass();
     }
 
     private static void onPlayerTick(Player player) {
@@ -43,6 +60,10 @@ public class ClientHandler {
             var cd = data.getGunTrans(hand);
             if (sd.updateId() != cd.updateId())
                 data.setGunTrans(hand, sd);
+        }
+
+        if (player instanceof LocalPlayer) {
+            data.setHoldType(HoldType.getIdeal(ClientAction.isHolding(), player.isSprinting(), data.getHoldGrace()));
         }
     }
 
