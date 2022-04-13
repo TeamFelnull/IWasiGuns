@@ -1,6 +1,6 @@
 package dev.felnull.iwasi.entity;
 
-import dev.felnull.iwasi.data.GunTransData;
+import dev.felnull.iwasi.data.GunPlayerTransData;
 import dev.felnull.iwasi.data.HoldType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -34,13 +34,13 @@ public interface IIWDataPlayer {
 
     void setHoldGrace(int grace);
 
-    GunTransData getGunTrans(InteractionHand hand);
+    GunPlayerTransData getGunTrans(InteractionHand hand);
 
-    void setGunTrans(InteractionHand hand, GunTransData gunTransData);
+    void setGunTrans(InteractionHand hand, GunPlayerTransData gunTransData);
 
-    GunTransData getGunTransOld(InteractionHand hand);
+    GunPlayerTransData getGunTransOld(InteractionHand hand);
 
-    void setGunTransOld(InteractionHand hand, GunTransData gunTransData);
+    void setGunTransOld(InteractionHand hand, GunPlayerTransData gunTransData);
 
     boolean isPullTrigger();
 }

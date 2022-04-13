@@ -1,6 +1,6 @@
 package dev.felnull.iwasi.mixin;
 
-import dev.felnull.iwasi.data.GunTransData;
+import dev.felnull.iwasi.data.GunPlayerTransData;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
@@ -26,8 +26,8 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     private HoldType lastHoldType = HoldType.NONE;
     private HoldType preHoldType = HoldType.NONE;
     private int holdGrace;
-    private GunTransData mainHandGunTransOld = new GunTransData();
-    private GunTransData offHandGunTransOld = new GunTransData();
+    private GunPlayerTransData mainHandGunTransOld = new GunPlayerTransData();
+    private GunPlayerTransData offHandGunTransOld = new GunPlayerTransData();
 
     @Inject(method = "setItemSlot", at = @At("HEAD"))
     private void setItemSlot(EquipmentSlot equipmentSlot, ItemStack itemStack, CallbackInfo ci) {
@@ -98,12 +98,12 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     }
 
     @Override
-    public GunTransData getGunTrans(InteractionHand hand) {
+    public GunPlayerTransData getGunTrans(InteractionHand hand) {
         return IWPlayerData.getGunTransData((Player) (Object) this, hand);
     }
 
     @Override
-    public void setGunTrans(InteractionHand hand, GunTransData gunTransData) {
+    public void setGunTrans(InteractionHand hand, GunPlayerTransData gunTransData) {
         if ((Object) this instanceof ServerPlayer serverPlayer)
             IWPlayerData.setGunTransData(serverPlayer, hand, gunTransData);
     }
@@ -115,12 +115,12 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     }
 
     @Override
-    public GunTransData getGunTransOld(InteractionHand hand) {
+    public GunPlayerTransData getGunTransOld(InteractionHand hand) {
         return hand == InteractionHand.MAIN_HAND ? mainHandGunTransOld : offHandGunTransOld;
     }
 
     @Override
-    public void setGunTransOld(InteractionHand hand, GunTransData gunTransData) {
+    public void setGunTransOld(InteractionHand hand, GunPlayerTransData gunTransData) {
         if (hand == InteractionHand.MAIN_HAND) {
             mainHandGunTransOld = gunTransData;
         } else {

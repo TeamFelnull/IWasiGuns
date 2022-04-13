@@ -4,7 +4,7 @@ import dev.architectury.networking.NetworkManager;
 import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.client.handler.ClientMessageHandler;
 import dev.felnull.iwasi.data.ContinuousActionData;
-import dev.felnull.iwasi.gun.trans.GunTrans;
+import dev.felnull.iwasi.gun.trans.player.GunPlayerTrans;
 import dev.felnull.iwasi.gun.trans.GunTransRegistry;
 import dev.felnull.iwasi.server.handler.ServerMessageHandler;
 import dev.felnull.otyacraftengine.networking.PacketMessage;
@@ -29,14 +29,14 @@ public class IWPackets {
 
     public static class GunTransResetMessage implements PacketMessage {
         public final InteractionHand hand;
-        public final GunTrans gunTrans;
+        public final GunPlayerTrans gunTrans;
 
         public GunTransResetMessage(FriendlyByteBuf buf) {
             this.hand = buf.readEnum(InteractionHand.class);
             this.gunTrans = GunTransRegistry.getById(buf.readInt());
         }
 
-        public GunTransResetMessage(InteractionHand hand, GunTrans gunTrans) {
+        public GunTransResetMessage(InteractionHand hand, GunPlayerTrans gunTrans) {
             this.hand = hand;
             this.gunTrans = gunTrans;
         }

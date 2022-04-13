@@ -1,9 +1,7 @@
 package dev.felnull.iwasi.gun;
 
 import com.mojang.math.Vector3f;
-import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
-import dev.felnull.iwasi.gun.trans.HoldGunTrans;
-import dev.felnull.iwasi.gun.trans.IWGunTrans;
+import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.type.GunType;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -49,14 +47,6 @@ public abstract class Gun {
 
     public int getHoldSpeed() {
         return (int) (getWeight() / 200f);
-    }
-
-    public HoldGunTrans getHoldTrans() {
-        return IWGunTrans.HOLD;
-    }
-
-    public HoldGunTrans getUnHoldTrans() {
-        return IWGunTrans.UN_HOLD;
     }
 
     public Vector3f getSize() {

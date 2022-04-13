@@ -1,5 +1,6 @@
 package dev.felnull.iwasi.item;
 
+import dev.felnull.iwasi.data.GunItemTransData;
 import dev.felnull.iwasi.gun.Gun;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -13,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -117,5 +119,30 @@ public class GunItem extends Item {
 
     public static void setShotCoolDown(ItemStack itemStack, int count) {
         getOrCreateGunTag(itemStack).putInt("ShotCoolDown", count);
+    }
+
+    public static List<GunItemTransData> getGunItemTransList(ItemStack stack) {
+        var tag = getGunTag(stack);
+        if (tag != null)
+            return GunItemTransData.readList(tag);
+        return List.of();
+    }
+
+    public static void setGunItemTransList(ItemStack stack, List<GunItemTransData> gunItemTransDatas) {
+        GunItemTransData.writeList(getOrCreateGunTag(stack), gunItemTransDatas);
+    }
+
+    public static void addGunItemTrans(ItemStack stack, GunItemTransData gunItemTransData, boolean overwrite) {
+        var old = getGunItemTransList(stack);
+        var eqs = old.stream().filter(n -> n.name().equals(gunItemTransData.name())).toList();
+
+        if (overwrite) {
+            old.removeAll(eqs);
+            old.add(gunItemTransData);
+        } else if (eqs.isEmpty()) {
+            old.add(gunItemTransData);
+        }
+
+        setGunItemTransList(stack, old);
     }
 }

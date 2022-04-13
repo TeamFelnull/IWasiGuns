@@ -1,4 +1,4 @@
-package dev.felnull.iwasi.gun.trans;
+package dev.felnull.iwasi.item;
 
 import net.minecraft.world.item.Item;
 

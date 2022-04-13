@@ -5,8 +5,7 @@ import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.client.util.IWClientPlayerData;
 import dev.felnull.iwasi.data.IWPlayerData;
-import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
-import dev.felnull.iwasi.gun.trans.HoldGunTrans;
+import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
@@ -124,9 +123,7 @@ public abstract class GunRenderer<M extends GunMotion> {
         MotionPose pose;
         var bp = motion.getGunFixedMotionPoint(arm, bothHands, IWPlayerData.getLastHold(mc.player));
 
-        if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
-            pose = motion.getGunHoldMotion(arm, bothHands, IWPlayerData.getPreHold(mc.player), IWPlayerData.getHold(mc.player)).getPose(hold);
-        } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
+        if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
             pose = bp.getPose();
         } else {
             pose = bp.getPose();
@@ -141,9 +138,7 @@ public abstract class GunRenderer<M extends GunMotion> {
         MotionPose pose;
         var bp = motion.getOppositeItemFixedMotionPoint(arm, hold > 0.5);
 
-        if (gunTrans.gunTransData().gunTrans() instanceof HoldGunTrans) {
-            pose = motion.getOppositeItemHoldMotion(arm).getPose(hold);
-        } else if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
+        if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
             pose = bp.getPose();
         } else {
             pose = bp.getPose();

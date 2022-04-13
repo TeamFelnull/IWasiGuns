@@ -10,10 +10,6 @@ import java.util.List;
 
 public abstract class GunTrans {
 
-    public boolean isUseBothHand() {
-        return false;
-    }
-
     abstract public List<Integer> getProgressList();
 
     public int getStep() {

@@ -2,7 +2,7 @@ package dev.felnull.iwasi.handler;
 
 import dev.architectury.event.events.common.TickEvent;
 import dev.felnull.iwasi.data.ContinuousActionData;
-import dev.felnull.iwasi.data.GunTransData;
+import dev.felnull.iwasi.data.GunPlayerTransData;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
@@ -28,8 +28,8 @@ public class CommonHandler {
     public static void onDefineSynchedData(@NotNull Entity entity, @NotNull SynchedEntityData entityData) {
         if (!(entity instanceof Player)) return;
         entityData.define(IWPlayerData.CONTINUOUS_ACTION, new ContinuousActionData());
-        entityData.define(IWPlayerData.MAIN_HAND_GUN_TRANS, new GunTransData());
-        entityData.define(IWPlayerData.OFF_HAND_GUN_TRANS, new GunTransData());
+        entityData.define(IWPlayerData.MAIN_HAND_GUN_TRANS, new GunPlayerTransData());
+        entityData.define(IWPlayerData.OFF_HAND_GUN_TRANS, new GunPlayerTransData());
         entityData.define(IWPlayerData.HOLDING, HoldType.NONE);
     }
 
@@ -91,7 +91,7 @@ public class CommonHandler {
             var gun = IWItemUtil.getGunNullable(item);
             data.setGunTransOld(hand, gd);
             if (gun == null) {
-                data.setGunTrans(hand, new GunTransData(null, 0, 0, gd.updateId() + 1));
+                data.setGunTrans(hand, new GunPlayerTransData(null, 0, 0, gd.updateId() + 1));
                 continue;
             }
             if (gt == null) continue;
@@ -100,18 +100,18 @@ public class CommonHandler {
 
             int mp = gt.getProgress(gun, gd.step());
 
-            GunTransData nd = null;
+            GunPlayerTransData nd = null;
             if (mp - 1 <= gd.progress()) {
                 if (player instanceof ServerPlayer serverPlayer) {
                     gt.stepEnd(serverPlayer, hand, gun, item, gd.step());
                     if (gt.getStep() - 1 > gd.step()) {
-                        nd = new GunTransData(gt, 0, gd.step() + 1, gd.updateId() + 1);
+                        nd = new GunPlayerTransData(gt, 0, gd.step() + 1, gd.updateId() + 1);
                     } else {
-                        nd = new GunTransData(null, 0, 0, gd.updateId() + 1);
+                        nd = new GunPlayerTransData(null, 0, 0, gd.updateId() + 1);
                     }
                 }
             } else {
-                nd = new GunTransData(gt, gd.progress() + 1, gd.step(), gd.updateId());
+                nd = new GunPlayerTransData(gt, gd.progress() + 1, gd.step(), gd.updateId());
             }
             if (nd != null)
                 data.setGunTrans(hand, nd);

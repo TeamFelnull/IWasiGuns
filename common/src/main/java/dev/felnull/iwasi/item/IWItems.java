@@ -4,7 +4,6 @@ import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.gun.IWGuns;
-import dev.felnull.iwasi.gun.trans.MagazineItem;
 import net.minecraft.core.Registry;
 import net.minecraft.world.item.Item;
 

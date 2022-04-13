@@ -1,16 +1,20 @@
 package dev.felnull.iwasi.server.handler;
 
 import dev.architectury.event.events.common.TickEvent;
-import dev.felnull.iwasi.data.GunTransData;
+import dev.felnull.iwasi.data.GunItemTransData;
+import dev.felnull.iwasi.data.GunPlayerTransData;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWCashServerPlayer;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ServerHandler {
     public static void init() {
@@ -49,6 +53,29 @@ public class ServerHandler {
             if (item.getItem() instanceof GunItem)
                 GunItem.resetTmpUUID(item);
             lastCash.setLastSelected(selected);
+        }
+
+
+        for (InteractionHand hand : InteractionHand.values()) {
+            var item = player.getItemInHand(hand);
+            var gun = IWItemUtil.getGunNullable(item);
+            if (gun == null) continue;
+            var gitl = GunItem.getGunItemTransList(item);
+            List<GunItemTransData> nl = new ArrayList<>();
+            for (GunItemTransData entry : gitl) {
+                var gt = entry.getGunTrans();
+                if (gt == null) continue;
+                gt.tick(serverPlayer, hand, gun, item, entry.progress(), entry.step());
+                int mp = gt.getProgress(gun, entry.step());
+                if (mp - 1 <= entry.progress()) {
+                    gt.stepEnd(serverPlayer, hand, gun, item, entry.step());
+                    if (gt.getStep() - 1 > entry.step())
+                        nl.add(new GunItemTransData(entry.getGunTrans(), 0, entry.step() + 1));
+                } else {
+                    nl.add(new GunItemTransData(entry.getGunTrans(), entry.progress() + 1, entry.step()));
+                }
+            }
+            GunItem.setGunItemTransList(item, nl);
         }
   /*
         boolean reset = false;
@@ -103,25 +130,9 @@ public class ServerHandler {
         }*/
     }
 
-    private static void setGunTrans(ServerPlayer player, InteractionHand hand, GunTransData gunTransData) {
+    private static void setGunTrans(ServerPlayer player, InteractionHand hand, GunPlayerTransData gunTransData) {
         var es = hand == InteractionHand.MAIN_HAND ? IWPlayerData.MAIN_HAND_GUN_TRANS : IWPlayerData.OFF_HAND_GUN_TRANS;
         player.getEntityData().set(es, gunTransData);
-    }
-
-    private static void setHoldTrans(ServerPlayer player, InteractionHand hand, ItemStack stack, boolean hold) {
-        if (!(stack.getItem() instanceof GunItem gunItem)) return;
-        var holdGT = gunItem.getGun().getHoldTrans();
-        var unHoldGT = gunItem.getGun().getUnHoldTrans();
-        var ogt = IWPlayerData.getGunTransData(player, hand);
-        var hgt = hold ? holdGT : unHoldGT;
-        var gt = ogt.getGunTrans();
-        if (gt == null) {
-            IWPlayerData.setGunTrans(player, hand, hgt);
-            return;
-        }
-        if (gt != unHoldGT && gt != holdGT) return;
-        int ms = hgt.getProgress(gunItem.getGun(), 0);
-        setGunTrans(player, hand, new GunTransData(hgt, ms - 1 - ogt.progress(), 0, ogt.updateId() + 1));
     }
 
     private static boolean canChangeHold(Player player) {

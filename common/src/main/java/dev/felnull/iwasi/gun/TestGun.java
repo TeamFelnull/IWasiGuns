@@ -1,7 +1,7 @@
 package dev.felnull.iwasi.gun;
 
-import dev.felnull.iwasi.gun.trans.AbstractReloadGunTrans;
-import dev.felnull.iwasi.gun.trans.IWGunTrans;
+import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
+import dev.felnull.iwasi.gun.trans.player.IWGunPlayerTrans;
 import dev.felnull.iwasi.gun.type.IWGunTypes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -13,7 +13,7 @@ public class TestGun extends Gun {
 
     @Override
     public AbstractReloadGunTrans getReloadTrans() {
-        return IWGunTrans.GLOCK_17_RELOAD;
+        return IWGunPlayerTrans.GLOCK_17_RELOAD;
     }
 
     @Override
