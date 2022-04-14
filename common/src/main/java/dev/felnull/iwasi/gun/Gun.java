@@ -3,6 +3,12 @@ package dev.felnull.iwasi.gun;
 import com.mojang.math.Vector3f;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.type.GunType;
+import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.item.MagazineItem;
+import dev.felnull.iwasi.util.IWItemUtil;
+import dev.felnull.otyacraftengine.util.OEPlayerUtil;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -58,7 +64,7 @@ public abstract class Gun {
     abstract public Item getMagazine();
 
     protected boolean canShot(Level level, Player player, InteractionHand interactionHand, ItemStack itemStack) {
-        return true;
+        return GunItem.getChamberRemainingBullets(itemStack) >= 1;
     }
 
     public InteractionResult shot(Level level, Player player, InteractionHand interactionHand, ItemStack itemStack) {
@@ -69,9 +75,46 @@ public abstract class Gun {
                 thrownEgg.setItem(new ItemStack(Items.EGG));
                 thrownEgg.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
                 level.addFreshEntity(thrownEgg);
+                shotAfter((ServerLevel) level, (ServerPlayer) player, interactionHand, itemStack);
             }
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.FAIL;
+    }
+
+    protected void shotAfter(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
+        GunItem.setChamberRemainingBullets(itemStack, Math.max(GunItem.getChamberRemainingBullets(itemStack) - 1, 0));
+        updateMagazineRemaining(itemStack, GunItem.getMagazine(itemStack));
+    }
+
+    public void unReload(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
+        var mg = GunItem.getMagazine(itemStack);
+        if (!mg.isEmpty()) {
+            OEPlayerUtil.giveItem(player, mg.copy());
+            GunItem.setMagazine(player, itemStack, ItemStack.EMPTY);
+        }
+    }
+
+    public void reload(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
+        GunItem.setMagazine(player, itemStack, MagazineItem.setRemainingBullets(new ItemStack(getMagazine()), ((MagazineItem) getMagazine()).getCapacity()));
+        updateMagazineRemaining(itemStack, GunItem.getMagazine(itemStack));
+    }
+
+    private void updateMagazineRemaining(ItemStack gunItem, ItemStack magazineItem) {
+        var gun = IWItemUtil.getGunNullable(gunItem);
+        if (gun == null) return;
+        int rb = MagazineItem.getRemainingBullets(magazineItem);
+        int crb = GunItem.getChamberRemainingBullets(gunItem);
+        int rcb = gun.getChamberCapacity() - crb;
+        if (rcb == 0) return;
+        if (rb <= rcb) {
+            MagazineItem.setRemainingBullets(magazineItem, 0);
+            GunItem.setChamberRemainingBullets(gunItem, crb + rb);
+        } else {
+            MagazineItem.setRemainingBullets(magazineItem, rb - rcb);
+            GunItem.setChamberRemainingBullets(gunItem, gun.getChamberCapacity());
+        }
+        if (GunItem.getChamberRemainingBullets(gunItem) >= gun.getChamberCapacity())
+            GunItem.setSlided(gunItem, false);
     }
 }

@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public record GunItemTransData(@NotNull ResourceLocation name, int progress, int step) {
+    public GunItemTransData(GunItemTrans gunTrans) {
+        this(gunTrans, 0, 0);
+    }
+
     public GunItemTransData(GunItemTrans gunTrans, int progress, int step) {
         this(gunTrans.getName(), progress, step);
     }

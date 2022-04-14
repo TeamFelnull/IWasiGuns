@@ -44,8 +44,14 @@ public class ClientHandler {
         if (entity instanceof LivingEntity livingEntity) {
             IClientItemHandRenderEntity handRender = (IClientItemHandRenderEntity) livingEntity;
             for (InteractionHand hand : InteractionHand.values()) {
-                handRender.setLastHandItemOld(hand, handRender.getLastHandItem(hand));
-                handRender.setLastHandItem(hand, livingEntity.getItemInHand(hand).copy());
+                var hitem = livingEntity.getItemInHand(hand);
+                if (hitem.getItem() instanceof GunItem) {
+                    handRender.setLastHandItemOld(hand, handRender.getLastHandItem(hand));
+                    handRender.setLastHandItem(hand, hitem.copy());
+                } else {
+                    handRender.setLastHandItemOld(hand, ItemStack.EMPTY);
+                    handRender.setLastHandItem(hand, ItemStack.EMPTY);
+                }
             }
         }
         return EventResult.pass();

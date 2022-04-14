@@ -5,8 +5,8 @@ import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public record InfoGunTrans(DeltaGunTransData gunTransData, @NotNull Gun gun) {
-    public InfoGunTrans(DeltaGunTransData gunTransData, ItemStack stack) {
+public record InfoGunTrans(DeltaGunPlayerTransData gunTransData, @NotNull Gun gun) {
+    public InfoGunTrans(DeltaGunPlayerTransData gunTransData, ItemStack stack) {
         this(gunTransData, IWItemUtil.getGun(stack));
     }
 

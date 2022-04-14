@@ -4,12 +4,17 @@ import dev.felnull.iwasi.data.GunItemTransData;
 import dev.felnull.iwasi.gun.Gun;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -144,5 +149,46 @@ public class GunItem extends Item {
         }
 
         setGunItemTransList(stack, old);
+    }
+
+    @Nullable
+    public static GunItemTransData getGunItemTrans(ItemStack stack, ResourceLocation name) {
+        var data = getGunItemTransList(stack);
+        for (GunItemTransData entry : data) {
+            if (entry.name().equals(name))
+                return entry;
+        }
+        return null;
+    }
+
+    public static boolean isSlided(ItemStack itemStack) {
+        var tag = getGunTag(itemStack);
+        if (tag != null)
+            return tag.getBoolean("Slided");
+        return false;
+    }
+
+    public static void setSlided(ItemStack itemStack, boolean slided) {
+        getOrCreateGunTag(itemStack).putBoolean("Slided", slided);
+    }
+
+    public static int getChamberRemainingBullets(ItemStack itemStack) {
+        var tag = getGunTag(itemStack);
+        if (tag != null)
+            return tag.getInt("ChamberRemainingBullets");
+        return 0;
+    }
+
+    public static void setChamberRemainingBullets(ItemStack itemStack, int remainingBullets) {
+        getOrCreateGunTag(itemStack).putInt("ChamberRemainingBullets", remainingBullets);
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level level, @NotNull List<Component> list, @NotNull TooltipFlag tooltipFlag) {
+        int mrb = 0;
+        var mg = getMagazine(itemStack);
+        if (!mg.isEmpty())
+            mrb = MagazineItem.getRemainingBullets(mg);
+        list.add(new TextComponent("Remaining Bullets: " + mrb + "+" + getChamberRemainingBullets(itemStack)));
     }
 }
