@@ -3,13 +3,13 @@ package dev.felnull.iwasi.item;
 import dev.felnull.iwasi.data.GunItemTransData;
 import dev.felnull.iwasi.gun.Gun;
 import dev.felnull.iwasi.sound.IWSounds;
+import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -80,12 +80,14 @@ public class GunItem extends Item {
     }
 
     public static void setMagazine(Player player, ItemStack itemStack, ItemStack magazineStack) {
+        var gun = IWItemUtil.getGunNullable(itemStack);
+        if (gun == null) return;
         SoundEvent s = null;
         if (!magazineStack.isEmpty() && getMagazine(itemStack).isEmpty()) s = IWSounds.MAGAZINE_REMOVE.get();
         else if (magazineStack.isEmpty() && !getMagazine(itemStack).isEmpty()) s = IWSounds.MAGAZINE_SET.get();
 
         if (s != null)
-            player.getLevel().playSound(null, player.getX(), player.getY(), player.getZ(), s, SoundSource.PLAYERS, 0.5F, 1f);
+            gun.playSound(player, s);
         setMagazine(itemStack, magazineStack);
     }
 

@@ -17,7 +17,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownEgg;
-import net.minecraft.world.item.*;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -87,7 +89,7 @@ public abstract class Gun {
 
     public InteractionResult shot(Level level, Player player, InteractionHand interactionHand, ItemStack itemStack) {
         if (canShot(level, player, interactionHand, itemStack)) {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), getShotSound(itemStack), SoundSource.PLAYERS, 0.5F, level.getRandom().nextFloat() * 0.1F + 0.95F);
+            playSound(player, getShotSound(itemStack), 2.0F);
             if (!level.isClientSide) {
                 ThrownEgg thrownEgg = new ThrownEgg(level, player);
                 thrownEgg.setItem(new ItemStack(Items.EGG));
@@ -97,7 +99,7 @@ public abstract class Gun {
             }
             return InteractionResult.SUCCESS;
         }
-        level.playSound(null, player.getX(), player.getY(), player.getZ(), getNoAmmoShotSound(itemStack), SoundSource.PLAYERS, 0.5F, level.getRandom().nextFloat() * 0.1F + 0.95F);
+        playSound(player, getNoAmmoShotSound(itemStack));
         return InteractionResult.CONSUME;
     }
 
@@ -133,5 +135,13 @@ public abstract class Gun {
             MagazineItem.setRemainingBullets(magazineItem, rb - rcb);
             GunItem.setChamberRemainingBullets(gunItem, gun.getChamberCapacity());
         }
+    }
+
+    public void playSound(Player player, SoundEvent soundEvent) {
+        playSound(player, soundEvent, 0.5f);
+    }
+
+    public void playSound(Player player, SoundEvent soundEvent, float range) {
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundSource.PLAYERS, 0.5F, player.level.getRandom().nextFloat() * 0.1F + 0.95F);
     }
 }

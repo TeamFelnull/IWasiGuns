@@ -4,7 +4,10 @@ import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.trans.player.IWGunPlayerTrans;
 import dev.felnull.iwasi.gun.type.IWGunTypes;
 import dev.felnull.iwasi.item.IWItems;
+import dev.felnull.iwasi.sound.IWSounds;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 public class TestGun extends Gun {
     public TestGun() {
@@ -14,6 +17,11 @@ public class TestGun extends Gun {
     @Override
     public AbstractReloadGunTrans getReloadTrans() {
         return IWGunPlayerTrans.GLOCK_17_RELOAD;
+    }
+
+    @Override
+    public SoundEvent getShotSound(ItemStack stack) {
+        return IWSounds.SHOT_2.get();
     }
 
     @Override

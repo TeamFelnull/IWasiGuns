@@ -38,12 +38,24 @@ public class CommonHandler {
         var data = (IIWDataPlayer) player;
         var holdType = data.getHoldType();
 
-        if (data.getLastHoldType() != holdType) {
+        if (data.getLastHoldType() != holdType && data.getGunTrans(InteractionHand.MAIN_HAND).getGunTrans() == null && data.getGunTrans(InteractionHand.OFF_HAND).getGunTrans() == null) {
             int retv = IWPlayerUtil.getMaxHoldProgress(player) - data.getHoldProgress();
             data.setHoldProgress(retv);
             data.setHoldProgressOld(retv);
             data.setPreHoldType(data.getLastHoldType());
             data.setLastHoldType(holdType);
+        }
+
+        if (data.getCompHoldType() != data.getLastHoldType() && IWPlayerUtil.getMaxHoldProgress(player) >= data.getHoldProgress()) {
+            if (data.getLastHoldType() == HoldType.HOLD) {
+                for (InteractionHand hand : InteractionHand.values()) {
+                    var item = player.getItemInHand(hand);
+                    var gun = IWItemUtil.getGunNullable(item);
+                    if (gun != null)
+                        gun.playSound(player, gun.getHoldSound(item));
+                }
+            }
+            data.setCompHoldType(data.getLastHoldType());
         }
 
         data.setHoldProgressOld(data.getHoldProgress());

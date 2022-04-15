@@ -26,6 +26,7 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     private int holdProgressOld;
     private HoldType lastHoldType = HoldType.NONE;
     private HoldType preHoldType = HoldType.NONE;
+    private HoldType compHoldType = HoldType.NONE;
     private int holdGrace;
     private GunPlayerTransData mainHandGunTransOld = new GunPlayerTransData();
     private GunPlayerTransData offHandGunTransOld = new GunPlayerTransData();
@@ -81,6 +82,16 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     @Override
     public void setPreHoldType(HoldType holdType) {
         preHoldType = holdType;
+    }
+
+    @Override
+    public HoldType getCompHoldType() {
+        return compHoldType;
+    }
+
+    @Override
+    public void setCompHoldType(HoldType compHoldType) {
+        this.compHoldType = compHoldType;
     }
 
     @Override

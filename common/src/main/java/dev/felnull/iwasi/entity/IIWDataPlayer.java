@@ -24,7 +24,12 @@ public interface IIWDataPlayer {
 
     HoldType getPreHoldType();
 
+
     void setPreHoldType(HoldType holdType);
+
+    HoldType getCompHoldType();
+
+    void setCompHoldType(HoldType holdType);
 
     HoldType getHoldType();
 
