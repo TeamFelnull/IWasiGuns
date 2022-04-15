@@ -1,11 +1,8 @@
 package dev.felnull.iwasi.client.renderer.gun;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import dev.felnull.iwasi.client.data.DeltaGunItemTransData;
 import dev.felnull.iwasi.client.model.IWModels;
 import dev.felnull.iwasi.client.motion.gun.Glock17GunMotion;
-import dev.felnull.iwasi.data.GunItemTransData;
-import dev.felnull.iwasi.gun.Gun;
 import dev.felnull.iwasi.gun.trans.item.IWGunItemTrans;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.util.IWItemUtil;
@@ -34,10 +31,11 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
         OERenderUtil.renderModel(poseStack, vc, main, light, overlay);
 
         poseStack.pushPose();
-        float sv = 0;
+        float sv = IWItemUtil.isSlideDown(stack) ? 1f : 0f;
         float rs = getRecoilSlide(stack, stackOld, delta);
         if (rs >= 0)
             sv = rs;
+
 
         OERenderUtil.poseTrans16(poseStack, 0, 0, 1.625f * sv);
         OERenderUtil.renderModel(poseStack, vc, slide, light, overlay);
@@ -57,22 +55,18 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
     }
 
     private float getRecoilSlide(ItemStack stack, ItemStack oldStack, float delta) {
-        if (stack.isEmpty() || oldStack.isEmpty()) return -1f;
-        var ng = GunItem.getGunItemTrans(stack, IWGunItemTrans.GLOCK_17_SLIDE_RECOIL.getName());
-        var og = GunItem.getGunItemTrans(oldStack, IWGunItemTrans.GLOCK_17_SLIDE_RECOIL.getName());
-        if (ng == null && og == null) return -1f;
-
-        if (ng == null)
-            ng = new GunItemTransData(IWGunItemTrans.GLOCK_17_SLIDE_RECOIL);
-        if (og == null)
-            og = new GunItemTransData(IWGunItemTrans.GLOCK_17_SLIDE_RECOIL);
-        Gun gun = IWItemUtil.getGun(stack);
-        var delt = DeltaGunItemTransData.of(delta, og, ng, gun);
-
-        if (ng.getGunTrans() == null) return -1f;
+        var delt = getGunItemTrans(IWGunItemTrans.GLOCK_17_SLIDE_RECOIL, stack, oldStack, delta);
+        if (delt == null) {
+            delt = getGunItemTrans(IWGunItemTrans.GLOCK_17_SLIDE_REVERS, stack, oldStack, delta);
+            if (delt == null)
+                return -1f;
+            return 1f - delt.progress() / (IWGunItemTrans.GLOCK_17_SLIDE_REVERS.getProgress(stack, 0) - 1f);
+        }
         if (delt.step() == 0)
-            return delt.progress() / (ng.getGunTrans().getProgress(gun, 0) - 1f);
-        return 1f - (delt.progress() / (ng.getGunTrans().getProgress(gun, delt.step()) - 1f));
+            return delt.progress() / (IWGunItemTrans.GLOCK_17_SLIDE_RECOIL.getProgress(stack, 0) - 1f);
+        float ap = IWGunItemTrans.GLOCK_17_SLIDE_RECOIL.getProgress(stack, delt.step()) - 1f;
+        float dlp = delt.progress();
+        return 1f - (dlp / ap);
     }
 
 }

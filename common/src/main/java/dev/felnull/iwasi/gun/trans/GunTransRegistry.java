@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class GunTransRegistry {
+    public static final ResourceLocation NULL = new ResourceLocation("null");
     private static final List<GunPlayerTrans> GUN_PLAYER_TRANS = new ArrayList<>();
     private static final Map<ResourceLocation, GunItemTrans> GUN_ITEM_TRANS = new HashMap<>();
 
@@ -40,11 +41,10 @@ public class GunTransRegistry {
         return trans;
     }
 
-    @Nullable
     public static ResourceLocation getName(GunItemTrans trans) {
         if (GUN_ITEM_TRANS.containsValue(trans))
             return GUN_ITEM_TRANS.entrySet().stream().filter(n -> n.getValue().equals(trans)).map(Map.Entry::getKey).findFirst().orElse(null);
-        return null;
+        return NULL;
     }
 
     @Nullable

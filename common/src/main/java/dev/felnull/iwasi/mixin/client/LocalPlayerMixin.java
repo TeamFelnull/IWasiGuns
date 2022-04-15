@@ -2,8 +2,8 @@ package dev.felnull.iwasi.mixin.client;
 
 import dev.felnull.iwasi.client.data.ClientAction;
 import dev.felnull.iwasi.data.HoldType;
-import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
+import dev.felnull.iwasi.util.IWPlayerUtil;
 import net.minecraft.client.player.LocalPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 
@@ -18,7 +18,7 @@ public abstract class LocalPlayerMixin implements IIWDataPlayer {
 
     @Override
     public void setHoldType(HoldType holdType) {
-        if (getHoldProgress() >= IWPlayerData.getMaxHoldProgress((LocalPlayer) (Object) this))
+        if (getHoldProgress() >= IWPlayerUtil.getMaxHoldProgress((LocalPlayer) (Object) this))
             this.clientHoldType = holdType;
     }
 

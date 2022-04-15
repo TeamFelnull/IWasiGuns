@@ -13,7 +13,7 @@ public class Glock17ReloadGunTrans extends AbstractReloadGunTrans {
     private static final List<Integer> progress = ImmutableList.of(6, 6, 5, 6);
 
     @Override
-    public List<Integer> getProgressList() {
+    public List<Integer> getProgressList(ItemStack stack) {
         return progress;
     }
 

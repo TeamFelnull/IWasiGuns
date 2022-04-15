@@ -1,16 +1,10 @@
 package dev.felnull.iwasi.client.data;
 
-import dev.felnull.iwasi.gun.Gun;
-import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.NotNull;
 
-public record InfoGunTrans(DeltaGunPlayerTransData gunTransData, @NotNull Gun gun) {
-    public InfoGunTrans(DeltaGunPlayerTransData gunTransData, ItemStack stack) {
-        this(gunTransData, IWItemUtil.getGun(stack));
-    }
+public record InfoGunTrans(DeltaGunPlayerTransData gunTransData, ItemStack stack) {
 
     public float progressPar() {
-        return gunTransData.progress() / (float) (gunTransData.gunTrans().getProgress(gun, gunTransData.step()) - 1);
+        return gunTransData.progress() / (float) (gunTransData.gunTrans().getProgress(stack, gunTransData.step()) - 1);
     }
 }

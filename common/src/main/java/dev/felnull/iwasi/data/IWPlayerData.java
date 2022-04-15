@@ -3,7 +3,6 @@ package dev.felnull.iwasi.data;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.entity.IWEntityDataSerializers;
 import dev.felnull.iwasi.gun.trans.player.GunPlayerTrans;
-import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
@@ -70,29 +69,5 @@ public class IWPlayerData {
     public static void setGunTransData(@NotNull ServerPlayer player, InteractionHand hand, GunPlayerTransData gunTransData) {
         var es = hand == InteractionHand.MAIN_HAND ? MAIN_HAND_GUN_TRANS : OFF_HAND_GUN_TRANS;
         player.getEntityData().set(es, gunTransData);
-    }
-
-    public static int getMaxHoldProgress(@NotNull Player player) {
-        var mg = IWItemUtil.getGunNullable(player.getMainHandItem());
-        var og = IWItemUtil.getGunNullable(player.getOffhandItem());
-        return Math.max(mg != null ? mg.getHoldSpeed() : 0, og != null ? og.getHoldSpeed() : 0);
-    }
-
-    public static boolean isHolding(@NotNull Player player, InteractionHand hand) {
-        var g = IWItemUtil.getGunNullable(player.getItemInHand(hand));
-        if (g != null) {
-            var data = (IIWDataPlayer) player;
-            return data.getHoldProgress() >= g.getHoldSpeed();
-        }
-        return false;
-    }
-
-    public static float getHoldProgress(@NotNull Player player, InteractionHand hand, float delta) {
-        var g = IWItemUtil.getGunNullable(player.getItemInHand(hand));
-        if (g != null) {
-            var data = (IIWDataPlayer) player;
-            return Math.min(data.getHoldProgress(delta) / (float) g.getHoldSpeed(), 1f);
-        }
-        return 0;
     }
 }

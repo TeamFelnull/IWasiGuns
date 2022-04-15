@@ -8,6 +8,7 @@ import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.util.IWItemUtil;
+import dev.felnull.iwasi.util.IWPlayerUtil;
 import dev.felnull.otyacraftengine.event.MoreEntityEvent;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
@@ -38,7 +39,7 @@ public class CommonHandler {
         var holdType = data.getHoldType();
 
         if (data.getLastHoldType() != holdType) {
-            int retv = IWPlayerData.getMaxHoldProgress(player) - data.getHoldProgress();
+            int retv = IWPlayerUtil.getMaxHoldProgress(player) - data.getHoldProgress();
             data.setHoldProgress(retv);
             data.setHoldProgressOld(retv);
             data.setPreHoldType(data.getLastHoldType());
@@ -46,9 +47,9 @@ public class CommonHandler {
         }
 
         data.setHoldProgressOld(data.getHoldProgress());
-        if (IWPlayerData.getMaxHoldProgress(player) > data.getHoldProgress())
-            data.setHoldProgress(data.getHoldProgress() + 1);
-
+        if (IWPlayerUtil.getMaxHoldProgress(player) > data.getHoldProgress()) {
+            data.setHoldProgress(data.getHoldProgress() + IWPlayerUtil.getHoldSpeed(player, data.getPreHoldType(), data.getHoldType(), data.getHoldGrace() > 0));
+        }
         if (data.getHoldGrace() > 0)
             data.setHoldGrace(data.getHoldGrace() - 1);
 
@@ -62,7 +63,7 @@ public class CommonHandler {
             int sc = GunItem.getShotCoolDown(item);
             boolean shot = false;
             if (data.isPullTrigger()) {
-                if (data.getGunTrans(hand).getGunTrans() == null && (data.getHoldProgress() == 0 || data.getHoldProgress() >= gun.getHoldSpeed()) && sc <= 0 && (gun.getMaxContinuousShotCount() <= 0 || GunItem.getContinuousShotCount(item) < gun.getMaxContinuousShotCount())) {
+                if (data.getGunTrans(hand).getGunTrans() == null && (data.getHoldProgress() == 0 || data.getHoldProgress() >= gun.getRequiredHoldTime()) && sc <= 0 && (gun.getMaxContinuousShotCount() <= 0 || GunItem.getContinuousShotCount(item) < gun.getMaxContinuousShotCount())) {
                     var sret = gun.shot(player.level, player, hand, item);
                     if (sret == InteractionResult.SUCCESS) {
                         shot = true;
@@ -98,13 +99,13 @@ public class CommonHandler {
             if (player instanceof ServerPlayer serverPlayer)
                 gt.tick(serverPlayer, hand, gun, item, gd.progress(), gd.step());
 
-            int mp = gt.getProgress(gun, gd.step());
+            int mp = gt.getProgress(item, gd.step());
 
             GunPlayerTransData nd = null;
             if (mp - 1 <= gd.progress()) {
                 if (player instanceof ServerPlayer serverPlayer) {
                     gt.stepEnd(serverPlayer, hand, gun, item, gd.step());
-                    if (gt.getStep() - 1 > gd.step()) {
+                    if (gt.getStep(item) - 1 > gd.step()) {
                         nd = new GunPlayerTransData(gt, 0, gd.step() + 1, gd.updateId() + 1);
                     } else {
                         nd = new GunPlayerTransData(null, 0, 0, gd.updateId() + 1);

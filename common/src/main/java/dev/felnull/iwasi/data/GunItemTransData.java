@@ -12,13 +12,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public record GunItemTransData(@NotNull ResourceLocation name, int progress, int step) {
+public record GunItemTransData(@NotNull ResourceLocation name, int progress, int step, int updateId) {
     public GunItemTransData(GunItemTrans gunTrans) {
-        this(gunTrans, 0, 0);
+        this(gunTrans, 0, 0, 0);
     }
 
-    public GunItemTransData(GunItemTrans gunTrans, int progress, int step) {
-        this(gunTrans.getName(), progress, step);
+    public GunItemTransData(GunItemTrans gunTrans, int progress, int step, int updateId) {
+        this(GunTransRegistry.getName(gunTrans), progress, step, updateId);
     }
 
     @Nullable
@@ -56,13 +56,14 @@ public record GunItemTransData(@NotNull ResourceLocation name, int progress, int
     }
 
     public static GunItemTransData read(CompoundTag tag) {
-        return new GunItemTransData(new ResourceLocation(tag.getString("Name")), tag.getInt("Progress"), tag.getInt("Step"));
+        return new GunItemTransData(new ResourceLocation(tag.getString("Name")), tag.getInt("Progress"), tag.getInt("Step"), tag.getInt("UpdateId"));
     }
 
     public CompoundTag write(CompoundTag tag) {
         tag.putString("Name", name.toString());
         tag.putInt("Progress", progress);
         tag.putInt("Step", step);
+        tag.putInt("UpdateId", updateId);
         return tag;
     }
 }

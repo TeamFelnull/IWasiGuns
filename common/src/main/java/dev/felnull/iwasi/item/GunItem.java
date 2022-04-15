@@ -41,8 +41,7 @@ public class GunItem extends Item {
     @Nullable
     public static UUID getTmpUUID(@NotNull ItemStack stack) {
         var tag = stack.getTag();
-        if (tag != null && tag.hasUUID("TmpId"))
-            return tag.getUUID("TmpId");
+        if (tag != null && tag.hasUUID("TmpId")) return tag.getUUID("TmpId");
         return null;
     }
 
@@ -52,8 +51,7 @@ public class GunItem extends Item {
         if (uuid != null) {
             tag.putUUID("TmpId", uuid);
         } else {
-            if (tag.hasUUID("TmpId"))
-                tag.remove("TmpId");
+            if (tag.hasUUID("TmpId")) tag.remove("TmpId");
         }
         return stack;
     }
@@ -65,31 +63,26 @@ public class GunItem extends Item {
     }
 
     public static CompoundTag getGunTag(ItemStack stack) {
-        if (stack.getTag() != null)
-            return stack.getTag().getCompound("GunData");
+        if (stack.getTag() != null) return stack.getTag().getCompound("GunData");
         return null;
     }
 
     public static CompoundTag getOrCreateGunTag(ItemStack stack) {
         var tag = stack.getOrCreateTag();
-        if (!tag.contains("GunData", Tag.TAG_COMPOUND))
-            tag.put("GunData", new CompoundTag());
+        if (!tag.contains("GunData", Tag.TAG_COMPOUND)) tag.put("GunData", new CompoundTag());
         return tag.getCompound("GunData");
     }
 
     public static ItemStack getMagazine(ItemStack itemStack) {
         var tag = getGunTag(itemStack);
-        if (tag != null && tag.contains("Magazine", Tag.TAG_COMPOUND))
-            return ItemStack.of(tag.getCompound("Magazine"));
+        if (tag != null && tag.contains("Magazine", Tag.TAG_COMPOUND)) return ItemStack.of(tag.getCompound("Magazine"));
         return ItemStack.EMPTY;
     }
 
     public static void setMagazine(Player player, ItemStack itemStack, ItemStack magazineStack) {
         SoundEvent s = null;
-        if (!magazineStack.isEmpty() && getMagazine(itemStack).isEmpty())
-            s = SoundEvents.IRON_TRAPDOOR_OPEN;
-        else if (magazineStack.isEmpty() && !getMagazine(itemStack).isEmpty())
-            s = SoundEvents.IRON_TRAPDOOR_CLOSE;
+        if (!magazineStack.isEmpty() && getMagazine(itemStack).isEmpty()) s = SoundEvents.IRON_TRAPDOOR_OPEN;
+        else if (magazineStack.isEmpty() && !getMagazine(itemStack).isEmpty()) s = SoundEvents.IRON_TRAPDOOR_CLOSE;
 
         if (s != null)
             player.getLevel().playSound(null, player.getX(), player.getY(), player.getZ(), s, SoundSource.NEUTRAL, 0.5F, 1f);
@@ -106,8 +99,7 @@ public class GunItem extends Item {
 
     public static int getContinuousShotCount(ItemStack itemStack) {
         var tag = getGunTag(itemStack);
-        if (tag != null)
-            return tag.getInt("ContinuousShotCount");
+        if (tag != null) return tag.getInt("ContinuousShotCount");
         return 0;
     }
 
@@ -117,8 +109,7 @@ public class GunItem extends Item {
 
     public static int getShotCoolDown(ItemStack itemStack) {
         var tag = getGunTag(itemStack);
-        if (tag != null)
-            return tag.getInt("ShotCoolDown");
+        if (tag != null) return tag.getInt("ShotCoolDown");
         return 0;
     }
 
@@ -128,8 +119,7 @@ public class GunItem extends Item {
 
     public static List<GunItemTransData> getGunItemTransList(ItemStack stack) {
         var tag = getGunTag(stack);
-        if (tag != null)
-            return GunItemTransData.readList(tag);
+        if (tag != null) return GunItemTransData.readList(tag);
         return List.of();
     }
 
@@ -139,12 +129,14 @@ public class GunItem extends Item {
 
     public static void addGunItemTrans(ItemStack stack, GunItemTransData gunItemTransData, boolean overwrite) {
         var old = getGunItemTransList(stack);
-        var eqs = old.stream().filter(n -> n.name().equals(gunItemTransData.name())).toList();
+        var pre = getGunItemTrans(stack, gunItemTransData.name());
 
         if (overwrite) {
-            old.removeAll(eqs);
+            if (pre != null)
+                gunItemTransData = new GunItemTransData(gunItemTransData.getGunTrans(), gunItemTransData.progress(), gunItemTransData.step(), pre.updateId() + 1);
+            old.remove(pre);
             old.add(gunItemTransData);
-        } else if (eqs.isEmpty()) {
+        } else if (pre == null) {
             old.add(gunItemTransData);
         }
 
@@ -155,27 +147,14 @@ public class GunItem extends Item {
     public static GunItemTransData getGunItemTrans(ItemStack stack, ResourceLocation name) {
         var data = getGunItemTransList(stack);
         for (GunItemTransData entry : data) {
-            if (entry.name().equals(name))
-                return entry;
+            if (entry.name().equals(name)) return entry;
         }
         return null;
     }
 
-    public static boolean isSlided(ItemStack itemStack) {
-        var tag = getGunTag(itemStack);
-        if (tag != null)
-            return tag.getBoolean("Slided");
-        return false;
-    }
-
-    public static void setSlided(ItemStack itemStack, boolean slided) {
-        getOrCreateGunTag(itemStack).putBoolean("Slided", slided);
-    }
-
     public static int getChamberRemainingBullets(ItemStack itemStack) {
         var tag = getGunTag(itemStack);
-        if (tag != null)
-            return tag.getInt("ChamberRemainingBullets");
+        if (tag != null) return tag.getInt("ChamberRemainingBullets");
         return 0;
     }
 
@@ -187,8 +166,7 @@ public class GunItem extends Item {
     public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level level, @NotNull List<Component> list, @NotNull TooltipFlag tooltipFlag) {
         int mrb = 0;
         var mg = getMagazine(itemStack);
-        if (!mg.isEmpty())
-            mrb = MagazineItem.getRemainingBullets(mg);
+        if (!mg.isEmpty()) mrb = MagazineItem.getRemainingBullets(mg);
         list.add(new TextComponent("Remaining Bullets: " + mrb + "+" + getChamberRemainingBullets(itemStack)));
     }
 }

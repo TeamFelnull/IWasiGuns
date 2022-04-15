@@ -3,8 +3,8 @@ package dev.felnull.iwasi.gun;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.trans.player.IWGunPlayerTrans;
 import dev.felnull.iwasi.gun.type.IWGunTypes;
+import dev.felnull.iwasi.item.IWItems;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 
 public class TestGun extends Gun {
     public TestGun() {
@@ -18,6 +18,6 @@ public class TestGun extends Gun {
 
     @Override
     public Item getMagazine() {
-        return Items.APPLE;
+        return IWItems.GLOCK_17_MAGAZINE.get();
     }
 }

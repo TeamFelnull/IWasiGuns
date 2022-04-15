@@ -5,6 +5,7 @@ import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.util.IWPlayerUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -110,7 +111,7 @@ public abstract class PlayerMixin implements IIWDataPlayer {
 
     @Override
     public void setHoldType(HoldType holdType) {
-        if ((Object) this instanceof ServerPlayer serverPlayer && getHoldProgress() >= IWPlayerData.getMaxHoldProgress(serverPlayer))
+        if ((Object) this instanceof ServerPlayer serverPlayer && getHoldProgress() >= IWPlayerUtil.getMaxHoldProgress(serverPlayer))
             IWPlayerData.setHold(serverPlayer, holdType);
     }
 

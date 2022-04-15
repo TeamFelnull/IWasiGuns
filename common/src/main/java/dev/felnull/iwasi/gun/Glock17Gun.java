@@ -7,12 +7,12 @@ import dev.felnull.iwasi.gun.trans.player.IWGunPlayerTrans;
 import dev.felnull.iwasi.gun.type.IWGunTypes;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.item.IWItems;
+import dev.felnull.iwasi.util.IWItemUtil;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 
 //https://www.hyperdouraku.com/colum/cqbguam/glock17gen5.html
 public class Glock17Gun extends Gun {
@@ -31,11 +31,15 @@ public class Glock17Gun extends Gun {
     }
 
     @Override
-    public InteractionResult shot(Level level, Player player, InteractionHand interactionHand, ItemStack itemStack) {
-        var ret = super.shot(level, player, interactionHand, itemStack);
-        if (ret == InteractionResult.SUCCESS) {
-            GunItem.addGunItemTrans(itemStack, new GunItemTransData(IWGunItemTrans.GLOCK_17_SLIDE_RECOIL, 0, 0), true);
-        }
-        return ret;
+    protected void shotAfter(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
+        super.shotAfter(level, player, interactionHand, itemStack);
+        GunItem.addGunItemTrans(itemStack, new GunItemTransData(IWGunItemTrans.GLOCK_17_SLIDE_RECOIL, 0, 0, 0), true);
+    }
+
+    @Override
+    public void reload(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
+        if (IWItemUtil.isSlideDown(itemStack))
+            GunItem.addGunItemTrans(itemStack, new GunItemTransData(IWGunItemTrans.GLOCK_17_SLIDE_REVERS, 0, 0, 0), true);
+        super.reload(level, player, interactionHand, itemStack);
     }
 }

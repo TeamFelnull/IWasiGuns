@@ -1,12 +1,17 @@
 package dev.felnull.iwasi.client.renderer.gun;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import dev.felnull.iwasi.client.data.DeltaGunItemTransData;
 import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.client.util.IWClientPlayerData;
+import dev.felnull.iwasi.data.GunItemTransData;
 import dev.felnull.iwasi.data.IWPlayerData;
+import dev.felnull.iwasi.gun.trans.item.GunItemTrans;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
+import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.item.IWItems;
+import dev.felnull.iwasi.util.IWPlayerUtil;
 import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
@@ -47,7 +52,7 @@ public abstract class GunRenderer<M extends GunMotion> {
         if (cgt != null && cgt.isUseBothHand())
             bothHand = true;
 
-        float holdPar = getHoldParent(stack, hand, partialTicks);
+        float holdPar = IWPlayerUtil.getHoldProgress(mc.player, hand, partialTicks);
         poseStack.pushPose();
         OERenderUtil.poseHandItem(poseStack, arm, swingProgress, equipProgress);
         poseStack.pushPose();
@@ -149,22 +154,23 @@ public abstract class GunRenderer<M extends GunMotion> {
         pose.pose(stack);
     }
 
-    protected float getHoldParent(ItemStack stack, InteractionHand hand, float delta) {
-        return IWPlayerData.getHoldProgress(mc.player, hand, delta);
-       /* if (!(stack.getItem() instanceof GunItem gunItem)) return 0f;
-        boolean holding = IWPlayerData.isHolding(mc.player, hand);
-        if (deltaGunTransData.gunTrans() == null || (deltaGunTransData.gunTrans() != gunItem.getGun().getHoldTrans() && deltaGunTransData.gunTrans() != gunItem.getGun().getUnHoldTrans()))
-            return holding ? 1f : 0f;
-        float holdPar = (deltaGunTransData.progress() / ((float) deltaGunTransData.gunTrans().getProgress(gunItem.getGun(), deltaGunTransData.step()) - 1f));
-        if (deltaGunTransData.gunTrans() instanceof HoldGunTrans holdGunTrans && holdGunTrans.isRevers())
-            holdPar = 1f - holdPar;
-        return holdPar;*/
-    }
-
     protected static void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
         mc.getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, light, overlay, poseStack, multiBufferSource, 0);
         poseStack.popPose();
+    }
+
+    protected DeltaGunItemTransData getGunItemTrans(GunItemTrans gunItemTrans, ItemStack stack, ItemStack oldStack, float delta) {
+        if (stack.isEmpty() || oldStack.isEmpty()) return null;
+        var ng = GunItem.getGunItemTrans(stack, gunItemTrans.getName());
+        var og = GunItem.getGunItemTrans(oldStack, gunItemTrans.getName());
+        if (ng == null && og == null) return null;
+        if (ng == null)
+            ng = new GunItemTransData(null);
+        if (og == null)
+            og = new GunItemTransData(null);
+
+        return DeltaGunItemTransData.of(delta, og, ng, stack);
     }
 }

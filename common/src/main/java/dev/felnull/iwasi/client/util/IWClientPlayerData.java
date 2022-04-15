@@ -19,7 +19,7 @@ public class IWClientPlayerData {
                 int tp = lst.progress();
                 int tpo = old.progress();
                 if (lst.step() != old.step() || lst.getGunTrans() == null)
-                    tp = old.getGunTrans().getProgress(gun, old.step()) - 1;
+                    tp = old.getGunTrans().getProgress(player.getItemInHand(hand), old.step()) - 1;
                 return new DeltaGunPlayerTransData(lst.getGunTrans(), Mth.lerp(delta, tpo, tp), old.step());
             }
         }

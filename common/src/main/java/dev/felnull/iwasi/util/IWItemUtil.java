@@ -29,4 +29,8 @@ public class IWItemUtil {
             return GunItem.getTmpUUID(stack);
         return null;
     }
+
+    public static boolean isSlideDown(@NotNull ItemStack stack) {
+        return GunItem.getChamberRemainingBullets(stack) <= 0;
+    }
 }

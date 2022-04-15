@@ -1,6 +1,7 @@
 package dev.felnull.iwasi.gun;
 
 import com.mojang.math.Vector3f;
+import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.type.GunType;
 import dev.felnull.iwasi.item.GunItem;
@@ -51,12 +52,18 @@ public abstract class Gun {
         return properties.weight();
     }
 
-    public int getHoldSpeed() {
+    public int getRequiredHoldTime() {
         return (int) (getWeight() / 200f);
     }
 
     public Vector3f getSize() {
         return properties.size();
+    }
+
+    public int getHoldSpeed(HoldType old, HoldType last, boolean hurry) {
+        if (((old == HoldType.LOWER && last == HoldType.NONE) || old == HoldType.NONE && last == HoldType.LOWER) && hurry)
+            return Math.max(getRequiredHoldTime() - 1, 1);
+        return 1;
     }
 
     abstract public AbstractReloadGunTrans getReloadTrans();
@@ -114,7 +121,5 @@ public abstract class Gun {
             MagazineItem.setRemainingBullets(magazineItem, rb - rcb);
             GunItem.setChamberRemainingBullets(gunItem, gun.getChamberCapacity());
         }
-        if (GunItem.getChamberRemainingBullets(gunItem) >= gun.getChamberCapacity())
-            GunItem.setSlided(gunItem, false);
     }
 }

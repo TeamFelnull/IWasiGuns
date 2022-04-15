@@ -9,6 +9,7 @@ import dev.felnull.iwasi.entity.IIWCashServerPlayer;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.util.IWItemUtil;
+import dev.felnull.iwasi.util.IWPlayerUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -66,13 +67,13 @@ public class ServerHandler {
                 var gt = entry.getGunTrans();
                 if (gt == null) continue;
                 gt.tick(serverPlayer, hand, gun, item, entry.progress(), entry.step());
-                int mp = gt.getProgress(gun, entry.step());
+                int mp = gt.getProgress(item, entry.step());
                 if (mp - 1 <= entry.progress()) {
                     gt.stepEnd(serverPlayer, hand, gun, item, entry.step());
-                    if (gt.getStep() - 1 > entry.step())
-                        nl.add(new GunItemTransData(entry.getGunTrans(), 0, entry.step() + 1));
+                    if (gt.getStep(item) - 1 > entry.step())
+                        nl.add(new GunItemTransData(entry.getGunTrans(), 0, entry.step() + 1, entry.updateId()));
                 } else {
-                    nl.add(new GunItemTransData(entry.getGunTrans(), entry.progress() + 1, entry.step()));
+                    nl.add(new GunItemTransData(entry.getGunTrans(), entry.progress() + 1, entry.step(), entry.updateId()));
                 }
             }
             GunItem.setGunItemTransList(item, nl);
@@ -137,6 +138,6 @@ public class ServerHandler {
 
     private static boolean canChangeHold(Player player) {
         var data = (IIWDataPlayer) player;
-        return IWPlayerData.getMaxHoldProgress(player) <= data.getHoldProgress();
+        return IWPlayerUtil.getMaxHoldProgress(player) <= data.getHoldProgress();
     }
 }

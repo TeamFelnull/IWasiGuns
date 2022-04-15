@@ -10,14 +10,17 @@ import java.util.List;
 
 public abstract class GunTrans {
 
-    abstract public List<Integer> getProgressList();
+    abstract public List<Integer> getProgressList(ItemStack stack);
 
-    public int getStep() {
-        return getProgressList().size();
+    public int getStep(ItemStack stack) {
+        return getProgressList(stack).size();
     }
 
-    public int getProgress(@NotNull Gun gun, int step) {
-        return getProgressList().get(step);
+    public int getProgress(ItemStack stack, int step) {
+        var lst = getProgressList(stack);
+        if (step < 0 || lst.size() <= step)
+            return 0;
+        return lst.get(step);
     }
 
     public void tick(@NotNull ServerPlayer player, @NotNull InteractionHand hand, @NotNull Gun gun, @NotNull ItemStack stack, int progress, int step) {
