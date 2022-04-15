@@ -11,6 +11,7 @@ import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 
 public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
@@ -32,10 +33,9 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
 
         poseStack.pushPose();
         float sv = IWItemUtil.isSlideDown(stack) ? 1f : 0f;
-        float rs = getRecoilSlide(stack, stackOld, delta);
+        float rs = getSlide(stack, stackOld, delta);
         if (rs >= 0)
             sv = rs;
-
 
         OERenderUtil.poseTrans16(poseStack, 0, 0, 1.625f * sv);
         OERenderUtil.renderModel(poseStack, vc, slide, light, overlay);
@@ -54,7 +54,7 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
         poseStack.popPose();
     }
 
-    private float getRecoilSlide(ItemStack stack, ItemStack oldStack, float delta) {
+    private float getSlide(ItemStack stack, ItemStack oldStack, float delta) {
         var delt = getGunItemTrans(IWGunItemTrans.GLOCK_17_SLIDE_RECOIL, stack, oldStack, delta);
         if (delt == null) {
             delt = getGunItemTrans(IWGunItemTrans.GLOCK_17_SLIDE_REVERS, stack, oldStack, delta);
@@ -62,11 +62,12 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
                 return -1f;
             return 1f - delt.progress() / (IWGunItemTrans.GLOCK_17_SLIDE_REVERS.getProgress(stack, 0) - 1f);
         }
+        float ret;
         if (delt.step() == 0)
-            return delt.progress() / (IWGunItemTrans.GLOCK_17_SLIDE_RECOIL.getProgress(stack, 0) - 1f);
-        float ap = IWGunItemTrans.GLOCK_17_SLIDE_RECOIL.getProgress(stack, delt.step()) - 1f;
-        float dlp = delt.progress();
-        return 1f - (dlp / ap);
+            ret = delt.progress() / (IWGunItemTrans.GLOCK_17_SLIDE_RECOIL.getProgress(stack, 0) - 1f);
+        else
+            ret = 1f - (delt.progress() / (IWGunItemTrans.GLOCK_17_SLIDE_RECOIL.getProgress(stack, delt.step()) - 1f));
+        return Mth.clamp(ret, 0f, 1f);
     }
 
 }

@@ -10,6 +10,7 @@ import dev.felnull.iwasi.handler.CommonHandler;
 import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.iwasi.networking.IWPackets;
 import dev.felnull.iwasi.server.handler.ServerHandler;
+import dev.felnull.iwasi.sound.IWSounds;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 
@@ -23,6 +24,7 @@ public class IWasi {
         IWEntityDataSerializers.init();
         IWGunPlayerTrans.init();
         IWGunItemTrans.init();
+        IWSounds.init();
         CommonHandler.init();
         ServerHandler.init();
         EnvExecutor.runInEnv(Env.CLIENT, () -> IWasiClient::preInit);

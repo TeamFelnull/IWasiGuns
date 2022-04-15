@@ -6,19 +6,18 @@ import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.type.GunType;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.item.MagazineItem;
+import dev.felnull.iwasi.sound.IWSounds;
 import dev.felnull.iwasi.util.IWItemUtil;
 import dev.felnull.otyacraftengine.util.OEPlayerUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownEgg;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,13 +69,25 @@ public abstract class Gun {
 
     abstract public Item getMagazine();
 
+    public SoundEvent getShotSound(ItemStack stack) {
+        return IWSounds.SHOT_1.get();
+    }
+
+    public SoundEvent getNoAmmoShotSound(ItemStack stack) {
+        return IWSounds.SHOT_NO_AMMO.get();
+    }
+
+    public SoundEvent getHoldSound(ItemStack stack) {
+        return IWSounds.HOLD_1.get();
+    }
+
     protected boolean canShot(Level level, Player player, InteractionHand interactionHand, ItemStack itemStack) {
         return GunItem.getChamberRemainingBullets(itemStack) >= 1;
     }
 
     public InteractionResult shot(Level level, Player player, InteractionHand interactionHand, ItemStack itemStack) {
         if (canShot(level, player, interactionHand, itemStack)) {
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.IRON_GOLEM_HURT, SoundSource.PLAYERS, 0.5F, 2f);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), getShotSound(itemStack), SoundSource.PLAYERS, 0.5F, level.getRandom().nextFloat() * 0.1F + 0.95F);
             if (!level.isClientSide) {
                 ThrownEgg thrownEgg = new ThrownEgg(level, player);
                 thrownEgg.setItem(new ItemStack(Items.EGG));
@@ -86,7 +97,8 @@ public abstract class Gun {
             }
             return InteractionResult.SUCCESS;
         }
-        return InteractionResult.FAIL;
+        level.playSound(null, player.getX(), player.getY(), player.getZ(), getNoAmmoShotSound(itemStack), SoundSource.PLAYERS, 0.5F, level.getRandom().nextFloat() * 0.1F + 0.95F);
+        return InteractionResult.CONSUME;
     }
 
     protected void shotAfter(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {

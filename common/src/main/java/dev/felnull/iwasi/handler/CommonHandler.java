@@ -63,12 +63,15 @@ public class CommonHandler {
             int sc = GunItem.getShotCoolDown(item);
             boolean shot = false;
             if (data.isPullTrigger()) {
-                if (data.getGunTrans(hand).getGunTrans() == null && (data.getHoldProgress() == 0 || data.getHoldProgress() >= gun.getRequiredHoldTime()) && sc <= 0 && (gun.getMaxContinuousShotCount() <= 0 || GunItem.getContinuousShotCount(item) < gun.getMaxContinuousShotCount())) {
+                if (data.getGunTrans(hand).getGunTrans() == null && (data.getHoldProgress() == 0 || data.getHoldProgress() >= gun.getRequiredHoldTime()) && sc <= 0 && GunItem.getContinuousShotCount(item) >= 0 && (gun.getMaxContinuousShotCount() == 0 || GunItem.getContinuousShotCount(item) < gun.getMaxContinuousShotCount())) {
                     var sret = gun.shot(player.level, player, hand, item);
-                    if (sret == InteractionResult.SUCCESS) {
+                    if (sret.consumesAction()) {
                         shot = true;
                         if (!player.level.isClientSide()) {
-                            GunItem.setContinuousShotCount(item, GunItem.getContinuousShotCount(item) + 1);
+                            int ac = GunItem.getContinuousShotCount(item) + 1;
+                            if (sret == InteractionResult.CONSUME)
+                                ac = gun.getMaxContinuousShotCount() <= 0 ? -1 : gun.getMaxContinuousShotCount();
+                            GunItem.setContinuousShotCount(item, ac);
                         }
                     }
                 }
