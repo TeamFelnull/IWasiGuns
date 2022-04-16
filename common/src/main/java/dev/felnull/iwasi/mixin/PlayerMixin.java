@@ -6,6 +6,7 @@ import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.util.IWPlayerUtil;
+import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -22,6 +23,8 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     @Shadow
     public abstract ItemStack getItemBySlot(EquipmentSlot arg);
 
+    @Shadow
+    public int takeXpDelay;
     private int holdProgress;
     private int holdProgressOld;
     private HoldType lastHoldType = HoldType.NONE;
@@ -30,6 +33,10 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     private int holdGrace;
     private GunPlayerTransData mainHandGunTransOld = new GunPlayerTransData();
     private GunPlayerTransData offHandGunTransOld = new GunPlayerTransData();
+    private NonNullList<ItemStack> mainHandTmpItems = NonNullList.of(ItemStack.EMPTY);
+    private NonNullList<ItemStack> offHandTmpItems = NonNullList.of(ItemStack.EMPTY);
+    private boolean mainHandTmpItemsUpdate;
+    private boolean offHandTmpItemsUpdate;
 
     @Inject(method = "setItemSlot", at = @At("HEAD"))
     private void setItemSlot(EquipmentSlot equipmentSlot, ItemStack itemStack, CallbackInfo ci) {
@@ -143,5 +150,37 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     @Override
     public boolean isPullTrigger() {
         return IWPlayerData.isPullTrigger((Player) (Object) this);
+    }
+
+    @Override
+    public NonNullList<ItemStack> getTmpHandItems(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandTmpItems : offHandTmpItems;
+    }
+
+    @Override
+    public void setTmpHandItems(InteractionHand hand, NonNullList<ItemStack> itemStacks) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            mainHandTmpItems = itemStacks;
+            if ((Object) this instanceof ServerPlayer)
+                mainHandTmpItemsUpdate = true;
+        } else {
+            offHandTmpItems = itemStacks;
+            if ((Object) this instanceof ServerPlayer)
+                offHandTmpItemsUpdate = true;
+        }
+    }
+
+    @Override
+    public boolean isTmpHandItemsUpdate(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandTmpItemsUpdate : offHandTmpItemsUpdate;
+    }
+
+    @Override
+    public void setTmpHandItemsUpdate(InteractionHand hand, boolean update) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            mainHandTmpItemsUpdate = update;
+        } else {
+            offHandTmpItemsUpdate = update;
+        }
     }
 }

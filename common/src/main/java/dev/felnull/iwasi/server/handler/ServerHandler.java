@@ -1,6 +1,7 @@
 package dev.felnull.iwasi.server.handler;
 
 import dev.architectury.event.events.common.TickEvent;
+import dev.architectury.networking.NetworkManager;
 import dev.felnull.iwasi.data.GunItemTransData;
 import dev.felnull.iwasi.data.GunPlayerTransData;
 import dev.felnull.iwasi.data.HoldType;
@@ -8,11 +9,14 @@ import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWCashServerPlayer;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.networking.IWPackets;
 import dev.felnull.iwasi.util.IWItemUtil;
 import dev.felnull.iwasi.util.IWPlayerUtil;
+import dev.felnull.otyacraftengine.util.OEPlayerUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +34,15 @@ public class ServerHandler {
         var continuousAction = IWPlayerData.getContinuousAction(player);
         boolean canChangeHold = canChangeHold(player);
         var data = (IIWDataPlayer) player;
+
+        for (InteractionHand hand : InteractionHand.values()) {
+            if (data.isTmpHandItemsUpdate(hand)) {
+                var lch = (LevelChunk) player.getLevel().getChunk(player.blockPosition());
+                OEPlayerUtil.doPlayers(lch, n -> NetworkManager.sendToPlayer(n, IWPackets.TMP_HAND_ITEMS_SYNC, new IWPackets.TmpHandItemsSyncMessage(player.getGameProfile().getId(), hand, data.getTmpHandItems(hand)).toFBB()));
+                data.setTmpHandItemsUpdate(hand, false);
+            }
+        }
+
 
         if (lastCash.getLastContinuousHold() != continuousAction.hold() && canChangeHold) {
             data.setHoldType(HoldType.getIdeal(continuousAction.hold(), player.isSprinting(), data.getHoldGrace()));
@@ -66,11 +79,13 @@ public class ServerHandler {
             for (GunItemTransData entry : gitl) {
                 var gt = entry.getGunTrans();
                 if (gt == null) continue;
-                gt.tick(serverPlayer, hand, gun, item, entry.progress(), entry.step());
+                boolean next;
+                next = gt.tick(serverPlayer, hand, gun, item, entry.progress(), entry.step());
                 int mp = gt.getProgress(item, entry.step());
                 if (mp - 1 <= entry.progress()) {
-                    gt.stepEnd(serverPlayer, hand, gun, item, entry.step());
-                    if (gt.getStep(item) - 1 > entry.step())
+                    if (next)
+                        next = gt.stepEnd(serverPlayer, hand, gun, item, entry.step());
+                    if (next && gt.getStep(item) - 1 > entry.step())
                         nl.add(new GunItemTransData(entry.getGunTrans(), 0, entry.step() + 1, entry.updateId()));
                 } else {
                     nl.add(new GunItemTransData(entry.getGunTrans(), entry.progress() + 1, entry.step(), entry.updateId()));

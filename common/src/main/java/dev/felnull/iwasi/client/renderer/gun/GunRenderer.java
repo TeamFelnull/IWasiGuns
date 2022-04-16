@@ -2,6 +2,7 @@ package dev.felnull.iwasi.client.renderer.gun;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.data.DeltaGunItemTransData;
+import dev.felnull.iwasi.client.data.DeltaGunPlayerTransData;
 import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.client.util.IWClientPlayerData;
@@ -9,8 +10,8 @@ import dev.felnull.iwasi.data.GunItemTransData;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.gun.trans.item.GunItemTrans;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
+import dev.felnull.iwasi.gun.trans.player.GunPlayerTrans;
 import dev.felnull.iwasi.item.GunItem;
-import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.iwasi.util.IWPlayerUtil;
 import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
@@ -83,22 +84,33 @@ public abstract class GunRenderer<M extends GunMotion> {
                 poseStack.translate(t * SLIM_TRANS, 0, 0);
             OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, oparm, packedLight);
 
-            ItemStack opItem = ItemStack.EMPTY;
-            if (cgt instanceof AbstractReloadGunTrans && (cgtd.step() == 1 || cgtd.step() == 2))
-                opItem = new ItemStack(IWItems.GLOCK_17_MAGAZINE.get());
+            ItemStack opItem = getOppositeItem(cgt, cgtd, OEEntityUtil.getOppositeHand(hand));
 
             if (!opItem.isEmpty()) {
-                if (handFlg)
-                    poseStack.translate(1f, 0, 0f);
                 poseOppositeItem(motion, poseStack, arm, holdPar, igt);
 
                 if (slim)
                     poseStack.translate(t * -SLIM_TRANS, 0, 0);
+
+                if (handFlg)
+                    poseStack.translate(1f, 0, 0f);
                 OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, opItem, packedLight);
             }
             poseStack.popPose();
         }
         poseStack.popPose();
+    }
+
+    protected ItemStack getOppositeItem(GunPlayerTrans gunPlayerTrans, DeltaGunPlayerTransData deltaGunPlayerTransData, InteractionHand hand) {
+        ItemStack opItem = ItemStack.EMPTY;
+
+        if (gunPlayerTrans instanceof AbstractReloadGunTrans && (deltaGunPlayerTransData.step() == 1 || deltaGunPlayerTransData.step() == 2)) {
+            var lst = IWPlayerData.getTmpHandItems(mc.player, hand);
+            if (!lst.isEmpty())
+                opItem = lst.get(0);
+        }
+
+        return opItem;
     }
 
     protected void poseHand(M motion, PoseStack stack, HumanoidArm arm, boolean bothHands, float hold, InfoGunTrans gunTrans) {

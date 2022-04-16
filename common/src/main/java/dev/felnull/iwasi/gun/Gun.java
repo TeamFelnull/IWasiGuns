@@ -2,13 +2,17 @@ package dev.felnull.iwasi.gun;
 
 import com.mojang.math.Vector3f;
 import dev.felnull.iwasi.data.HoldType;
+import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.type.GunType;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.item.MagazineItem;
 import dev.felnull.iwasi.sound.IWSounds;
 import dev.felnull.iwasi.util.IWItemUtil;
+import dev.felnull.iwasi.util.IWPlayerUtil;
+import dev.felnull.otyacraftengine.util.OEEntityUtil;
 import dev.felnull.otyacraftengine.util.OEPlayerUtil;
+import net.minecraft.core.NonNullList;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -17,11 +21,13 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ThrownEgg;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class Gun {
     private final GunType type;
@@ -69,7 +75,20 @@ public abstract class Gun {
 
     abstract public AbstractReloadGunTrans getReloadTrans();
 
-    abstract public Item getMagazine();
+    abstract public ItemStack getDefaultsAmmo(ItemStack stack);
+
+    abstract public List<Predicate<ItemStack>> getAmmo(ItemStack stack);
+
+    public void consumeAmmo(ServerPlayer player, ItemStack stack) {
+        for (int i = 0; i < player.getInventory().getContainerSize(); i++) {
+            var itm = player.getInventory().getItem(i);
+            if (itm == stack) {
+                if (!player.getAbilities().instabuild)
+                    itm.shrink(1);
+                break;
+            }
+        }
+    }
 
     public SoundEvent getShotSound(ItemStack stack) {
         return IWSounds.SHOT_1.get();
@@ -108,17 +127,25 @@ public abstract class Gun {
         updateMagazineRemaining(itemStack, GunItem.getMagazine(itemStack));
     }
 
-    public void unReload(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
+    public void reloadRemoveMagazine(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
         var mg = GunItem.getMagazine(itemStack);
+        IWPlayerData.setTmpHandItems(player, OEEntityUtil.getOppositeHand(interactionHand), NonNullList.of(ItemStack.EMPTY, mg.copy()));
         if (!mg.isEmpty()) {
             OEPlayerUtil.giveItem(player, mg.copy());
             GunItem.setMagazine(player, itemStack, ItemStack.EMPTY);
         }
     }
 
-    public void reload(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
-        GunItem.setMagazine(player, itemStack, MagazineItem.setRemainingBullets(new ItemStack(getMagazine()), ((MagazineItem) getMagazine()).getCapacity()));
-        updateMagazineRemaining(itemStack, GunItem.getMagazine(itemStack));
+    public void reloadSetMagazine(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {
+        var ret = getReloadedItem(player, interactionHand, itemStack);
+        if (!ret.isEmpty()) {
+            var ri = ret.copy();
+            ri.setCount(1);
+            GunItem.setMagazine(player, itemStack, ri);
+            updateMagazineRemaining(itemStack, GunItem.getMagazine(itemStack));
+            consumeAmmo(player, ret);
+        }
+        IWPlayerData.setTmpHandItems(player, OEEntityUtil.getOppositeHand(interactionHand), NonNullList.of(ItemStack.EMPTY, ItemStack.EMPTY));
     }
 
     private void updateMagazineRemaining(ItemStack gunItem, ItemStack magazineItem) {
@@ -142,6 +169,13 @@ public abstract class Gun {
     }
 
     public void playSound(Player player, SoundEvent soundEvent, float range) {
-        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundSource.PLAYERS, 0.5F, player.level.getRandom().nextFloat() * 0.1F + 0.95F);
+        player.level.playSound(null, player.getX(), player.getY(), player.getZ(), soundEvent, SoundSource.PLAYERS, range, player.level.getRandom().nextFloat() * 0.1F + 0.95F);
+    }
+
+    public ItemStack getReloadedItem(ServerPlayer player, InteractionHand hand, ItemStack stack) {
+        var mg = GunItem.getMagazine(stack);
+        if (mg.isEmpty() || MagazineItem.getRemainingBullets(mg) < ((MagazineItem) mg.getItem()).getCapacity())
+            return IWPlayerUtil.getFindAmmo(player, getAmmo(stack), getDefaultsAmmo(stack));
+        return ItemStack.EMPTY;
     }
 }

@@ -14,6 +14,7 @@ public class IWSounds {
     public static final RegistrySupplier<SoundEvent> SHOT_NO_AMMO = register("gun.shot.shot_no_ammo");
 
     public static final RegistrySupplier<SoundEvent> HOLD_1 = register("gun.hold.hold_1");
+    public static final RegistrySupplier<SoundEvent> HOLD_2 = register("gun.hold.hold_2");
 
     public static final RegistrySupplier<SoundEvent> MAGAZINE_SET = register("gun.reload.magazine_set");
     public static final RegistrySupplier<SoundEvent> MAGAZINE_REMOVE = register("gun.reload.magazine_remove");

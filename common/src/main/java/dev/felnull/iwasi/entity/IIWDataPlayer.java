@@ -2,8 +2,10 @@ package dev.felnull.iwasi.entity;
 
 import dev.felnull.iwasi.data.GunPlayerTransData;
 import dev.felnull.iwasi.data.HoldType;
+import net.minecraft.core.NonNullList;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 
 public interface IIWDataPlayer {
     int getHoldProgress();
@@ -48,4 +50,12 @@ public interface IIWDataPlayer {
     void setGunTransOld(InteractionHand hand, GunPlayerTransData gunTransData);
 
     boolean isPullTrigger();
+
+    NonNullList<ItemStack> getTmpHandItems(InteractionHand hand);
+
+    void setTmpHandItems(InteractionHand hand, NonNullList<ItemStack> itemStacks);
+
+    boolean isTmpHandItemsUpdate(InteractionHand hand);
+
+    void setTmpHandItemsUpdate(InteractionHand hand, boolean update);
 }

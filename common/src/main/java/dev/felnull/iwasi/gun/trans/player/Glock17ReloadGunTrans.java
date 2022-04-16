@@ -18,12 +18,15 @@ public class Glock17ReloadGunTrans extends AbstractReloadGunTrans {
     }
 
     @Override
-    public void stepEnd(@NotNull ServerPlayer player, @NotNull InteractionHand hand, @NotNull Gun gun, @NotNull ItemStack stack, int step) {
+    public boolean stepEnd(@NotNull ServerPlayer player, @NotNull InteractionHand hand, @NotNull Gun gun, @NotNull ItemStack stack, int step) {
         super.stepEnd(player, hand, gun, stack, step);
         if (step == 0) {
-            unReload(player.getLevel(), player, hand, stack);
+            removeMagazine(player.getLevel(), player, hand, stack);
+        } else if (step == 1) {
+            return swapHoldMagazine(player.getLevel(), player, hand, stack);
         } else if (step == 2) {
-            reload(player.getLevel(), player, hand, stack);
+            setMagazine(player.getLevel(), player, hand, stack);
         }
+        return true;
     }
 }

@@ -4,7 +4,11 @@ import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.function.Predicate;
 
 public class IWPlayerUtil {
     public static float getHoldProgress(@NotNull Player player, InteractionHand hand, float delta) {
@@ -38,5 +42,29 @@ public class IWPlayerUtil {
             return data.getHoldProgress() >= g.getRequiredHoldTime();
         }
         return false;
+    }
+
+    public static ItemStack getFindAmmo(Player player, List<Predicate<ItemStack>> ammoFilters, ItemStack defaultsAmmo) {
+        for (Predicate<ItemStack> ammoFilter : ammoFilters) {
+            var itm = getFindAmmo(player, ammoFilter, null);
+            if (itm != null)
+                return itm;
+        }
+        return player.getAbilities().instabuild ? defaultsAmmo : ItemStack.EMPTY;
+    }
+
+    public static ItemStack getFindAmmo(Player player, Predicate<ItemStack> ammoFilter, ItemStack defaultsAmmo) {
+        for (InteractionHand hand : InteractionHand.values()) {
+            var itm = player.getItemInHand(hand);
+            if (ammoFilter.test(itm))
+                return itm;
+        }
+        for (int i = 0; i < player.getInventory().getContainerSize(); ++i) {
+            ItemStack stack = player.getInventory().getItem(i);
+            if (ammoFilter.test(stack)) {
+                return stack;
+            }
+        }
+        return player.getAbilities().instabuild ? defaultsAmmo : ItemStack.EMPTY;
     }
 }

@@ -16,15 +16,13 @@ public class Glock17MagazineItemRenderer implements BEWLItemRenderer {
         poseStack.pushPose();
         var model = OEModelUtil.getModel(IWModels.GLOCK_17_MAGAZINE);
         var vc = multiBufferSource.getBuffer(Sheets.cutoutBlockSheet());
-
         OERenderUtil.poseTrans16(poseStack, -6.35, -2.0351, -0.8561);
         OERenderUtil.poseRotateY(poseStack, 180);
         poseStack.translate(-1f, 0f, -1f);
         OERenderUtil.poseTrans16(poseStack, 1.35 / 2f, 0, 0);
         OERenderUtil.poseTrans16(poseStack, -0.1, 0.025, 0.075);
-
         OERenderUtil.renderModel(poseStack, vc, model, light, overlay);
         poseStack.popPose();
-        
+
     }
 }

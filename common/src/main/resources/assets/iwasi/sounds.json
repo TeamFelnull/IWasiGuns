@@ -23,6 +23,12 @@
       "iwasi:gun/hold/hold_1"
     ]
   },
+  "gun.hold.hold_2": {
+    "subtitle": "iwasi.subtitle.gun.hold.hold",
+    "sounds": [
+      "iwasi:gun/hold/hold_2"
+    ]
+  },
   "gun.reload.magazine_set": {
     "subtitle": "iwasi.subtitle.gun.reload.magazine_set",
     "sounds": [

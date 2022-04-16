@@ -3,11 +3,13 @@ package dev.felnull.iwasi.data;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.entity.IWEntityDataSerializers;
 import dev.felnull.iwasi.gun.trans.player.GunPlayerTrans;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,5 +71,15 @@ public class IWPlayerData {
     public static void setGunTransData(@NotNull ServerPlayer player, InteractionHand hand, GunPlayerTransData gunTransData) {
         var es = hand == InteractionHand.MAIN_HAND ? MAIN_HAND_GUN_TRANS : OFF_HAND_GUN_TRANS;
         player.getEntityData().set(es, gunTransData);
+    }
+
+    public static NonNullList<ItemStack> getTmpHandItems(@NotNull Player player, InteractionHand hand) {
+        var data = (IIWDataPlayer) player;
+        return data.getTmpHandItems(hand);
+    }
+
+    public static void setTmpHandItems(@NotNull ServerPlayer player, InteractionHand hand, NonNullList<ItemStack> itemStacks) {
+        var data = (IIWDataPlayer) player;
+        data.setTmpHandItems(hand, itemStacks);
     }
 }

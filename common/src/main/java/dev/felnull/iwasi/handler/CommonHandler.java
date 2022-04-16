@@ -54,6 +54,7 @@ public class CommonHandler {
                     if (gun != null)
                         gun.playSound(player, gun.getHoldSound(item));
                 }
+                data.setHoldGrace(holdGraceTime);
             }
             data.setCompHoldType(data.getLastHoldType());
         }
@@ -111,16 +112,18 @@ public class CommonHandler {
                 continue;
             }
             if (gt == null) continue;
+            boolean next = true;
             if (player instanceof ServerPlayer serverPlayer)
-                gt.tick(serverPlayer, hand, gun, item, gd.progress(), gd.step());
+                next = gt.tick(serverPlayer, hand, gun, item, gd.progress(), gd.step());
 
             int mp = gt.getProgress(item, gd.step());
 
             GunPlayerTransData nd = null;
             if (mp - 1 <= gd.progress()) {
                 if (player instanceof ServerPlayer serverPlayer) {
-                    gt.stepEnd(serverPlayer, hand, gun, item, gd.step());
-                    if (gt.getStep(item) - 1 > gd.step()) {
+                    if (next)
+                        next = gt.stepEnd(serverPlayer, hand, gun, item, gd.step());
+                    if (next && gt.getStep(item) - 1 > gd.step()) {
                         nd = new GunPlayerTransData(gt, 0, gd.step() + 1, gd.updateId() + 1);
                     } else {
                         nd = new GunPlayerTransData(null, 0, 0, gd.updateId() + 1);

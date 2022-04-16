@@ -1,5 +1,8 @@
 package dev.felnull.iwasi.item;
 
+import dev.felnull.iwasi.data.IWPlayerData;
+import net.minecraft.core.NonNullList;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -18,12 +21,7 @@ public class TestItem extends Item {
         ItemStack itemStack = player.getItemInHand(interactionHand);
 
         if (!level.isClientSide()) {
-            var hand = interactionHand == InteractionHand.MAIN_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
-            ItemStack opItemStack = player.getItemInHand(hand);
-            if (opItemStack.getItem() instanceof GunItem gunItem) {
-                var magazine = player.isCrouching() ? ItemStack.EMPTY : new ItemStack(gunItem.getGun().getMagazine());
-                GunItem.setMagazine(player, opItemStack, magazine);
-            }
+            IWPlayerData.setTmpHandItems((ServerPlayer) player, interactionHand, NonNullList.of(ItemStack.EMPTY, new ItemStack(IWItems.GLOCK_17_MAGAZINE.get())));
         }
 
         return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());

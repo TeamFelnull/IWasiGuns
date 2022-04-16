@@ -25,9 +25,12 @@ public class ServerMessageHandler {
                     if (flg) return;
                     for (InteractionHand hand : InteractionHand.values()) {
                         var item = packetContext.getPlayer().getItemInHand(hand);
-                        if (item.getItem() instanceof GunItem gunItem && GunItem.canReload(item)) {
-                            IWPlayerData.setGunTrans((ServerPlayer) packetContext.getPlayer(), hand, gunItem.getGun().getReloadTrans());
-                            break;
+                        if (item.getItem() instanceof GunItem gunItem) {
+                            var ri = gunItem.getGun().getReloadedItem((ServerPlayer) packetContext.getPlayer(), hand, item);
+                            if (!ri.isEmpty()) {
+                                IWPlayerData.setGunTrans((ServerPlayer) packetContext.getPlayer(), hand, gunItem.getGun().getReloadTrans());
+                                break;
+                            }
                         }
                     }
                 }

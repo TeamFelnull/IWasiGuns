@@ -9,14 +9,18 @@ import dev.felnull.iwasi.gun.trans.GunTransRegistry;
 import dev.felnull.iwasi.server.handler.ServerMessageHandler;
 import dev.felnull.otyacraftengine.networking.PacketMessage;
 import io.netty.buffer.Unpooled;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.UUID;
 
 public class IWPackets {
     public static final ResourceLocation CONTINUOUS_ACTION_INPUT = new ResourceLocation(IWasi.MODID, "continuous_action_input");
     public static final ResourceLocation ACTION_INPUT = new ResourceLocation(IWasi.MODID, "action_input");
-    public static final ResourceLocation GUN_TRANS_RESET = new ResourceLocation(IWasi.MODID, "gun_trans_reset");
+    public static final ResourceLocation TMP_HAND_ITEMS_SYNC = new ResourceLocation(IWasi.MODID, "tmp_hand_items_sync");
 
     public static void init() {
         NetworkManager.registerReceiver(NetworkManager.c2s(), CONTINUOUS_ACTION_INPUT, (friendlyByteBuf, packetContext) -> ServerMessageHandler.onContinuousActionInputMessage(new ContinuousActionInputMessage(friendlyByteBuf), packetContext));
@@ -24,7 +28,38 @@ public class IWPackets {
     }
 
     public static void clientInit() {
-        NetworkManager.registerReceiver(NetworkManager.s2c(), GUN_TRANS_RESET, (friendlyByteBuf, packetContext) -> ClientMessageHandler.onGunTransResetMessage(new GunTransResetMessage(friendlyByteBuf), packetContext));
+        NetworkManager.registerReceiver(NetworkManager.s2c(), TMP_HAND_ITEMS_SYNC, (friendlyByteBuf, packetContext) -> ClientMessageHandler.onTmpHandItemsSyncMessage(new TmpHandItemsSyncMessage(friendlyByteBuf), packetContext));
+    }
+
+    public static class TmpHandItemsSyncMessage implements PacketMessage {
+        public final UUID playerId;
+        public final InteractionHand hand;
+        public final NonNullList<ItemStack> items;
+
+        public TmpHandItemsSyncMessage(FriendlyByteBuf buf) {
+            this.playerId = buf.readUUID();
+            this.hand = buf.readEnum(InteractionHand.class);
+            items = NonNullList.withSize(buf.readInt(), ItemStack.EMPTY);
+            items.replaceAll(ignored -> buf.readItem());
+        }
+
+        public TmpHandItemsSyncMessage(UUID playerId, InteractionHand hand, NonNullList<ItemStack> items) {
+            this.playerId = playerId;
+            this.hand = hand;
+            this.items = items;
+        }
+
+        @Override
+        public FriendlyByteBuf toFBB() {
+            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            buf.writeUUID(playerId);
+            buf.writeEnum(hand);
+            buf.writeInt(items.size());
+            for (ItemStack item : items) {
+                buf.writeItem(item);
+            }
+            return buf;
+        }
     }
 
     public static class GunTransResetMessage implements PacketMessage {

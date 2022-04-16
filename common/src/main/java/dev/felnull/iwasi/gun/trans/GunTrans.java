@@ -23,11 +23,11 @@ public abstract class GunTrans {
         return lst.get(step);
     }
 
-    public void tick(@NotNull ServerPlayer player, @NotNull InteractionHand hand, @NotNull Gun gun, @NotNull ItemStack stack, int progress, int step) {
-
+    public boolean tick(@NotNull ServerPlayer player, @NotNull InteractionHand hand, @NotNull Gun gun, @NotNull ItemStack stack, int progress, int step) {
+        return true;
     }
 
-    public void stepEnd(@NotNull ServerPlayer player, @NotNull InteractionHand hand, @NotNull Gun gun, @NotNull ItemStack stack, int step) {
-
+    public boolean stepEnd(@NotNull ServerPlayer player, @NotNull InteractionHand hand, @NotNull Gun gun, @NotNull ItemStack stack, int step) {
+        return true;
     }
 }

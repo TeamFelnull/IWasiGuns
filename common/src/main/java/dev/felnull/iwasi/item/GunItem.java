@@ -95,10 +95,6 @@ public class GunItem extends Item {
         getOrCreateGunTag(itemStack).put("Magazine", magazineStack.save(new CompoundTag()));
     }
 
-    public static boolean canReload(ItemStack itemStack) {
-        return true;
-    }
-
     public static int getContinuousShotCount(ItemStack itemStack) {
         var tag = getGunTag(itemStack);
         if (tag != null) return tag.getInt("ContinuousShotCount");
