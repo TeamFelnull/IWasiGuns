@@ -90,7 +90,7 @@ public class ClientHandler {
         }
     }
 
-    private static void onClientTick(Minecraft instance) {
+    private static void onClientTick(Minecraft mc) {
         ClientAction.tick();
     }
 

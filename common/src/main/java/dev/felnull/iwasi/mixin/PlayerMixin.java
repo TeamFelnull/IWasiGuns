@@ -23,8 +23,6 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     @Shadow
     public abstract ItemStack getItemBySlot(EquipmentSlot arg);
 
-    @Shadow
-    public int takeXpDelay;
     private int holdProgress;
     private int holdProgressOld;
     private HoldType lastHoldType = HoldType.NONE;
@@ -37,17 +35,21 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     private NonNullList<ItemStack> offHandTmpItems = NonNullList.of(ItemStack.EMPTY);
     private boolean mainHandTmpItemsUpdate;
     private boolean offHandTmpItemsUpdate;
+    private int mainHandRecoil;
+    private int offHandRecoil;
+    private int mainHandRecoilStart;
+    private int offHandRecoilStart;
+    private boolean mainHandRecoiling;
+    private boolean offHandRecoiling;
 
     @Inject(method = "setItemSlot", at = @At("HEAD"))
     private void setItemSlot(EquipmentSlot equipmentSlot, ItemStack itemStack, CallbackInfo ci) {
         var ths = (Player) (Object) this;
         if (!(ths instanceof ServerPlayer)) return;
         if (equipmentSlot == EquipmentSlot.MAINHAND || equipmentSlot == EquipmentSlot.OFFHAND) {
-            if (itemStack.getItem() instanceof GunItem)
-                GunItem.resetTmpUUID(itemStack);
+            if (itemStack.getItem() instanceof GunItem) GunItem.resetTmpUUID(itemStack);
             var old = getItemBySlot(equipmentSlot);
-            if (old.getItem() instanceof GunItem)
-                GunItem.resetTmpUUID(old);
+            if (old.getItem() instanceof GunItem) GunItem.resetTmpUUID(old);
         }
     }
 
@@ -161,12 +163,10 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     public void setTmpHandItems(InteractionHand hand, NonNullList<ItemStack> itemStacks) {
         if (hand == InteractionHand.MAIN_HAND) {
             mainHandTmpItems = itemStacks;
-            if ((Object) this instanceof ServerPlayer)
-                mainHandTmpItemsUpdate = true;
+            if ((Object) this instanceof ServerPlayer) mainHandTmpItemsUpdate = true;
         } else {
             offHandTmpItems = itemStacks;
-            if ((Object) this instanceof ServerPlayer)
-                offHandTmpItemsUpdate = true;
+            if ((Object) this instanceof ServerPlayer) offHandTmpItemsUpdate = true;
         }
     }
 
@@ -181,6 +181,49 @@ public abstract class PlayerMixin implements IIWDataPlayer {
             mainHandTmpItemsUpdate = update;
         } else {
             offHandTmpItemsUpdate = update;
+        }
+    }
+
+    @Override
+    public int getRecoil(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandRecoil : offHandRecoil;
+    }
+
+    @Override
+    public void setRecoil(InteractionHand hand, int recoil) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            mainHandRecoil = recoil;
+        } else {
+            offHandRecoil = recoil;
+        }
+    }
+
+    @Override
+    public int getRecoilStart(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandRecoilStart : offHandRecoilStart;
+    }
+
+    @Override
+    public void setRecoilStart(InteractionHand hand, int recoil) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            mainHandRecoilStart = recoil;
+        } else {
+            offHandRecoilStart = recoil;
+        }
+
+    }
+
+    @Override
+    public boolean isRecoiling(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandRecoiling : offHandRecoiling;
+    }
+
+    @Override
+    public void setRecoiling(InteractionHand hand, boolean recoiling) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            mainHandRecoiling = recoiling;
+        } else {
+            offHandRecoiling = recoiling;
         }
     }
 }

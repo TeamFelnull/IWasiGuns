@@ -67,4 +67,12 @@ public class IWPlayerUtil {
         }
         return player.getAbilities().instabuild ? defaultsAmmo : ItemStack.EMPTY;
     }
+
+    public static void startRecoil(@NotNull Player player, InteractionHand hand) {
+        var gun = IWItemUtil.getGunNullable(player.getItemInHand(hand));
+        if (gun == null) return;
+        var data = (IIWDataPlayer) player;
+        data.setRecoil(hand, 0);
+        data.setRecoiling(hand, true);
+    }
 }

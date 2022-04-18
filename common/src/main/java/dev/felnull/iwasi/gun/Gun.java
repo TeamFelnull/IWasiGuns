@@ -116,6 +116,7 @@ public abstract class Gun {
                 level.addFreshEntity(thrownEgg);
                 shotAfter((ServerLevel) level, (ServerPlayer) player, interactionHand, itemStack);
             }
+            IWPlayerUtil.startRecoil(player, interactionHand);
             return InteractionResult.SUCCESS;
         }
         playSound(player, getNoAmmoShotSound(itemStack));
@@ -177,5 +178,19 @@ public abstract class Gun {
         if (mg.isEmpty() || MagazineItem.getRemainingBullets(mg) < ((MagazineItem) mg.getItem()).getCapacity())
             return IWPlayerUtil.getFindAmmo(player, getAmmo(stack), getDefaultsAmmo(stack));
         return ItemStack.EMPTY;
+    }
+
+    public int getRecoil() {
+        return 10;
+    }
+
+    public int getRecoilSpeed(boolean ret) {
+        if (ret)
+            return getRecoil();
+        return 1;
+    }
+
+    public float getRecoilAngle() {
+        return 5;
     }
 }

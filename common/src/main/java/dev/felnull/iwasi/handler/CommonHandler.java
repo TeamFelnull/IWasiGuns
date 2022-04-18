@@ -12,6 +12,7 @@ import dev.felnull.iwasi.util.IWPlayerUtil;
 import dev.felnull.otyacraftengine.event.MoreEntityEvent;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -51,8 +52,7 @@ public class CommonHandler {
                 for (InteractionHand hand : InteractionHand.values()) {
                     var item = player.getItemInHand(hand);
                     var gun = IWItemUtil.getGunNullable(item);
-                    if (gun != null)
-                        gun.playSound(player, gun.getHoldSound(item));
+                    if (gun != null) gun.playSound(player, gun.getHoldSound(item));
                 }
                 data.setHoldGrace(holdGraceTime);
             }
@@ -63,11 +63,9 @@ public class CommonHandler {
         if (IWPlayerUtil.getMaxHoldProgress(player) > data.getHoldProgress()) {
             data.setHoldProgress(data.getHoldProgress() + IWPlayerUtil.getHoldSpeed(player, data.getPreHoldType(), data.getHoldType(), data.getHoldGrace() > 0));
         }
-        if (data.getHoldGrace() > 0)
-            data.setHoldGrace(data.getHoldGrace() - 1);
+        if (data.getHoldGrace() > 0) data.setHoldGrace(data.getHoldGrace() - 1);
 
-        if (data.isPullTrigger())
-            data.setHoldGrace(holdGraceTime);
+        if (data.isPullTrigger()) data.setHoldGrace(holdGraceTime);
 
         for (InteractionHand hand : InteractionHand.values()) {
             var item = player.getItemInHand(hand);
@@ -89,14 +87,17 @@ public class CommonHandler {
                     }
                 }
             } else {
-                GunItem.setContinuousShotCount(item, 0);
+                if (!player.level.isClientSide())
+                    GunItem.setContinuousShotCount(item, 0);
             }
-
-            if (shot) {
-                GunItem.setShotCoolDown(item, gun.getShotCoolDown());
-            } else {
-                if (sc >= 1)
-                    GunItem.setShotCoolDown(item, sc - 1);
+            
+            if (!player.level.isClientSide()) {
+                if (shot) {
+                    GunItem.setShotCoolDown(item, gun.getShotCoolDown());
+                } else {
+                    if (sc >= 1)
+                        GunItem.setShotCoolDown(item, sc - 1);
+                }
             }
         }
 
@@ -121,8 +122,7 @@ public class CommonHandler {
             GunPlayerTransData nd = null;
             if (mp - 1 <= gd.progress()) {
                 if (player instanceof ServerPlayer serverPlayer) {
-                    if (next)
-                        next = gt.stepEnd(serverPlayer, hand, gun, item, gd.step());
+                    if (next) next = gt.stepEnd(serverPlayer, hand, gun, item, gd.step());
                     if (next && gt.getStep(item) - 1 > gd.step()) {
                         nd = new GunPlayerTransData(gt, 0, gd.step() + 1, gd.updateId() + 1);
                     } else {
@@ -132,9 +132,42 @@ public class CommonHandler {
             } else {
                 nd = new GunPlayerTransData(gt, gd.progress() + 1, gd.step(), gd.updateId());
             }
-            if (nd != null)
-                data.setGunTrans(hand, nd);
+            if (nd != null) data.setGunTrans(hand, nd);
+        }
+
+        for (InteractionHand hand : InteractionHand.values()) {
+            var itm = player.getItemInHand(hand);
+            var gun = IWItemUtil.getGunNullable(itm);
+            if (gun == null) {
+                data.setRecoiling(hand, false);
+                data.setRecoil(hand, 0);
+                continue;
+            }
+
+            if (data.isRecoiling(hand)) {
+                int rs = gun.getRecoilSpeed(true);
+                data.setRecoil(hand, data.getRecoil(hand) + rs);
+                float ang = gun.getRecoilAngle() * ((float) rs / (float) gun.getRecoil());
+                recoilTurn(player, -ang, 0);
+                if (data.getRecoil(hand) >= gun.getRecoil())
+                    data.setRecoiling(hand, false);
+            } else {
+                if (data.getRecoil(hand) > 0) {
+                    int rs = gun.getRecoilSpeed(false);
+                    data.setRecoil(hand, Math.max(data.getRecoil(hand) - rs, 0));
+                    float ang = gun.getRecoilAngle() * ((float) rs / (float) gun.getRecoil());
+                    recoilTurn(player, ang, 0);
+                }
+            }
         }
     }
 
+    private static void recoilTurn(Player player, float x, float y) {
+        player.setXRot(player.getXRot() + x);
+        player.setYRot(player.getYRot() + y);
+        player.setXRot(Mth.clamp(player.getXRot(), -90.0F, 90.0F));
+        player.xRotO += x;
+        player.yRotO += y;
+        player.xRotO = Mth.clamp(player.xRotO, -90.0F, 90.0F);
+    }
 }
