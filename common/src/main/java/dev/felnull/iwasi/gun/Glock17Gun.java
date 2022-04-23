@@ -13,10 +13,7 @@ import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -26,7 +23,7 @@ public class Glock17Gun extends Gun {
     public static final Predicate<ItemStack> GLOCK_17_MG_ONLY = stack -> stack.is(IWItems.GLOCK_17_MAGAZINE.get()) && MagazineItem.getRemainingBullets(stack) >= 1;
 
     public Glock17Gun() {
-        super(IWGunTypes.HAND_GUN, new GunProperties.Builder().setMaxContinuousShotCount(1).setShotCoolDown(3).setWeight(716).setSize16(1.525f, 6.55f, 12.225f).create());
+        super(IWGunTypes.HAND_GUN, new GunProperties.Builder().setMaxContinuousShotCount(1).setShotCoolDown(5).setWeight(716).setSize16(1.525f, 6.55f, 12.225f).create());
     }
 
     @Override
@@ -55,11 +52,5 @@ public class Glock17Gun extends Gun {
         if (IWItemUtil.isSlideDown(itemStack))
             GunItem.addGunItemTrans(itemStack, new GunItemTransData(IWGunItemTrans.GLOCK_17_SLIDE_REVERS, 0, 0, 0), true);
         super.reloadSetMagazine(level, player, interactionHand, itemStack);
-    }
-
-    @Override
-    public InteractionResult shot(Level level, Player player, InteractionHand interactionHand, ItemStack itemStack) {
-        System.out.println(MagazineItem.getRemainingBullets(GunItem.getMagazine(itemStack)) + "");
-        return super.shot(level, player, interactionHand, itemStack);
     }
 }

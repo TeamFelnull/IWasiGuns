@@ -1,8 +1,11 @@
 package dev.felnull.iwasi.util;
 
+import dev.architectury.networking.NetworkManager;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.networking.IWPackets;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -78,38 +81,36 @@ public class IWPlayerUtil {
         data.setRecoiling(hand, true);
     }
 
-    public static void shotGun(Player player, InteractionHand hand) {
+    public static void shotGun(ServerPlayer player, InteractionHand hand, boolean trigger) {
         var item = player.getItemInHand(hand);
         var gun = IWItemUtil.getGunNullable(item);
         if (gun == null) return;
         int sc = GunItem.getShotCoolDown(item);
         boolean shot = false;
         var data = (IIWDataPlayer) player;
-        if (data.isPullTrigger()) {
+        if (trigger) {
             if (data.getGunTrans(hand).getGunTrans() == null && (data.getHoldProgress() == 0 || data.getHoldProgress() >= gun.getRequiredHoldTime()) && sc <= 0 && GunItem.getContinuousShotCount(item) >= 0 && (gun.getMaxContinuousShotCount() == 0 || GunItem.getContinuousShotCount(item) < gun.getMaxContinuousShotCount())) {
                 var sret = gun.shot(player.level, player, hand, item);
                 if (sret.consumesAction()) {
                     shot = true;
-                    if (!player.level.isClientSide()) {
-                        int ac = GunItem.getContinuousShotCount(item) + 1;
-                        if (sret == InteractionResult.CONSUME)
-                            ac = gun.getMaxContinuousShotCount() <= 0 ? -1 : gun.getMaxContinuousShotCount();
-                        GunItem.setContinuousShotCount(item, ac);
-                    }
+                    int ac = GunItem.getContinuousShotCount(item) + 1;
+                    if (sret == InteractionResult.CONSUME)
+                        ac = gun.getMaxContinuousShotCount() <= 0 ? -1 : gun.getMaxContinuousShotCount();
+                    GunItem.setContinuousShotCount(item, ac);
+                    var gunId = IWItemUtil.getGunTmpID(item);
+                    if (gunId != null)
+                        NetworkManager.sendToPlayer(player, IWPackets.ACTION_CLIENT_SYNC, new IWPackets.ActionClientSyncMessage(player.getGameProfile().getId(), hand, gunId).toFBB());
                 }
             }
         } else {
-            if (!player.level.isClientSide())
-                GunItem.setContinuousShotCount(item, 0);
+            GunItem.setContinuousShotCount(item, 0);
         }
 
-        if (!player.level.isClientSide()) {
-            if (shot) {
-                GunItem.setShotCoolDown(item, gun.getShotCoolDown());
-            } else {
-                if (sc >= 1)
-                    GunItem.setShotCoolDown(item, sc - 1);
-            }
+        if (shot) {
+            GunItem.setShotCoolDown(item, gun.getShotCoolDown());
+        } else {
+            if (sc >= 1)
+                GunItem.setShotCoolDown(item, sc - 1);
         }
     }
 }

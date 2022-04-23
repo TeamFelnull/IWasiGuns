@@ -66,10 +66,6 @@ public class CommonHandler {
         if (data.isPullTrigger()) data.setHoldGrace(holdGraceTime);
 
         for (InteractionHand hand : InteractionHand.values()) {
-            IWPlayerUtil.shotGun(player, hand);
-        }
-
-        for (InteractionHand hand : InteractionHand.values()) {
             var gd = data.getGunTrans(hand);
             var gt = gd.getGunTrans();
             var item = player.getItemInHand(hand);

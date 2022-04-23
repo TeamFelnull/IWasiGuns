@@ -37,7 +37,7 @@ public class ServerMessageHandler {
                 }
                 case TRIGGER -> {
                     for (InteractionHand hand : InteractionHand.values()) {
-                        IWPlayerUtil.shotGun(packetContext.getPlayer(), hand);
+                        IWPlayerUtil.shotGun((ServerPlayer) packetContext.getPlayer(), hand, true);
                     }
                 }
             }

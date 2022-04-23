@@ -20,6 +20,7 @@ import java.util.UUID;
 public class IWPackets {
     public static final ResourceLocation CONTINUOUS_ACTION_INPUT = new ResourceLocation(IWasi.MODID, "continuous_action_input");
     public static final ResourceLocation ACTION_INPUT = new ResourceLocation(IWasi.MODID, "action_input");
+    public static final ResourceLocation ACTION_CLIENT_SYNC = new ResourceLocation(IWasi.MODID, "action_client_sync");
     public static final ResourceLocation TMP_HAND_ITEMS_SYNC = new ResourceLocation(IWasi.MODID, "tmp_hand_items_sync");
 
     public static void init() {
@@ -28,7 +29,35 @@ public class IWPackets {
     }
 
     public static void clientInit() {
+        NetworkManager.registerReceiver(NetworkManager.s2c(), ACTION_CLIENT_SYNC, (friendlyByteBuf, packetContext) -> ClientMessageHandler.onActionClientSyncMessage(new ActionClientSyncMessage(friendlyByteBuf), packetContext));
         NetworkManager.registerReceiver(NetworkManager.s2c(), TMP_HAND_ITEMS_SYNC, (friendlyByteBuf, packetContext) -> ClientMessageHandler.onTmpHandItemsSyncMessage(new TmpHandItemsSyncMessage(friendlyByteBuf), packetContext));
+    }
+
+    public static class ActionClientSyncMessage implements PacketMessage {
+        public final UUID playerId;
+        public final InteractionHand hand;
+        public final UUID gunTmpId;
+
+        public ActionClientSyncMessage(FriendlyByteBuf buf) {
+            this.playerId = buf.readUUID();
+            this.hand = buf.readEnum(InteractionHand.class);
+            this.gunTmpId = buf.readUUID();
+        }
+
+        public ActionClientSyncMessage(UUID playerId, InteractionHand hand, UUID gunTmpId) {
+            this.playerId = playerId;
+            this.hand = hand;
+            this.gunTmpId = gunTmpId;
+        }
+
+        @Override
+        public FriendlyByteBuf toFBB() {
+            FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+            buf.writeUUID(playerId);
+            buf.writeEnum(hand);
+            buf.writeUUID(gunTmpId);
+            return buf;
+        }
     }
 
     public static class TmpHandItemsSyncMessage implements PacketMessage {
@@ -104,7 +133,7 @@ public class IWPackets {
         }
 
         public static enum ActionType {
-            RELOAD,TRIGGER
+            RELOAD, TRIGGER
         }
     }
 

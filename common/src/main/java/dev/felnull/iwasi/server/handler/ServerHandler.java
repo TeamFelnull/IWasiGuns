@@ -94,6 +94,10 @@ public class ServerHandler {
             GunItem.setGunItemTransList(item, nl);
         }
 
+        for (InteractionHand hand : InteractionHand.values()) {
+            IWPlayerUtil.shotGun(serverPlayer, hand, data.isPullTrigger());
+        }
+
   /*
         boolean reset = false;
         for (InteractionHand hand : InteractionHand.values()) {
@@ -145,11 +149,6 @@ public class ServerHandler {
             if (ng != null)
                 setGunTrans(serverPlayer, hand, ng);
         }*/
-    }
-
-    private static void setGunTrans(ServerPlayer player, InteractionHand hand, GunPlayerTransData gunTransData) {
-        var es = hand == InteractionHand.MAIN_HAND ? IWPlayerData.MAIN_HAND_GUN_TRANS : IWPlayerData.OFF_HAND_GUN_TRANS;
-        player.getEntityData().set(es, gunTransData);
     }
 
     private static boolean canChangeHold(Player player) {

@@ -3,10 +3,8 @@ package dev.felnull.iwasi.client.data;
 import dev.architectury.networking.NetworkManager;
 import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.data.ContinuousActionData;
-import dev.felnull.iwasi.handler.CommonHandler;
 import dev.felnull.iwasi.networking.IWPackets;
 import dev.felnull.iwasi.util.IWItemUtil;
-import dev.felnull.iwasi.util.IWPlayerUtil;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
@@ -28,10 +26,6 @@ public class ClientAction {
 
         while (getTriggerKey().consumeClick()) {
             sendActionPacket(IWPackets.ActionInputMessage.ActionType.TRIGGER);
-
-            for (InteractionHand hand : InteractionHand.values()) {
-                IWPlayerUtil.shotGun(mc.player, hand);
-            }
         }
 
         if (IWasi.getConfig().toggleHold) {
@@ -44,6 +38,14 @@ public class ClientAction {
         pullTrigger = getTriggerKey().isDown();
 
         NetworkManager.sendToServer(IWPackets.CONTINUOUS_ACTION_INPUT, new IWPackets.ContinuousActionInputMessage(ClientAction.getContinuousData()).toFBB());
+    }
+
+    public static void onUseClick() {
+
+    }
+
+    public static void onAttackClick() {
+
     }
 
     private static boolean haveGun() {
@@ -78,4 +80,6 @@ public class ClientAction {
     public static KeyMapping getTriggerKey() {
         return mc.options.keyAttack;
     }
+
+
 }
