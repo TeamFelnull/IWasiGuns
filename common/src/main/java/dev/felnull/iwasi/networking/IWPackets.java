@@ -104,7 +104,7 @@ public class IWPackets {
         }
 
         public static enum ActionType {
-            RELOAD
+            RELOAD,TRIGGER
         }
     }
 

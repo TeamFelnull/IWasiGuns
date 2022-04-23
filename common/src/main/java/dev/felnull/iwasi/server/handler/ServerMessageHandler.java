@@ -4,6 +4,7 @@ import dev.architectury.networking.NetworkManager;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.networking.IWPackets;
+import dev.felnull.iwasi.util.IWPlayerUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 
@@ -32,6 +33,11 @@ public class ServerMessageHandler {
                                 break;
                             }
                         }
+                    }
+                }
+                case TRIGGER -> {
+                    for (InteractionHand hand : InteractionHand.values()) {
+                        IWPlayerUtil.shotGun(packetContext.getPlayer(), hand);
                     }
                 }
             }

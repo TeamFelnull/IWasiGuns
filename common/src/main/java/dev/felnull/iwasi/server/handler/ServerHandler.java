@@ -93,6 +93,7 @@ public class ServerHandler {
             }
             GunItem.setGunItemTransList(item, nl);
         }
+
   /*
         boolean reset = false;
         for (InteractionHand hand : InteractionHand.values()) {

@@ -2,7 +2,9 @@ package dev.felnull.iwasi.util;
 
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
+import dev.felnull.iwasi.item.GunItem;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -74,5 +76,40 @@ public class IWPlayerUtil {
         var data = (IIWDataPlayer) player;
         data.setRecoil(hand, 0);
         data.setRecoiling(hand, true);
+    }
+
+    public static void shotGun(Player player, InteractionHand hand) {
+        var item = player.getItemInHand(hand);
+        var gun = IWItemUtil.getGunNullable(item);
+        if (gun == null) return;
+        int sc = GunItem.getShotCoolDown(item);
+        boolean shot = false;
+        var data = (IIWDataPlayer) player;
+        if (data.isPullTrigger()) {
+            if (data.getGunTrans(hand).getGunTrans() == null && (data.getHoldProgress() == 0 || data.getHoldProgress() >= gun.getRequiredHoldTime()) && sc <= 0 && GunItem.getContinuousShotCount(item) >= 0 && (gun.getMaxContinuousShotCount() == 0 || GunItem.getContinuousShotCount(item) < gun.getMaxContinuousShotCount())) {
+                var sret = gun.shot(player.level, player, hand, item);
+                if (sret.consumesAction()) {
+                    shot = true;
+                    if (!player.level.isClientSide()) {
+                        int ac = GunItem.getContinuousShotCount(item) + 1;
+                        if (sret == InteractionResult.CONSUME)
+                            ac = gun.getMaxContinuousShotCount() <= 0 ? -1 : gun.getMaxContinuousShotCount();
+                        GunItem.setContinuousShotCount(item, ac);
+                    }
+                }
+            }
+        } else {
+            if (!player.level.isClientSide())
+                GunItem.setContinuousShotCount(item, 0);
+        }
+
+        if (!player.level.isClientSide()) {
+            if (shot) {
+                GunItem.setShotCoolDown(item, gun.getShotCoolDown());
+            } else {
+                if (sc >= 1)
+                    GunItem.setShotCoolDown(item, sc - 1);
+            }
+        }
     }
 }
