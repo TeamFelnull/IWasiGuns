@@ -7,6 +7,7 @@ import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.motion.gun.GunMotion;
 import dev.felnull.iwasi.client.util.IWClientPlayerData;
 import dev.felnull.iwasi.data.GunItemTransData;
+import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.gun.trans.item.GunItemTrans;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
@@ -56,6 +57,9 @@ public abstract class GunRenderer<M extends GunMotion> {
         float holdPar = IWPlayerUtil.getHoldProgress(mc.player, hand, partialTicks);
         poseStack.pushPose();
         OERenderUtil.poseHandItem(poseStack, arm, swingProgress, equipProgress);
+
+        poseRecoil(motion, poseStack, arm, partialTicks);
+
         poseStack.pushPose();
 
         poseHand(motion, poseStack, arm, bothHand, holdPar, igt);
@@ -111,6 +115,16 @@ public abstract class GunRenderer<M extends GunMotion> {
         }
 
         return opItem;
+    }
+
+    protected void poseRecoil(M motion, PoseStack stack, HumanoidArm arm, float delta) {
+        float rcp = IWPlayerData.getRecoil(mc.player, OEEntityUtil.getHandByArm(mc.player, arm), delta);
+        var ht = IWPlayerData.getLastHold(mc.player);
+        var pose = ht == HoldType.HOLD ? motion.getRecoilHold(rcp) : motion.getRecoilBase(rcp);
+
+        if (arm == HumanoidArm.LEFT)
+            pose = pose.reverse();
+        pose.pose(stack);
     }
 
     protected void poseHand(M motion, PoseStack stack, HumanoidArm arm, boolean bothHands, float hold, InfoGunTrans gunTrans) {

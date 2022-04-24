@@ -104,8 +104,11 @@ public class CommonHandler {
             if (gun == null) {
                 data.setRecoiling(hand, false);
                 data.setRecoil(hand, 0);
+                data.setRecoilOld(hand, 0);
                 continue;
             }
+
+            data.setRecoilOld(hand, data.getRecoil(hand));
 
             if (data.isRecoiling(hand)) {
                 int rs = gun.getRecoilSpeed(true);

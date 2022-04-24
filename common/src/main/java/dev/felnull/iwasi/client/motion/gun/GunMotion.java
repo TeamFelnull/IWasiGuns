@@ -38,4 +38,8 @@ public abstract class GunMotion {
     abstract public MotionPose getOppositeHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base);
 
     abstract public MotionPoint getOppositeHandHideMotionPoint(HumanoidArm arm);
+
+    abstract public MotionPose getRecoilBase(float par);
+
+    abstract public MotionPose getRecoilHold(float par);
 }

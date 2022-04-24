@@ -63,9 +63,9 @@ public interface IIWDataPlayer {
 
     void setRecoil(InteractionHand hand, int recoil);
 
-    int getRecoilStart(InteractionHand hand);
+    int getRecoilOld(InteractionHand hand);
 
-    void setRecoilStart(InteractionHand hand, int recoil);
+    void setRecoilOld(InteractionHand hand, int recoil);
 
     boolean isRecoiling(InteractionHand hand);
 

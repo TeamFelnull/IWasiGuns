@@ -37,8 +37,8 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     private boolean offHandTmpItemsUpdate;
     private int mainHandRecoil;
     private int offHandRecoil;
-    private int mainHandRecoilStart;
-    private int offHandRecoilStart;
+    private int mainHandRecoilOld;
+    private int offHandRecoilOld;
     private boolean mainHandRecoiling;
     private boolean offHandRecoiling;
 
@@ -199,18 +199,17 @@ public abstract class PlayerMixin implements IIWDataPlayer {
     }
 
     @Override
-    public int getRecoilStart(InteractionHand hand) {
-        return hand == InteractionHand.MAIN_HAND ? mainHandRecoilStart : offHandRecoilStart;
+    public int getRecoilOld(InteractionHand hand) {
+        return hand == InteractionHand.MAIN_HAND ? mainHandRecoilOld : offHandRecoilOld;
     }
 
     @Override
-    public void setRecoilStart(InteractionHand hand, int recoil) {
+    public void setRecoilOld(InteractionHand hand, int recoil) {
         if (hand == InteractionHand.MAIN_HAND) {
-            mainHandRecoilStart = recoil;
+            mainHandRecoilOld = recoil;
         } else {
-            offHandRecoilStart = recoil;
+            offHandRecoilOld = recoil;
         }
-
     }
 
     @Override

@@ -3,10 +3,12 @@ package dev.felnull.iwasi.data;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.entity.IWEntityDataSerializers;
 import dev.felnull.iwasi.gun.trans.player.GunPlayerTrans;
+import dev.felnull.iwasi.util.IWItemUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -83,5 +85,14 @@ public class IWPlayerData {
         data.setTmpHandItems(hand, itemStacks);
     }
 
+    public static float getRecoil(@NotNull Player player, InteractionHand hand, float delta) {
+        var data = (IIWDataPlayer) player;
+        var itm = player.getItemInHand(hand);
+        var gun = IWItemUtil.getGunNullable(itm);
+        if (gun == null)
+            return 0;
+        float dp = Mth.lerp(delta, data.getRecoilOld(hand), data.getRecoil(hand));
+        return dp / (float) gun.getRecoil();
+    }
 
 }

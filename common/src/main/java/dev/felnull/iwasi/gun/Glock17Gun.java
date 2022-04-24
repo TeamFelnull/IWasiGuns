@@ -23,7 +23,7 @@ public class Glock17Gun extends Gun {
     public static final Predicate<ItemStack> GLOCK_17_MG_ONLY = stack -> stack.is(IWItems.GLOCK_17_MAGAZINE.get()) && MagazineItem.getRemainingBullets(stack) >= 1;
 
     public Glock17Gun() {
-        super(IWGunTypes.HAND_GUN, new GunProperties.Builder().setMaxContinuousShotCount(1).setShotCoolDown(5).setWeight(716).setSize16(1.525f, 6.55f, 12.225f).create());
+        super(IWGunTypes.HAND_GUN, new GunProperties.Builder().setMaxContinuousShotCount(1).setShotCoolDown(8).setWeight(716).setSize16(1.525f, 6.55f, 12.225f).create());
     }
 
     @Override

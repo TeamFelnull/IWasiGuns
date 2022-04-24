@@ -181,16 +181,16 @@ public abstract class Gun {
     }
 
     public int getRecoil() {
-        return 10;
+        return 7;
     }
 
     public int getRecoilSpeed(boolean ret) {
         if (ret)
             return getRecoil();
-        return 1;
+        return 2;
     }
 
     public float getRecoilAngle() {
-        return 5;
+        return 3;
     }
 }

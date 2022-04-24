@@ -3,10 +3,7 @@ package dev.felnull.iwasi.client.motion.gun;
 import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.data.HoldType;
-import dev.felnull.otyacraftengine.client.motion.MotionManager;
-import dev.felnull.otyacraftengine.client.motion.MotionPoint;
-import dev.felnull.otyacraftengine.client.motion.MotionPose;
-import dev.felnull.otyacraftengine.client.motion.MotionSwapper;
+import dev.felnull.otyacraftengine.client.motion.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.HumanoidArm;
 
@@ -29,6 +26,14 @@ public class Glock17GunMotion extends GunMotion {
     private static final ResourceLocation OP_HAND_RELOAD_MOTION = new ResourceLocation(IWasi.MODID, "glock_17/opposite_hand_reload");
 
     private static final MotionPoint OP_HAND_HIDE = new MotionPoint(-0.9300009f, -0.966556f, -0.044355575f, -87.54647f, -181.9746f, 40.24339f, 0.069000006f, 0.6063378f, -1.4881045E-4f, false, false, false);
+
+    private static final MotionPoint RECOIL_BASE = new MotionPoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -0.17200013f, 0.3094994f, 0.042000048f, false, false, false);
+    private static final MotionPoint RECOIL_BASE_MAX = new MotionPoint(0.0f, 0.0f, 0.0f, 17.155855f, 0.8799998f, 0.0f, -0.17200013f, 0.3094994f, 0.042000048f, false, false, false);
+    private static final Motion RECOIL_BASE_MOTION = Motion.of(RECOIL_BASE, RECOIL_BASE_MAX);
+
+    private static final MotionPoint RECOIL_HOLD = new MotionPoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, -0.56099993f, 0.4519122f, 0.33499983f, false, false, false);
+    private static final MotionPoint RECOIL_HOLD_MAX = new MotionPoint(0.0f, 0.0f, 0.0f, 30.720013f, 0.0f, 0.0f, -0.56099993f, 0.4519122f, 0.33499983f, false, false, false);
+    private static final Motion RECOIL_HOLD_MOTION = Motion.of(RECOIL_HOLD, RECOIL_HOLD_MAX);
 
     @Override
     public MotionPose getHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base) {
@@ -84,6 +89,16 @@ public class Glock17GunMotion extends GunMotion {
     @Override
     public MotionPoint getOppositeHandHideMotionPoint(HumanoidArm arm) {
         return OP_HAND_HIDE;
+    }
+
+    @Override
+    public MotionPose getRecoilBase(float par) {
+        return RECOIL_BASE_MOTION.getPose(par);
+    }
+
+    @Override
+    public MotionPose getRecoilHold(float par) {
+        return RECOIL_HOLD_MOTION.getPose(par);
     }
 
 }
