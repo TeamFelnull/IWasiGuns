@@ -63,6 +63,7 @@ public abstract class GunRenderer<M extends GunMotion> {
         poseStack.pushPose();
 
         poseHand(motion, poseStack, arm, bothHand, holdPar, igt);
+        //  MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
 
         if (slim)
             poseStack.translate(t * -SLIM_TRANS, 0, 0);

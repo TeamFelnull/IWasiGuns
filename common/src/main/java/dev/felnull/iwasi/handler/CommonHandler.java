@@ -37,7 +37,9 @@ public class CommonHandler {
         var data = (IIWDataPlayer) player;
         var holdType = data.getHoldType();
 
-        if (data.getLastHoldType() != holdType && data.getGunTrans(InteractionHand.MAIN_HAND).getGunTrans() == null && data.getGunTrans(InteractionHand.OFF_HAND).getGunTrans() == null) {
+        boolean recoiled = data.getRecoil(InteractionHand.MAIN_HAND) > 0 || data.getRecoil(InteractionHand.OFF_HAND) > 0;
+
+        if (!recoiled && data.getLastHoldType() != holdType && data.getGunTrans(InteractionHand.MAIN_HAND).getGunTrans() == null && data.getGunTrans(InteractionHand.OFF_HAND).getGunTrans() == null) {
             int retv = IWPlayerUtil.getMaxHoldProgress(player) - data.getHoldProgress();
             data.setHoldProgress(retv);
             data.setHoldProgressOld(retv);

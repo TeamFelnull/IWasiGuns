@@ -3,7 +3,6 @@ package dev.felnull.iwasi.server.handler;
 import dev.architectury.event.events.common.TickEvent;
 import dev.architectury.networking.NetworkManager;
 import dev.felnull.iwasi.data.GunItemTransData;
-import dev.felnull.iwasi.data.GunPlayerTransData;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWCashServerPlayer;
@@ -95,7 +94,7 @@ public class ServerHandler {
         }
 
         for (InteractionHand hand : InteractionHand.values()) {
-            IWPlayerUtil.shotGun(serverPlayer, hand, data.isPullTrigger());
+            IWPlayerUtil.shotGun(serverPlayer, hand, data.isPullTrigger(), true);
         }
 
   /*

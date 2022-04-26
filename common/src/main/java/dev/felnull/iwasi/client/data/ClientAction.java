@@ -40,14 +40,6 @@ public class ClientAction {
         NetworkManager.sendToServer(IWPackets.CONTINUOUS_ACTION_INPUT, new IWPackets.ContinuousActionInputMessage(ClientAction.getContinuousData()).toFBB());
     }
 
-    public static void onUseClick() {
-
-    }
-
-    public static void onAttackClick() {
-
-    }
-
     private static boolean haveGun() {
         return IWItemUtil.getGunNullable(mc.player.getItemInHand(InteractionHand.MAIN_HAND)) != null || IWItemUtil.getGunNullable(mc.player.getItemInHand(InteractionHand.OFF_HAND)) != null;
     }
@@ -74,10 +66,12 @@ public class ClientAction {
     }
 
     public static KeyMapping getHoldKey() {
+        if (IWasi.getConfig().reverseHoldKeyAndTriggerKey) return mc.options.keyAttack;
         return mc.options.keyUse;
     }
 
     public static KeyMapping getTriggerKey() {
+        if (IWasi.getConfig().reverseHoldKeyAndTriggerKey) return mc.options.keyUse;
         return mc.options.keyAttack;
     }
 

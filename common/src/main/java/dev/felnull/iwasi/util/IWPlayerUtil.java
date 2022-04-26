@@ -81,7 +81,7 @@ public class IWPlayerUtil {
         data.setRecoiling(hand, true);
     }
 
-    public static void shotGun(ServerPlayer player, InteractionHand hand, boolean trigger) {
+    public static void shotGun(ServerPlayer player, InteractionHand hand, boolean trigger, boolean reduce) {
         var item = player.getItemInHand(hand);
         var gun = IWItemUtil.getGunNullable(item);
         if (gun == null) return;
@@ -109,7 +109,7 @@ public class IWPlayerUtil {
         if (shot) {
             GunItem.setShotCoolDown(item, gun.getShotCoolDown());
         } else {
-            if (sc >= 1)
+            if (reduce && sc >= 1)
                 GunItem.setShotCoolDown(item, sc - 1);
         }
     }
