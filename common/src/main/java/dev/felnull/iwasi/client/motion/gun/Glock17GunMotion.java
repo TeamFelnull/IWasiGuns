@@ -43,13 +43,22 @@ public class Glock17GunMotion extends GunMotion {
     private static final MotionPoint RECOIL_HOLD_NO_BOTH_MAX = new MotionPoint(0.0f, 0.030000001f, 0.0f, 32.40001f, 8.300001f, 0.0f, -0.3594998f, 0.4519122f, 0.21499982f, false, false, false);
     private static final Motion RECOIL_HOLD_NO_BOTH_MOTION = Motion.of(RECOIL_HOLD_NO_BOTH, RECOIL_HOLD_NO_BOTH_MAX);
 
-    private static final MotionPoint ARM_GUN_BASE = new MotionPoint(0.43500006f, 0.7900003f, 0.09000002f, -90.0f, 0.0f, 0.0f, -0.4979977f, -0.13799986f, -0.37999994f, false, false, false);
+    private static final MotionPoint ARM_GUN_BASE = new MotionPoint(0.3305003f, 0.59050006f, 0.06900002f, -90.0f, -4.59f, 0.0f, -0.34850004f, -0.10750002f, -0.25f, false, false, false);
+    private static final MotionPoint ARM_GUN_HOLD = new MotionPoint(0.3305003f, 0.59050006f, 0.06900002f, -90.0f, -23.069996f, 0.0f, -0.34850004f, -0.10750002f, -0.25f, false, false, false);
+    private static final MotionPoint ARM_GUN_HOLD_NO_BOTH = new MotionPoint(0.3305003f, 0.59050006f, 0.06900002f, -90.0f, -8.069996f, 0.0f, -0.34850004f, -0.10750002f, -0.25f, false, false, false);
+    private static final MotionPoint ARM_GUN_HOLD_SIDE = new MotionPoint(0.3305003f, 0.59050006f, 0.06900002f, -90.0f, -0.06999588f, 0.0f, -0.34850004f, -0.10750002f, -0.25f, false, false, false);
+    private static final Motion ARM_GUN_HOLD_MOTION = Motion.of(ARM_GUN_HOLD, ARM_GUN_HOLD_SIDE);
+    private static final Motion ARM_GUN_HOLD_MOTION_NO_BOTH = Motion.of(ARM_GUN_HOLD_NO_BOTH, ARM_GUN_HOLD_SIDE);
 
     private static final MotionPoint ARM_POSE_BASE = new MotionPoint(0.0f, 0.0f, 0.0f, 86.0f, 15.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
     private static final MotionPoint ARM_POSE_HOLD = new MotionPoint(0.0f, 0.0f, 0.0f, 98.5f, 28.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
+    private static final MotionPoint ARM_POSE_HOLD_BI_BOTH = new MotionPoint(0.0f, 0.0f, 0.0f, 98.5f, 15.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
+    private static final MotionPoint ARM_POSE_LOWER = new MotionPoint(0.0f, 0.0f, 0.0f, 49.892914f, 14.25f, 7.522299f, 0.0f, 0.0f, 0.0f, false, false, false);
+    private static final MotionPoint ARM_POSE_UPPER = new MotionPoint(0.0f, 0.0f, 0.0f, 102.29813f, 7.25f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
 
     private static final MotionPoint OP_ARM_POSE_BASE = new MotionPoint(0.0f, 0.0f, 0.0f, 90.0f, -42.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
     private static final MotionPoint OP_ARM_POSE_HOLD = new MotionPoint(0.0f, 0.0f, 0.0f, 98.0f, -31.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
+    private static final MotionPoint OP_ARM_POSE_LOWER = new MotionPoint(-0.0125f, 0.0f, 0.0f, 56.149876f, -57.5f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
 
     @Override
     public MotionPose getHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base) {
@@ -121,14 +130,20 @@ public class Glock17GunMotion extends GunMotion {
     }
 
     @Override
-    public MotionPoint getArmGunFixedMotionPoint(HumanoidArm arm, boolean bothHands, HoldType holdType) {
-        return ARM_GUN_BASE;
+    public MotionPose getArmGunMotionPoint(HumanoidArm arm, boolean bothHands, HoldType holdType, float headX) {
+        if (holdType == HoldType.HOLD)
+            return (bothHands ? ARM_GUN_HOLD_MOTION : ARM_GUN_HOLD_MOTION_NO_BOTH).getPose(Math.abs(headX) / 90f);
+        return ARM_GUN_BASE.getPose();
     }
 
     @Override
     public MotionPoint getArmPose(HumanoidArm arm, boolean bothHands, HoldType holdType) {
         if (holdType == HoldType.HOLD)
-            return ARM_POSE_HOLD;
+            return bothHands ? ARM_POSE_HOLD : ARM_POSE_HOLD_BI_BOTH;
+        if (holdType == HoldType.LOWER)
+            return ARM_POSE_LOWER;
+        if (holdType == HoldType.UPPER)
+            return ARM_POSE_UPPER;
         return ARM_POSE_BASE;
     }
 
@@ -136,6 +151,9 @@ public class Glock17GunMotion extends GunMotion {
     public MotionPoint getOppositeArmPose(HumanoidArm arm, HoldType holdType) {
         if (holdType == HoldType.HOLD)
             return OP_ARM_POSE_HOLD;
+        if (holdType == HoldType.LOWER)
+
+            return OP_ARM_POSE_LOWER;
         return OP_ARM_POSE_BASE;
     }
 
