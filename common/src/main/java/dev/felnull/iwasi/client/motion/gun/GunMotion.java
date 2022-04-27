@@ -39,7 +39,15 @@ public abstract class GunMotion {
 
     abstract public MotionPoint getOppositeHandHideMotionPoint(HumanoidArm arm);
 
-    abstract public MotionPose getRecoilBase(float par);
+    abstract public MotionPose getRecoil(HoldType holdType, float par, boolean bothHands);
 
-    abstract public MotionPose getRecoilHold(float par);
+    abstract public MotionPoint getArmGunFixedMotionPoint(HumanoidArm arm, boolean bothHands, HoldType holdType);
+
+    abstract public MotionPoint getArmPose(HumanoidArm arm, boolean bothHands, HoldType holdType);
+
+    abstract public MotionPoint getOppositeArmPose(HumanoidArm arm, HoldType holdType);
+
+    public Motion getArmPoseHoldMotion(HumanoidArm arm, boolean bothHands, HoldType preHoldType, HoldType holdType) {
+        return Motion.of(getArmPose(arm, bothHands, preHoldType), getArmPose(arm, bothHands, holdType));
+    }
 }

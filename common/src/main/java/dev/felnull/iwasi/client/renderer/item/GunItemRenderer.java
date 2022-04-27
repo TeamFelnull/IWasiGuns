@@ -11,9 +11,11 @@ import dev.felnull.iwasi.gun.Gun;
 import dev.felnull.otyacraftengine.client.renderer.item.BEWLItemRenderer;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import dev.felnull.otyacraftengine.util.OEEntityUtil;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -74,8 +76,12 @@ public class GunItemRenderer implements BEWLItemRenderer {
         getGunRenderer().renderHand(getGunMotion(), poseStack, multiBufferSource, hand, packedLight, partialTicks, interpolatedPitch, swingProgress, equipProgress, stack);
     }
 
-    public void poseHand(HumanoidArm arm, HumanoidModel<? extends LivingEntity> model, ItemStack stack, LivingEntity livingEntity) {
+    public void renderArmWithItem(ItemInHandLayer<? extends LivingEntity, ? extends EntityModel<?>> layer, LivingEntity livingEntity, ItemStack itemStack, ItemTransforms.TransformType transformType, HumanoidArm arm, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, float delta) {
+        getGunRenderer().renderArmWithItem(getGunMotion(), layer, livingEntity, itemStack, transformType, arm, poseStack, multiBufferSource, i, delta);
+    }
 
+    public void poseHand(HumanoidArm arm, InteractionHand hand, HumanoidModel<? extends LivingEntity> model, ItemStack stack, LivingEntity livingEntity) {
+        getGunRenderer().poseArm(getGunMotion(), hand, arm, model, stack, livingEntity);
     }
 
     private GunRenderer getGunRenderer() {

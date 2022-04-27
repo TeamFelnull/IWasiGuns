@@ -44,7 +44,7 @@ public class ServerHandler {
 
 
         if (lastCash.getLastContinuousHold() != continuousAction.hold() && canChangeHold) {
-            data.setHoldType(HoldType.getIdeal(continuousAction.hold(), player.isSprinting(), data.getHoldGrace()));
+            data.setHoldType(HoldType.getIdeal(player, continuousAction.hold()));
             lastCash.setLastContinuousHold(continuousAction.hold());
         }
 

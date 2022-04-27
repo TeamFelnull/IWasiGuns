@@ -7,6 +7,7 @@ import dev.felnull.iwasi.networking.IWPackets;
 import dev.felnull.iwasi.util.IWPlayerUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 
 public class ServerMessageHandler {
     public static void onContinuousActionInputMessage(IWPackets.ContinuousActionInputMessage message, NetworkManager.PacketContext packetContext) {
@@ -29,7 +30,9 @@ public class ServerMessageHandler {
                         if (item.getItem() instanceof GunItem gunItem) {
                             var ri = gunItem.getGun().getReloadedItem((ServerPlayer) packetContext.getPlayer(), hand, item);
                             if (!ri.isEmpty()) {
-                                IWPlayerData.setGunTrans((ServerPlayer) packetContext.getPlayer(), hand, gunItem.getGun().getReloadTrans());
+                                ItemStack mg = GunItem.getMagazine(item);
+
+                                IWPlayerData.setGunTrans((ServerPlayer) packetContext.getPlayer(), hand, gunItem.getGun().getReloadTrans(mg.isEmpty()));
                                 break;
                             }
                         }

@@ -68,12 +68,12 @@ public abstract class Gun {
     }
 
     public int getHoldSpeed(HoldType old, HoldType last, boolean hurry) {
-        if (((old == HoldType.LOWER && last == HoldType.NONE) || old == HoldType.NONE && last == HoldType.LOWER) && hurry)
+        if (((old.isDisarmament() && last == HoldType.NONE) || old == HoldType.NONE && last.isDisarmament()) && hurry)
             return Math.max(getRequiredHoldTime() - 1, 1);
         return 1;
     }
 
-    abstract public AbstractReloadGunTrans getReloadTrans();
+    abstract public AbstractReloadGunTrans getReloadTrans(boolean empty);
 
     abstract public ItemStack getDefaultsAmmo(ItemStack stack);
 

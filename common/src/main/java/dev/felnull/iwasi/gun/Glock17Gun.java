@@ -27,8 +27,8 @@ public class Glock17Gun extends Gun {
     }
 
     @Override
-    public AbstractReloadGunTrans getReloadTrans() {
-        return IWGunPlayerTrans.GLOCK_17_RELOAD;
+    public AbstractReloadGunTrans getReloadTrans(boolean empty) {
+        return empty ? IWGunPlayerTrans.GLOCK_17_EMPTY_RELOAD : IWGunPlayerTrans.GLOCK_17_RELOAD;
     }
 
     @Override

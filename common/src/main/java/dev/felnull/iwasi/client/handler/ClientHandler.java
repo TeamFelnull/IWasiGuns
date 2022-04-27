@@ -69,7 +69,7 @@ public class ClientHandler {
         }
 
         if (player instanceof LocalPlayer) {
-            data.setHoldType(HoldType.getIdeal(ClientAction.isHolding(), player.isSprinting(), data.getHoldGrace()));
+            data.setHoldType(HoldType.getIdeal(player, ClientAction.isHolding()));
         }
     }
 
@@ -113,7 +113,7 @@ public class ClientHandler {
         if (item.getItem() instanceof GunItem gunItem) {
             var gir = GunItemRenderer.GUN_ITEM_RENDERERS.get(gunItem.getGun());
             if (gir != null)
-                gir.poseHand(arm, model, item, livingEntity);
+                gir.poseHand(arm, hand, model, item, livingEntity);
             return EventResult.interruptFalse();
         }
         return EventResult.pass();

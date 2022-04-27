@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin implements IIWDataPlayer {
-    private HoldType clientHoldType;
+    private HoldType clientHoldType = HoldType.NONE;
 
     @Override
     public HoldType getHoldType() {

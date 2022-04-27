@@ -20,7 +20,7 @@ public class TestGun extends Gun {
     }
 
     @Override
-    public AbstractReloadGunTrans getReloadTrans() {
+    public AbstractReloadGunTrans getReloadTrans(boolean empty) {
         return IWGunPlayerTrans.GLOCK_17_RELOAD;
     }
 
