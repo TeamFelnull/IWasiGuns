@@ -138,8 +138,11 @@ public abstract class GunRenderer<M extends GunMotion> {
         var cgtd = IWClientPlayerData.getGunTransData(player, OEEntityUtil.getHandByArm(livingEntity, arm), delta);
         var igt = new InfoGunTrans(cgtd, itemStack);
         float holdPar = IWPlayerUtil.getHoldProgress(player, hand, delta);
-        //marm.xRot = -(float) Math.PI / 2f - 0.1f;
-        //marm.yRot = 0.5f * rv;
+        var opArm = arm.getOpposite();
+
+        var cgt = cgtd.gunTrans();
+        boolean tmpBothHand = bothHand;
+        if (cgt != null && cgt.isUseBothHand()) tmpBothHand = true;
 
         float headParY = 1f;
         float headParX = 1f;
@@ -151,10 +154,23 @@ public abstract class GunRenderer<M extends GunMotion> {
         if (lh != HoldType.UPPER && lh.isDisarmament())
             headParX = 1f - holdPar;
 
+        if (cgtd.gunTrans() != null) {
+            if (igt.isLastStep()) {
+                headParX *= igt.progressPar();
+                headParY *= igt.progressPar();
+            } else if (cgtd.step() == 0) {
+                headParX *= 1f - igt.progressPar();
+                headParY *= 1f - igt.progressPar();
+            } else {
+                headParX = headParY = 0;
+            }
+        }
+
         poseArm(motion, player, mainPart, headPart, arm, bothHand, holdPar, headParY, headParX, igt);
 
-        if (bothHand) {
-            poseOppositeArm(motion, player, offPart, headPart, arm, holdPar, headParY, headParX, igt);
+        if (bothHand || tmpBothHand) {
+            poseOppositeArm(motion, player, offPart, headPart, opArm, holdPar, headParY, headParX, igt);
+            //   setArmByPose(offPart, headPart, MotionDebug.getInstance().getDebugPose(), 1f, 1f);
         }
     }
 
@@ -162,7 +178,7 @@ public abstract class GunRenderer<M extends GunMotion> {
         MotionPose pose = motion.getArmPoseHoldMotion(arm, bothHands, IWPlayerData.getPreHold(player), IWPlayerData.getLastHold(player)).getPose(hold);
 
         if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
-            pose = motion.getHandReloadMotion(arm, gunTrans, pose);
+            pose = motion.getArmReloadMotion(arm, gunTrans, pose);
         }
 
         if (arm == HumanoidArm.LEFT)
@@ -175,10 +191,10 @@ public abstract class GunRenderer<M extends GunMotion> {
         MotionPose pose = motion.getOppositeArmPoseHoldMotion(arm, IWPlayerData.getPreHold(player), IWPlayerData.getLastHold(player)).getPose(hold);
 
         if (gunTrans.gunTransData().gunTrans() instanceof AbstractReloadGunTrans) {
-            pose = motion.getOppositeHandReloadMotion(arm, gunTrans, pose);
+            pose = motion.getOppositeArmReloadMotion(arm, gunTrans, pose);
         }
 
-        if (arm == HumanoidArm.LEFT)
+        if (arm == HumanoidArm.RIGHT)
             pose = pose.reverse();
 
         setArmByPose(oppositeArmPart, headPart, pose, headParY, headParX);
@@ -189,12 +205,18 @@ public abstract class GunRenderer<M extends GunMotion> {
     }
 
     private void setArmByPose(ModelPart part, ModelPart head, MotionPose pose, float headParY, float headParX) {
+        setArmByPose(part, head, pose, headParY, headParX, false);
+    }
+
+    private void setArmByPose(ModelPart part, ModelPart head, MotionPose pose, float headParY, float headParX, boolean revers) {
         float b = -(float) Math.PI * 2f / 360f;
         var ang = pose.rotation().angle();
 
+        float rev = revers ? -1f : 1f;
+
         part.xRot = b * ang.x() + (head.xRot * headParY);
         part.yRot = b * ang.y() + (head.yRot * headParX);
-        part.zRot = b * ang.z();
+        part.zRot = b * (ang.z() * rev);
     }
 
     protected boolean isBothHand(Player player, InteractionHand hand) {
@@ -204,7 +226,23 @@ public abstract class GunRenderer<M extends GunMotion> {
     }
 
     protected void poseArmGun(M motion, Player player, PoseStack poseStack, HumanoidArm arm, boolean bothHands, InfoGunTrans gunTrans, float holdPar, float delta) {
-        var pose = motion.getArmGunPoseHoldMotion(arm, bothHands, IWPlayerData.getPreHold(player), IWPlayerData.getLastHold(player), player.getViewXRot(delta)).getPose(holdPar);
+        var nh = IWPlayerData.getLastHold(player);
+        var ph = IWPlayerData.getPreHold(player);
+
+        if (gunTrans.gunTransData().gunTrans() != null) {
+            nh = HoldType.NONE;
+            ph = IWPlayerData.getLastHold(player);
+            if (gunTrans.isLastStep()) {
+                holdPar = 1f - gunTrans.progressPar();
+            } else if (gunTrans.isFirstStep()) {
+                holdPar = gunTrans.progressPar();
+            } else {
+                holdPar = 1f;
+            }
+        }
+
+        var pose = motion.getArmGunPoseHoldMotion(arm, bothHands, ph, nh, player.getViewXRot(delta)).getPose(holdPar);
+
         if (arm == HumanoidArm.LEFT)
             pose = pose.reverse();
         pose.pose(poseStack);

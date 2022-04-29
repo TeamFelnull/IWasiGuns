@@ -60,10 +60,19 @@ public class Glock17GunMotion extends GunMotion {
     private static final MotionPoint OP_ARM_POSE_HOLD = new MotionPoint(0.0f, 0.0f, 0.0f, 98.0f, -31.0f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
     private static final MotionPoint OP_ARM_POSE_LOWER = new MotionPoint(-0.0125f, 0.0f, 0.0f, 56.149876f, -57.5f, 0.0f, 0.0f, 0.0f, 0.0f, false, false, false);
 
+
+    private static final ResourceLocation ARM_RELOAD_MOTION = new ResourceLocation(IWasi.MODID, "glock_17/arm_reload");
+    private static final ResourceLocation OP_ARM_RELOAD_MOTION = new ResourceLocation(IWasi.MODID, "glock_17/opposite_arm_reload");
+    private static final ResourceLocation OP_ARM_EMPTY_RELOAD_MOTION = new ResourceLocation(IWasi.MODID, "glock_17/opposite_arm_empty_reload");
+
     @Override
     public MotionPose getHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base) {
+        return getReloadMotion(arm, infoGunTrans, base, false);
+    }
+
+    private MotionPose getReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base, boolean armed) {
         var gtd = infoGunTrans.gunTransData();
-        var mt = MotionManager.getInstance().getMotion(HAND_RELOAD_MOTION);
+        var mt = MotionManager.getInstance().getMotion(armed ? ARM_RELOAD_MOTION : HAND_RELOAD_MOTION);
         if (gtd.gunTrans() == IWGunPlayerTrans.GLOCK_17_EMPTY_RELOAD)
             return mt.getPose(infoGunTrans.progressPar(), MotionSwapper.swapStartAndEnd(base, base), gtd.step(), gtd.step() + 1);
 
@@ -80,8 +89,12 @@ public class Glock17GunMotion extends GunMotion {
 
     @Override
     public MotionPose getOppositeHandReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base) {
+        return getOppositeReloadMotion(arm, infoGunTrans, base, false);
+    }
+
+    private MotionPose getOppositeReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base, boolean armed) {
         var gtd = infoGunTrans.gunTransData();
-        var mt = MotionManager.getInstance().getMotion(gtd.gunTrans() == IWGunPlayerTrans.GLOCK_17_EMPTY_RELOAD ? OP_HAND_EMPTY_RELOAD_MOTION : OP_HAND_RELOAD_MOTION);
+        var mt = MotionManager.getInstance().getMotion(gtd.gunTrans() == IWGunPlayerTrans.GLOCK_17_EMPTY_RELOAD ? (armed ? OP_ARM_EMPTY_RELOAD_MOTION : OP_HAND_EMPTY_RELOAD_MOTION) : (armed ? OP_ARM_RELOAD_MOTION : OP_HAND_RELOAD_MOTION));
 
         return mt.getPose(infoGunTrans.progressPar(), MotionSwapper.swapStartAndEnd(base, base), gtd.step(), gtd.step() + 1);
     }
@@ -152,9 +165,18 @@ public class Glock17GunMotion extends GunMotion {
         if (holdType == HoldType.HOLD)
             return OP_ARM_POSE_HOLD;
         if (holdType == HoldType.LOWER)
-
             return OP_ARM_POSE_LOWER;
         return OP_ARM_POSE_BASE;
+    }
+
+    @Override
+    public MotionPose getArmReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base) {
+        return getReloadMotion(arm, infoGunTrans, base, true);
+    }
+
+    @Override
+    public MotionPose getOppositeArmReloadMotion(HumanoidArm arm, InfoGunTrans infoGunTrans, MotionPose base) {
+        return getOppositeReloadMotion(arm, infoGunTrans, base, true);
     }
 
 }
