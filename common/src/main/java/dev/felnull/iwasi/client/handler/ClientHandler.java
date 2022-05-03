@@ -4,14 +4,18 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.felnull.iwasi.client.data.ClientAction;
+import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.entity.IClientItemHandRenderEntity;
 import dev.felnull.iwasi.client.renderer.item.GunItemRenderer;
+import dev.felnull.iwasi.client.util.IWClientPlayerData;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.otyacraftengine.client.event.ClientEvent;
+import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import dev.felnull.otyacraftengine.event.MoreEntityEvent;
+import dev.felnull.otyacraftengine.util.OEEntityUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -34,6 +38,7 @@ public class ClientHandler {
         ClientEvent.CHANGE_HAND_HEIGHT.register(ClientHandler::onChangeHandHeight);
         ClientEvent.HAND_ATTACK.register(ClientHandler::onHandAttack);
         ClientEvent.POSE_HUMANOID_ARM.register(ClientHandler::onPoseHumanoidArm);
+        ClientEvent.POSE_HUMANOID_ARM_POST.register(ClientHandler::onPoseHumanoidArmPost);
         ClientEvent.EVALUATE_RENDER_HANDS.register(ClientHandler::onEvaluateRenderHands);
         TickEvent.PLAYER_PRE.register(ClientHandler::onPlayerTick);
         MoreEntityEvent.ENTITY_TICK.register(ClientHandler::onEntityTick);
@@ -109,13 +114,63 @@ public class ClientHandler {
     }
 
     private static EventResult onPoseHumanoidArm(HumanoidArm arm, InteractionHand hand, HumanoidModel<? extends LivingEntity> model, LivingEntity livingEntity) {
+        if (!(livingEntity instanceof Player player)) return EventResult.pass();
+        var opHand = OEEntityUtil.getOppositeHand(hand);
         var item = livingEntity.getItemInHand(hand);
-        if (item.getItem() instanceof GunItem gunItem) {
-            var gir = GunItemRenderer.GUN_ITEM_RENDERERS.get(gunItem.getGun());
-            if (gir != null)
-                gir.poseHand(arm, hand, model, item, livingEntity);
-            return EventResult.interruptFalse();
+
+        var opgt = IWPlayerData.getGunTrans(player, opHand);
+
+        if (opgt == null || !opgt.isUseBothHand()) {
+            if (item.getItem() instanceof GunItem gunItem) {
+                var gir = GunItemRenderer.GUN_ITEM_RENDERERS.get(gunItem.getGun());
+                if (gir != null)
+                    gir.poseHand(arm, hand, model, item, livingEntity);
+                return EventResult.interruptFalse();
+            }
         }
+
+        if (!isReplaceArm(livingEntity, opHand)) {
+            var offItem = livingEntity.getItemInHand(opHand);
+            if (offItem.getItem() instanceof GunItem gunItem) {
+                var gir = GunItemRenderer.GUN_ITEM_RENDERERS.get(gunItem.getGun());
+                if (gir != null)
+                    gir.poseOppositeHand(arm, hand, model, item, livingEntity);
+                return EventResult.interruptFalse();
+            }
+        }
+
         return EventResult.pass();
+    }
+
+    private static void onPoseHumanoidArmPost(HumanoidArm arm, InteractionHand hand, HumanoidModel<? extends LivingEntity> model, LivingEntity livingEntity) {
+        if (!(livingEntity instanceof Player player)) return;
+        var opHand = OEEntityUtil.getOppositeHand(hand);
+
+        var opgt = IWPlayerData.getGunTrans(player, opHand);
+        if (opgt != null && opgt.isUseBothHand()) {
+            var item = livingEntity.getItemInHand(hand);
+            if (item.getItem() instanceof GunItem gunItem) {
+                var gir = GunItemRenderer.GUN_ITEM_RENDERERS.get(gunItem.getGun());
+                if (gir != null)
+                    gir.poseHand(arm, hand, model, item, livingEntity);
+            }
+        }
+
+        if (isReplaceArm(livingEntity, opHand)) {
+            var item = livingEntity.getItemInHand(opHand);
+            if (item.getItem() instanceof GunItem gunItem) {
+                var gir = GunItemRenderer.GUN_ITEM_RENDERERS.get(gunItem.getGun());
+                if (gir != null)
+                    gir.poseOppositeHand(arm, hand, model, item, livingEntity);
+            }
+        }
+    }
+
+
+    private static boolean isReplaceArm(LivingEntity livingEntity, InteractionHand hand) {
+        if (!(livingEntity instanceof Player player)) return false;
+        var gt = IWClientPlayerData.getGunTransData(player, hand, OERenderUtil.getPartialTicks());
+        var gti = new InfoGunTrans(gt, player.getItemInHand(hand));
+        return gti.isFirstStep() || gti.isLastStep();
     }
 }

@@ -84,6 +84,10 @@ public class GunItemRenderer implements BEWLItemRenderer {
         getGunRenderer().poseArm(getGunMotion(), hand, arm, model, stack, livingEntity);
     }
 
+    public void poseOppositeHand(HumanoidArm arm, InteractionHand hand, HumanoidModel<? extends LivingEntity> model, ItemStack stack, LivingEntity livingEntity) {
+        getGunRenderer().poseOppositeArm(getGunMotion(), hand, arm, model, stack, livingEntity);
+    }
+
     private GunRenderer getGunRenderer() {
         return GunRendererRegister.getRenderer(gun);
     }
