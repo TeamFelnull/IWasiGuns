@@ -42,11 +42,13 @@ public class ServerHandler {
             }
         }
 
-
+        boolean holdRet = lastCash.getLastContinuousHold();
         if (lastCash.getLastContinuousHold() != continuousAction.hold() && canChangeHold) {
-            data.setHoldType(HoldType.getIdeal(player, continuousAction.hold()));
-            lastCash.setLastContinuousHold(continuousAction.hold());
+            holdRet = continuousAction.hold();
+            lastCash.setLastContinuousHold(holdRet);
         }
+
+        data.setHoldType(HoldType.getIdeal(player, holdRet));
 
         for (InteractionHand hand : InteractionHand.values()) {
             var item = serverPlayer.getItemInHand(hand);

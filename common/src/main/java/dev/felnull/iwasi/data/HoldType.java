@@ -19,6 +19,7 @@ public enum HoldType {
     public static HoldType getIdeal(Player player, boolean hold) {
         var data = (IIWDataPlayer) player;
         if (hold) return HOLD;
+
         if (player.isSprinting() && data.getHoldGrace() <= 0) {
             var gunMain = IWItemUtil.getGunNullable(player.getItemInHand(InteractionHand.MAIN_HAND));
             boolean upperMain = gunMain != null && gunMain.getType().isUpperGun();

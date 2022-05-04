@@ -6,22 +6,19 @@ import dev.felnull.iwasi.gun.trans.player.IWGunPlayerTrans;
 import dev.felnull.iwasi.gun.type.GunType;
 import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.iwasi.item.MagazineItem;
-import dev.felnull.iwasi.sound.IWSounds;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 import java.util.function.Predicate;
 
-public class TestGun extends Gun {
-
-    public TestGun() {
-        super(GunType.HAND_GUN, new GunProperties.Builder().setSize16(1.4f, 5.6f, 8.175f).create());
+public class PKPGun extends Gun {
+    public PKPGun() {
+        super(GunType.MACHINE_GUN, new GunProperties.Builder().create());
     }
 
     @Override
     public AbstractReloadGunTrans getReloadTrans(boolean empty) {
-        return IWGunPlayerTrans.GLOCK_17_RELOAD;
+        return empty ? IWGunPlayerTrans.GLOCK_17_EMPTY_RELOAD : IWGunPlayerTrans.GLOCK_17_RELOAD;
     }
 
     @Override
@@ -32,15 +29,5 @@ public class TestGun extends Gun {
     @Override
     public List<Predicate<ItemStack>> getAmmo(ItemStack stack) {
         return ImmutableList.of(Glock17Gun.GLOCK_17_MG_ONLY);
-    }
-
-    @Override
-    public SoundEvent getShotSound(ItemStack stack) {
-        return IWSounds.SHOT_2.get();
-    }
-
-    @Override
-    public SoundEvent getHoldSound(ItemStack stack) {
-        return IWSounds.HOLD_2.get();
     }
 }
