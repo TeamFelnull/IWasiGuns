@@ -129,8 +129,8 @@ public class ClientHandler {
             }
         }
 
+        var offItem = livingEntity.getItemInHand(opHand);
         if (!isReplaceArm(livingEntity, opHand)) {
-            var offItem = livingEntity.getItemInHand(opHand);
             if (offItem.getItem() instanceof GunItem gunItem) {
                 var gir = GunItemRenderer.GUN_ITEM_RENDERERS.get(gunItem.getGun());
                 if (gir != null)

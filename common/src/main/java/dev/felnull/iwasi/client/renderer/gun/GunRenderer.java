@@ -149,6 +149,8 @@ public abstract class GunRenderer<M extends GunMotion> {
             float headParX = headPar.getLeft();
 
             poseOffArm(motion, player, mainPart, headPart, arm, holdPar, headParY, headParX, igt, !bothHand);
+            if (bothHand)
+                poseArmRecoil(motion, player, mainPart, OEEntityUtil.getOppositeHand(hand), delta);
         }
     }
 
@@ -167,6 +169,7 @@ public abstract class GunRenderer<M extends GunMotion> {
         float headParX = headPar.getLeft();
 
         poseMainArm(motion, player, mainPart, headPart, arm, bothHand, holdPar, headParY, headParX, igt);
+        poseArmRecoil(motion, player, mainPart, hand, delta);
     }
 
     private Pair<Float, Float> getHeadPar(Player player, float holdPar, InfoGunTrans igt) {
@@ -191,6 +194,12 @@ public abstract class GunRenderer<M extends GunMotion> {
             }
         }
         return Pair.of(headParX, headParY);
+    }
+
+    protected void poseArmRecoil(M motion, Player player, ModelPart armPart, InteractionHand recoilHand, float delta) {
+        float rcp = IWPlayerData.getRecoil(mc.player, recoilHand, delta);
+        float b = -(float) Math.PI * 2f / 360f;
+        armPart.xRot += b * 12f * rcp;
     }
 
     protected void poseMainArm(M motion, Player player, ModelPart armPart, ModelPart headPart, HumanoidArm arm, boolean bothHands, float hold, float headParY, float headParX, InfoGunTrans gunTrans) {
