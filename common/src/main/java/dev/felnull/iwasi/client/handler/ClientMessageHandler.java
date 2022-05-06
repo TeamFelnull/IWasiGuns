@@ -17,7 +17,7 @@ public class ClientMessageHandler {
                 if (message.gunTmpId.equals(IWItemUtil.getGunTmpID(itm))) {
                     var gun = IWItemUtil.getGunNullable(itm);
                     if (gun != null)
-                        gun.shot(mc.level, mc.player, message.hand, itm);
+                        gun.shot(mc.level, pl, message.hand, itm);
                 }
             }
         });

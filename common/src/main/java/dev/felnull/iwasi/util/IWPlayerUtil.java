@@ -5,11 +5,13 @@ import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.networking.IWPackets;
+import dev.felnull.otyacraftengine.util.OEPlayerUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.chunk.LevelChunk;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -98,8 +100,11 @@ public class IWPlayerUtil {
                         ac = gun.getMaxContinuousShotCount() <= 0 ? -1 : gun.getMaxContinuousShotCount();
                     GunItem.setContinuousShotCount(item, ac);
                     var gunId = IWItemUtil.getGunTmpID(item);
-                    if (gunId != null)
-                        NetworkManager.sendToPlayer(player, IWPackets.ACTION_CLIENT_SYNC, new IWPackets.ActionClientSyncMessage(player.getGameProfile().getId(), hand, gunId).toFBB());
+                    if (gunId != null) {
+                        OEPlayerUtil.doPlayers((LevelChunk) player.getLevel().getChunk(player.blockPosition()), n -> {
+                            NetworkManager.sendToPlayer(n, IWPackets.ACTION_CLIENT_SYNC, new IWPackets.ActionClientSyncMessage(player.getGameProfile().getId(), hand, gunId).toFBB());
+                        });
+                    }
                 }
             }
         } else {

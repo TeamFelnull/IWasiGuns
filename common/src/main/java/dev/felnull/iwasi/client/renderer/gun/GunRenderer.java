@@ -197,7 +197,7 @@ public abstract class GunRenderer<M extends GunMotion> {
     }
 
     protected void poseArmRecoil(M motion, Player player, ModelPart armPart, InteractionHand recoilHand, float delta) {
-        float rcp = IWPlayerData.getRecoil(mc.player, recoilHand, delta);
+        float rcp = IWPlayerData.getRecoil(player, recoilHand, delta);
         float b = -(float) Math.PI * 2f / 360f;
         armPart.xRot += b * 12f * rcp;
     }
