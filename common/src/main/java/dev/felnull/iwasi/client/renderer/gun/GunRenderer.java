@@ -246,7 +246,18 @@ public abstract class GunRenderer<M extends GunMotion> {
         var ang = pose.rotation().angle();
 
         float x = b * ang.x() + head.xRot * headParY;
-        float y = b * ang.y() + head.yRot * headParX;
+
+        float hy = head.yRot;
+        hy %= ((float) Math.PI / 180f * 360f);
+        if (hy >= 0) {
+            if (hy > ((float) Math.PI / 180f * 360f) / 2f)
+                hy = -((float) Math.PI / 180f * 360f) + hy;
+        } else {
+            if (hy < -((float) Math.PI / 180f * 360f) / 2f)
+                hy = ((float) Math.PI / 180f * 360f) + hy;
+        }
+
+        float y = b * ang.y() + hy * headParX;
         float z = b * ang.z();
 
         part.xRot = Mth.lerp(par, part.xRot, x);

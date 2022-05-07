@@ -115,6 +115,7 @@ public class ClientHandler {
 
     private static EventResult onPoseHumanoidArm(HumanoidArm arm, InteractionHand hand, HumanoidModel<? extends LivingEntity> model, LivingEntity livingEntity) {
         if (!(livingEntity instanceof Player player)) return EventResult.pass();
+
         var opHand = OEEntityUtil.getOppositeHand(hand);
         var item = livingEntity.getItemInHand(hand);
 
