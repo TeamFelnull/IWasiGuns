@@ -3,6 +3,7 @@ package dev.felnull.iwasi.client.renderer.gun;
 import com.mojang.blaze3d.vertex.PoseStack;
 import dev.felnull.iwasi.client.model.IWModels;
 import dev.felnull.iwasi.client.motion.gun.Glock17GunMotion;
+import dev.felnull.iwasi.client.renderer.item.Glock17MagazineItemRenderer;
 import dev.felnull.iwasi.gun.trans.item.IWGunItemTrans;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.util.IWItemUtil;
@@ -47,11 +48,18 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
         if (!magazineStack.isEmpty()) {
             poseStack.pushPose();
             OERenderUtil.poseTrans16(poseStack, -0.1f, -0.45, -0.15f);
-            renderItem(magazineStack, poseStack, multiBufferSource, light, overlay);
+            renderMagazine(magazineStack, poseStack, multiBufferSource, delta, light, overlay);
             poseStack.popPose();
         }
 
         poseStack.popPose();
+    }
+
+    private static final Glock17MagazineItemRenderer renderer = new Glock17MagazineItemRenderer();
+
+    @Override
+    void renderMagazine(ItemStack stack, PoseStack poseStack, MultiBufferSource ms, float delta, int light, int overlay) {
+        renderer.renderMagazine(stack, poseStack, ms, delta, light, overlay);
     }
 
     private float getSlide(ItemStack stack, ItemStack oldStack, float delta) {

@@ -12,6 +12,6 @@ public class IWConfig implements ConfigData {
     @ConfigEntry.Category("client")
     public boolean reverseHoldKeyAndTriggerKey = false;
 
-    //@ConfigEntry.Category("client")
-    //public boolean testForceAlex = false;
+    @ConfigEntry.Category("client")
+    public boolean testForceAlex = false;
 }

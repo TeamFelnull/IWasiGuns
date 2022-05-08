@@ -23,4 +23,9 @@ public class TestGunRenderer extends GunRenderer<TestGunMotion> {
         OERenderUtil.renderModel(poseStack, vc, model, light, overlay);
         poseStack.popPose();
     }
+
+    @Override
+    void renderMagazine(ItemStack stack, PoseStack poseStack, MultiBufferSource ms, float delta, int light, int overlay) {
+
+    }
 }

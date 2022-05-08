@@ -26,6 +26,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -51,7 +52,8 @@ public abstract class GunRenderer<M extends GunMotion> {
         boolean hideOp = hand == InteractionHand.OFF_HAND || !bothHand;
 
         var cgtd = IWClientPlayerData.getGunTransData(mc.player, hand, partialTicks);
-        //  cgtd = new DeltaGunTransData(IWGunTrans.GLOCK_17_RELOAD, 2f, 1);
+
+       // cgtd = new DeltaGunPlayerTransData(IWGunPlayerTrans.GLOCK_17_RELOAD, 1f, 1);
 //IWGunTrans.GLOCK_17_RELOAD.getProgress(IWItemUtil.getGun(stack), 1)
 
         var cgt = cgtd.gunTrans();
@@ -91,14 +93,17 @@ public abstract class GunRenderer<M extends GunMotion> {
             OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, oparm, packedLight);
 
             ItemStack opItem = getOppositeItem(cgt, cgtd, OEEntityUtil.getOppositeHand(hand));
+            //opItem = new ItemStack(IWItems.GLOCK_17_MAGAZINE.get());
 
             if (!opItem.isEmpty()) {
-                poseOppositeItem(motion, poseStack, arm, holdPar, igt);
-
+                  poseOppositeItem(motion, poseStack, arm, holdPar, igt);
+               // MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
                 if (slim) poseStack.translate(t * -SLIM_TRANS, 0, 0);
 
-                if (handFlg) poseStack.translate(1f, 0, 0f);
-                OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, opItem, packedLight);
+                //if (handFlg)
+                //    poseStack.translate(1f, 0, 0f);
+                renderMagazine(opItem, poseStack, multiBufferSource, partialTicks, packedLight, OverlayTexture.NO_OVERLAY);
+                // OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, opItem, packedLight);
             }
             poseStack.popPose();
         }
@@ -364,12 +369,12 @@ public abstract class GunRenderer<M extends GunMotion> {
         pose.pose(stack);
     }
 
-    protected static void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
+    /*protected static void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
         mc.getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, light, overlay, poseStack, multiBufferSource, 0);
         poseStack.popPose();
-    }
+    }*/
 
     protected DeltaGunItemTransData getGunItemTrans(GunItemTrans gunItemTrans, ItemStack stack, ItemStack oldStack, float delta) {
         if (stack.isEmpty() || oldStack.isEmpty()) return null;
@@ -381,4 +386,6 @@ public abstract class GunRenderer<M extends GunMotion> {
 
         return DeltaGunItemTransData.of(delta, og, ng, stack);
     }
+
+    abstract void renderMagazine(ItemStack stack, PoseStack poseStack, MultiBufferSource ms, float delta, int light, int overlay);
 }
