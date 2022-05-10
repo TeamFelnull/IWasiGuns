@@ -20,6 +20,8 @@ public class IWItems {
 
     public static final RegistrySupplier<Item> GLOCK_17_MAGAZINE = register("glock_17_magazine", () -> new MagazineItem(new Item.Properties().tab(IWCreativeModeTab.MOD_TAB)));
 
+    public static final RegistrySupplier<Item> RATION = register("ration");
+
     private static RegistrySupplier<Item> register(String name) {
         return register(name, () -> new Item(new Item.Properties().tab(IWCreativeModeTab.MOD_TAB)));
     }

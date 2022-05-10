@@ -67,7 +67,7 @@ public class GunItemRenderer implements BEWLItemRenderer {
             }
         }
 
-        getGunRenderer().render(stack, stackOld, transformType, poseStack, multiBufferSource, f, light, overlay);
+        getGunRenderer().render(entity, stack, stackOld, transformType, poseStack, multiBufferSource, f, light, overlay);
         poseStack.popPose();
     }
 

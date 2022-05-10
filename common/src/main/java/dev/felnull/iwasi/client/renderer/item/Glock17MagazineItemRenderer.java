@@ -21,8 +21,6 @@ public class Glock17MagazineItemRenderer implements BEWLItemRenderer, IMagazineR
     @Override
     public void renderMagazine(ItemStack stack, PoseStack poseStack, MultiBufferSource ms, float delta, int light, int overlay) {
         poseStack.pushPose();
-     //   var vc = ms.getBuffer(Sheets.cutoutBlockSheet());
-       // OERenderUtil.renderModel(poseStack, vc, OEModelUtil.getModel(IWModels.ORIGIN), light, overlay);
         OERenderUtil.poseTrans16(poseStack, -6.35, -2.0351, -0.8561);
         OERenderUtil.poseRotateY(poseStack, 180);
         poseStack.translate(-1f, 0f, -1f);

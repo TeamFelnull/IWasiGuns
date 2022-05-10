@@ -1,3 +1,6 @@
 {
-  "item.examplemod.example_item": "Example Item"
+  "_comment.i": "Item",
+  "item.iwasi.glock_17": "Glock 17",
+  "_comment.cr": "CreativeTab",
+  "itemGroup.iwasi.iwasi": "IWasi"
 }

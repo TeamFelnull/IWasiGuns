@@ -13,11 +13,12 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
     @Override
-    public void render(ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
+    public void render(LivingEntity entity, ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
         var main = OEModelUtil.getModel(IWModels.GLOCK_17_MAIN);
         var slide = OEModelUtil.getModel(IWModels.GLOCK_17_SLIDE);
 
@@ -33,12 +34,16 @@ public class Glock17GunRenderer extends GunRenderer<Glock17GunMotion> {
         OERenderUtil.renderModel(poseStack, vc, main, light, overlay);
 
         poseStack.pushPose();
-        float sv = IWItemUtil.isSlideDown(stack) ? 1f : 0f;
-        float rs = getSlide(stack, stackOld, delta);
-        if (rs >= 0)
-            sv = rs;
 
-        OERenderUtil.poseTrans16(poseStack, 0, 0, 1.625f * sv);
+        if (transformType != ItemTransforms.TransformType.GUI) {
+            float sv = IWItemUtil.isSlideDown(stack) ? 1f : 0f;
+            float rs = getSlide(stack, stackOld, delta);
+            if (rs >= 0)
+                sv = rs;
+
+            OERenderUtil.poseTrans16(poseStack, 0, 0, 1.625f * sv);
+        }
+
         OERenderUtil.renderModel(poseStack, vc, slide, light, overlay);
         poseStack.popPose();
 

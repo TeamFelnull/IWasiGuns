@@ -7,11 +7,12 @@ import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 public class PKPGunRenderer extends Glock17GunRenderer {
     @Override
-    public void render(ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
+    public void render(LivingEntity entity, ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay) {
         var main = OEModelUtil.getModel(IWModels.PKP_MAIN);
         var vc = multiBufferSource.getBuffer(Sheets.cutoutBlockSheet());
 
