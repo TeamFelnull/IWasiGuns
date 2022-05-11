@@ -24,6 +24,7 @@ public class Glock17GunMotion extends GunMotion {
 
     private static final MotionPoint OP_ITEM_BASE = new MotionPoint(0.0025002188f, 0.43288428f, -0.25255203f, -85.459404f, 45.200092f, 35.36559f, -5.401671E-8f, 0.13999972f, 0.1349999f, false, false, false);
 
+
     private static final ResourceLocation HAND_RELOAD_MOTION = new ResourceLocation(IWasi.MODID, "glock_17/hand_reload");
 
     private static final ResourceLocation OP_HAND_RELOAD_MOTION = new ResourceLocation(IWasi.MODID, "glock_17/opposite_hand_reload");

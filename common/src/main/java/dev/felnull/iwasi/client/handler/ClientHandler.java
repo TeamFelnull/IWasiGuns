@@ -12,6 +12,7 @@ import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.util.IWItemUtil;
 import dev.felnull.otyacraftengine.client.event.ClientEvent;
 import dev.felnull.otyacraftengine.client.util.OERenderUtil;
 import dev.felnull.otyacraftengine.event.MoreEntityEvent;
@@ -80,11 +81,14 @@ public class ClientHandler {
 
     private static void onEvaluateRenderHands(ClientEvent.HandRenderSelectionWrapper handRenderSelection, LocalPlayer player, ClientEvent.EvaluateRenderHandSetter setter) {
         if (player != mc.player) return;
+
         boolean mgf = player.getMainHandItem().getItem() instanceof GunItem;
         boolean ogf = player.getOffhandItem().getItem() instanceof GunItem;
 
+        var mgun = IWItemUtil.getGunNullable(player.getMainHandItem());
+
         var mgt = IWPlayerData.getGunTrans(player, InteractionHand.MAIN_HAND);
-        if (mgf && mgt != null && mgt.isUseBothHand()) {
+        if ((mgf && mgt != null && mgt.isUseBothHand()) || (mgun != null && mgun.getType().canHaveWithKnife() && IWItemUtil.isKnife(player.getOffhandItem()))) {
             setter.setEvaluate(ClientEvent.HandRenderSelectionWrapper.RENDER_MAIN_HAND_ONLY);
             return;
         }

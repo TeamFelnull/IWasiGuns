@@ -3,6 +3,7 @@ package dev.felnull.iwasi.util;
 import dev.felnull.iwasi.gun.Gun;
 import dev.felnull.iwasi.item.GunItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,5 +33,9 @@ public class IWItemUtil {
 
     public static boolean isSlideDown(@NotNull ItemStack stack) {
         return GunItem.getChamberRemainingBullets(stack) <= 0;
+    }
+
+    public static boolean isKnife(ItemStack stack) {
+        return stack.getItem() instanceof SwordItem;
     }
 }

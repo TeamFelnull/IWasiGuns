@@ -9,7 +9,8 @@
     "client.ItemRendererMixin",
     "client.ItemStackMixin",
     "client.LivingEntityMixin",
-    "client.LocalPlayerMixin"
+    "client.LocalPlayerMixin",
+    "client.ItemInHandLayerMixin"
   ],
   "mixins": [
     "PlayerMixin",

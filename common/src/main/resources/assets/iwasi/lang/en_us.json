@@ -2,5 +2,8 @@
   "_comment.i": "Item",
   "item.iwasi.glock_17": "Glock 17",
   "_comment.cr": "CreativeTab",
+  "_comment.k": "Key",
+  "key.categories.iwasi": "IWasi",
+  "key.iwasi.reload": "Reload",
   "itemGroup.iwasi.iwasi": "IWasi"
 }

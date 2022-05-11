@@ -5,6 +5,7 @@ import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.entity.IIWDataPlayer;
 import dev.felnull.iwasi.item.GunItem;
 import dev.felnull.iwasi.networking.IWPackets;
+import dev.felnull.otyacraftengine.util.OEEntityUtil;
 import dev.felnull.otyacraftengine.util.OEPlayerUtil;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -117,5 +118,17 @@ public class IWPlayerUtil {
             if (reduce && sc >= 1)
                 GunItem.setShotCoolDown(item, sc - 1);
         }
+    }
+
+    public static boolean isBothHand(Player player, InteractionHand hand) {
+        if (hand == InteractionHand.MAIN_HAND) {
+            var opItem = player.getItemInHand(OEEntityUtil.getOppositeHand(hand));
+            if (opItem.isEmpty())
+                return true;
+            var item = player.getItemInHand(hand);
+            var gun = IWItemUtil.getGunNullable(item);
+            return (gun != null && gun.getType().canHaveWithKnife() && IWItemUtil.isKnife(opItem));
+        }
+        return false;
     }
 }

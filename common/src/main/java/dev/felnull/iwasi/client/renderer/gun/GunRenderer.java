@@ -13,6 +13,7 @@ import dev.felnull.iwasi.gun.trans.item.GunItemTrans;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.trans.player.GunPlayerTrans;
 import dev.felnull.iwasi.item.GunItem;
+import dev.felnull.iwasi.util.IWItemUtil;
 import dev.felnull.iwasi.util.IWPlayerUtil;
 import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import dev.felnull.otyacraftengine.client.util.OEModelUtil;
@@ -39,7 +40,7 @@ public abstract class GunRenderer<M extends GunMotion> {
     protected static final Minecraft mc = Minecraft.getInstance();
     protected static final float SLIM_TRANS = 0.035f / 2f;
 
-    abstract public void render(LivingEntity entity,ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay);
+    abstract public void render(LivingEntity entity, ItemStack stack, ItemStack stackOld, ItemTransforms.TransformType transformType, PoseStack poseStack, MultiBufferSource multiBufferSource, float delta, int light, int overlay);
 
     public void renderHand(M motion, PoseStack poseStack, MultiBufferSource multiBufferSource, InteractionHand hand, int packedLight, float partialTicks, float interpolatedPitch, float swingProgress, float equipProgress, ItemStack stack) {
         boolean off = hand == InteractionHand.MAIN_HAND;
@@ -47,13 +48,13 @@ public abstract class GunRenderer<M extends GunMotion> {
         boolean slim = OEModelUtil.isSlimPlayerModel(mc.player);
         boolean handFlg = arm == HumanoidArm.LEFT;
         float t = handFlg ? -1f : 1f;
-        boolean bothHand = isBothHand(mc.player, hand);
+        boolean bothHand = IWPlayerUtil.isBothHand(mc.player, hand);
 
         boolean hideOp = hand == InteractionHand.OFF_HAND || !bothHand;
 
         var cgtd = IWClientPlayerData.getGunTransData(mc.player, hand, partialTicks);
 
-       // cgtd = new DeltaGunPlayerTransData(IWGunPlayerTrans.GLOCK_17_RELOAD, 1f, 1);
+        // cgtd = new DeltaGunPlayerTransData(IWGunPlayerTrans.GLOCK_17_RELOAD, 1f, 1);
 //IWGunTrans.GLOCK_17_RELOAD.getProgress(IWItemUtil.getGun(stack), 1)
 
         var cgt = cgtd.gunTrans();
@@ -92,12 +93,12 @@ public abstract class GunRenderer<M extends GunMotion> {
             if (slim) poseStack.translate(t * SLIM_TRANS, 0, 0);
             OERenderUtil.renderPlayerArmNoTransAndRot(poseStack, multiBufferSource, oparm, packedLight);
 
+            poseStack.pushPose();
             ItemStack opItem = getOppositeItem(cgt, cgtd, OEEntityUtil.getOppositeHand(hand));
             //opItem = new ItemStack(IWItems.GLOCK_17_MAGAZINE.get());
-
             if (!opItem.isEmpty()) {
-                  poseOppositeItem(motion, poseStack, arm, holdPar, igt);
-               // MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
+                poseOppositeItem(motion, poseStack, arm, holdPar, igt);
+                // MotionDebug.getInstance().onDebug(poseStack, multiBufferSource, 0.5f);
                 if (slim) poseStack.translate(t * -SLIM_TRANS, 0, 0);
 
                 //if (handFlg)
@@ -105,6 +106,20 @@ public abstract class GunRenderer<M extends GunMotion> {
                 renderMagazine(opItem, poseStack, multiBufferSource, partialTicks, packedLight, OverlayTexture.NO_OVERLAY);
                 // OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm, opItem, packedLight);
             }
+            poseStack.popPose();
+
+
+            poseStack.pushPose();
+            if (hand == InteractionHand.MAIN_HAND) {
+                ItemStack offItem = mc.player.getItemInHand(OEEntityUtil.getOppositeHand(hand));
+                if (IWItemUtil.isKnife(offItem)) {
+                    poseOppositeKnife(motion, poseStack, arm, holdPar, igt);
+                    OERenderUtil.renderHandItem(poseStack, multiBufferSource, arm.getOpposite(), offItem, packedLight);
+                }
+            }
+            poseStack.popPose();
+
+
             poseStack.popPose();
         }
         poseStack.popPose();
@@ -116,7 +131,7 @@ public abstract class GunRenderer<M extends GunMotion> {
         boolean slim = OEModelUtil.isSlimPlayerModel(player);
         var cgtd = IWClientPlayerData.getGunTransData(player, OEEntityUtil.getHandByArm(livingEntity, arm), delta);
         var igt = new InfoGunTrans(cgtd, itemStack);
-        boolean bothHand = isBothHand(player, OEEntityUtil.getHandByArm(player, arm));
+        boolean bothHand = IWPlayerUtil.isBothHand(player, OEEntityUtil.getHandByArm(player, arm));
         float t = handFlg ? -1f : 1f;
         float holdPar = IWPlayerUtil.getHoldProgress(player, OEEntityUtil.getHandByArm(player, arm), delta);
 
@@ -137,7 +152,7 @@ public abstract class GunRenderer<M extends GunMotion> {
     public void poseOppositeArm(M motion, InteractionHand hand, HumanoidArm arm, HumanoidModel<? extends LivingEntity> model, ItemStack itemStack, LivingEntity livingEntity) {
         if (!(livingEntity instanceof Player player)) return;
         float delta = OERenderUtil.getPartialTicks();
-        boolean bothHand = isBothHand(player, OEEntityUtil.getOppositeHand(hand));
+        boolean bothHand = IWPlayerUtil.isBothHand(player, OEEntityUtil.getOppositeHand(hand));
         var cgtd = IWClientPlayerData.getGunTransData(player, OEEntityUtil.getHandByArm(livingEntity, arm.getOpposite()), delta);
         var cgt = cgtd.gunTrans();
         boolean tmpBothHand = bothHand;
@@ -161,7 +176,7 @@ public abstract class GunRenderer<M extends GunMotion> {
 
     public void poseArm(M motion, InteractionHand hand, HumanoidArm arm, HumanoidModel<? extends LivingEntity> model, ItemStack itemStack, LivingEntity livingEntity) {
         if (!(livingEntity instanceof Player player)) return;
-        boolean bothHand = isBothHand(player, hand);
+        boolean bothHand = IWPlayerUtil.isBothHand(player, hand);
         float delta = OERenderUtil.getPartialTicks();
         var headPart = model.head;
         var mainPart = arm == HumanoidArm.LEFT ? model.leftArm : model.rightArm;
@@ -270,12 +285,6 @@ public abstract class GunRenderer<M extends GunMotion> {
         part.zRot = Mth.lerp(par, part.zRot, z);
     }
 
-    protected boolean isBothHand(Player player, InteractionHand hand) {
-        if (hand == InteractionHand.MAIN_HAND)
-            return player.getItemInHand(OEEntityUtil.getOppositeHand(hand)).isEmpty();
-        return false;
-    }
-
     protected void poseArmGun(M motion, Player player, PoseStack poseStack, HumanoidArm arm, boolean bothHands, InfoGunTrans gunTrans, float holdPar, float delta) {
         var nh = IWPlayerData.getLastHold(player);
         var ph = IWPlayerData.getPreHold(player);
@@ -369,12 +378,15 @@ public abstract class GunRenderer<M extends GunMotion> {
         pose.pose(stack);
     }
 
-    /*protected static void renderItem(ItemStack stack, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay) {
-        poseStack.pushPose();
-        poseStack.translate(0.5, 0.5, 0.5);
-        mc.getItemRenderer().renderStatic(stack, ItemTransforms.TransformType.FIXED, light, overlay, poseStack, multiBufferSource, 0);
-        poseStack.popPose();
-    }*/
+    protected void poseOppositeKnife(M motion, PoseStack stack, HumanoidArm arm, float hold, InfoGunTrans gunTrans) {
+        MotionPose pose;
+        var bp = motion.getOppositeKnifeFixedMotionPoint(arm, hold > 0.5);
+
+        pose = bp.getPose();
+
+        if (arm == HumanoidArm.LEFT) pose = pose.reverse();
+        pose.pose(stack);
+    }
 
     protected DeltaGunItemTransData getGunItemTrans(GunItemTrans gunItemTrans, ItemStack stack, ItemStack oldStack, float delta) {
         if (stack.isEmpty() || oldStack.isEmpty()) return null;

@@ -8,6 +8,7 @@ import dev.felnull.otyacraftengine.client.motion.MotionPose;
 import net.minecraft.world.entity.HumanoidArm;
 
 public abstract class GunMotion {
+    private static final MotionPoint OP_KNIFE_BASE = new MotionPoint(0.15000014f, 0.59499985f, 0.04f, 39.999973f, 0.0f, 0.0f, -0.06999999f, 0.0f, 0.0f, false, false, false);
 
     abstract public MotionPoint getHandFixedMotionPoint(HumanoidArm arm, boolean bothHands, HoldType holdType);
 
@@ -16,6 +17,10 @@ public abstract class GunMotion {
     abstract public MotionPoint getGunFixedMotionPoint(HumanoidArm arm, boolean bothHands, HoldType holdType);
 
     abstract public MotionPoint getOppositeItemFixedMotionPoint(HumanoidArm arm, boolean hold);
+
+    public MotionPoint getOppositeKnifeFixedMotionPoint(HumanoidArm arm, boolean hold) {
+        return OP_KNIFE_BASE;
+    }
 
     public Motion getHandHoldMotion(HumanoidArm arm, boolean bothHands, HoldType preHoldType, HoldType holdType) {
         return Motion.of(getHandFixedMotionPoint(arm, bothHands, preHoldType), getHandFixedMotionPoint(arm, bothHands, holdType));
