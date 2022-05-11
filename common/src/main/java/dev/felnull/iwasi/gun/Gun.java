@@ -3,6 +3,7 @@ package dev.felnull.iwasi.gun;
 import com.mojang.math.Vector3f;
 import dev.felnull.iwasi.data.HoldType;
 import dev.felnull.iwasi.data.IWPlayerData;
+import dev.felnull.iwasi.entity.bullet.Bullet;
 import dev.felnull.iwasi.gun.trans.player.AbstractReloadGunTrans;
 import dev.felnull.iwasi.gun.type.GunType;
 import dev.felnull.iwasi.item.GunItem;
@@ -20,9 +21,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -110,10 +109,9 @@ public abstract class Gun {
         if (canShot(level, player, interactionHand, itemStack)) {
             playSound(player, getShotSound(itemStack), 2.0F);
             if (!level.isClientSide) {
-                ThrownEgg thrownEgg = new ThrownEgg(level, player);
-                thrownEgg.setItem(new ItemStack(Items.EGG));
-                thrownEgg.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
-                level.addFreshEntity(thrownEgg);
+                var bullet = createBulletEntity(level, player);
+                level.addFreshEntity(bullet);
+
                 shotAfter((ServerLevel) level, (ServerPlayer) player, interactionHand, itemStack);
             }
             IWPlayerUtil.startRecoil(player, interactionHand);
@@ -121,6 +119,13 @@ public abstract class Gun {
         }
         playSound(player, getNoAmmoShotSound(itemStack));
         return InteractionResult.CONSUME;
+    }
+
+    protected Bullet createBulletEntity(Level level, Player player) {
+        var bullet = new Bullet(level, player);
+        bullet.setPos(player.position().add(0, 1f, 0));
+        bullet.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+        return bullet;
     }
 
     protected void shotAfter(ServerLevel level, ServerPlayer player, InteractionHand interactionHand, ItemStack itemStack) {

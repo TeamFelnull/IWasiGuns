@@ -4,6 +4,7 @@ import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
 import dev.felnull.iwasi.client.IWasiClient;
 import dev.felnull.iwasi.entity.IWEntityDataSerializers;
+import dev.felnull.iwasi.entity.IWEntityType;
 import dev.felnull.iwasi.gun.trans.item.IWGunItemTrans;
 import dev.felnull.iwasi.gun.trans.player.IWGunPlayerTrans;
 import dev.felnull.iwasi.handler.CommonHandler;
@@ -25,6 +26,7 @@ public class IWasi {
         IWGunPlayerTrans.init();
         IWGunItemTrans.init();
         IWSounds.init();
+        IWEntityType.init();
         CommonHandler.init();
         ServerHandler.init();
         EnvExecutor.runInEnv(Env.CLIENT, () -> IWasiClient::preInit);
