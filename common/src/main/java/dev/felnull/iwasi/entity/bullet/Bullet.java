@@ -1,13 +1,12 @@
 package dev.felnull.iwasi.entity.bullet;
 
 import dev.felnull.iwasi.entity.IWEntityType;
-import dev.felnull.iwasi.util.IWPhysicsUtil;
+import dev.felnull.iwasi.util.IWProjectileUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -19,7 +18,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class Bullet extends Projectile {
     //速度(m/s);
-    public static float DEFAULT_SPEED = 340f;
+    public static double DEFAULT_SPEED = 1600;//340f;
 
     public Bullet(EntityType<? extends Bullet> entityType, Level level) {
         super(entityType, level);
@@ -33,7 +32,58 @@ public class Bullet extends Projectile {
     @Override
     public void tick() {
         super.tick();
-        HitResult hitResult = ProjectileUtil.getHitResult(this, this::canHitEntity);
+        IWProjectileUtil.onContinuousHitResult(this, this::canHitEntity, this::onContinuousHit);
+
+        this.checkInsideBlocks();
+        this.updateRotation();
+
+        var move = this.getDeltaMovement();
+        var np = IWProjectileUtil.nextPosition(position(), move);
+
+        /* float h;
+        if (this.isInWater()) {
+            for (int i = 0; i < 4; ++i) {
+                float g = 0.25F;
+                this.level.addParticle(ParticleTypes.BUBBLE, np.x() - move.x * 0.25, np.y() - move.y * 0.25, np.z() - move.z * 0.25, move.x, move.y, move.z);
+            }
+            h = 0.8F;
+        } else {
+            h = 0.99F;
+        }
+
+       this.setDeltaMovement(move.scale(h));
+        if (!this.isNoGravity()) {
+            Vec3 vec32 = this.getDeltaMovement();
+            this.setDeltaMovement(vec32.x, vec32.y - (double) IWPhysicsUtil.getGravity(level), vec32.z);
+        }*/
+
+        this.setPos(np);
+    }
+
+
+    @Override
+    protected void onHit(HitResult hitResult) {
+        super.onHit(hitResult);
+        if (!level.isClientSide()) {
+            var loc = hitResult.getLocation();
+           level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
+            //discard();
+            /*var vlg = new Villager(EntityType.VILLAGER, level);
+            vlg.setPos(loc);
+            level.addFreshEntity(vlg);*/
+
+          /*  var t = new Turtle(EntityType.TURTLE, level);
+            t.setPos(loc);
+            t.setNoGravity(true);
+            t.setNoAi(true);
+            t.setBaby(true);
+            level.addFreshEntity(t);*/
+
+
+        }
+    }
+
+    protected void onContinuousHit(HitResult hitResult) {
         boolean bl = false;
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult) hitResult).getBlockPos();
@@ -46,7 +96,6 @@ public class Bullet extends Projectile {
                 if (blockEntity instanceof TheEndGatewayBlockEntity && TheEndGatewayBlockEntity.canEntityTeleport(this)) {
                     TheEndGatewayBlockEntity.teleportEntity(this.level, blockPos, blockState, this, (TheEndGatewayBlockEntity) blockEntity);
                 }
-
                 bl = true;
             }
         }
@@ -54,37 +103,15 @@ public class Bullet extends Projectile {
         if (hitResult.getType() != HitResult.Type.MISS && !bl) {
             this.onHit(hitResult);
         }
-
-        this.checkInsideBlocks();
-        Vec3 vec3 = this.getDeltaMovement();
-        double d = this.getX() + vec3.x;
-        double e = this.getY() + vec3.y;
-        double f = this.getZ() + vec3.z;
-        this.updateRotation();
-        float h;
-        if (this.isInWater()) {
-            for (int i = 0; i < 4; ++i) {
-                float g = 0.25F;
-                this.level.addParticle(ParticleTypes.BUBBLE, d - vec3.x * 0.25, e - vec3.y * 0.25, f - vec3.z * 0.25, vec3.x, vec3.y, vec3.z);
-            }
-
-            h = 0.8F;
-        } else {
-            h = 0.99F;
-        }
-
-        this.setDeltaMovement(vec3.scale(h));
-        if (!this.isNoGravity()) {
-            Vec3 vec32 = this.getDeltaMovement();
-            this.setDeltaMovement(vec32.x, vec32.y - (double) IWPhysicsUtil.getGravity(level), vec32.z);
-        }
-
-        this.setPos(d, e, f);
     }
-
 
     @Override
     protected void defineSynchedData() {
 
+    }
+
+    //角度、速度(m/t)
+    public void shot(Vec3 angle, double speed) {
+        setDeltaMovement(angle.normalize().scale(speed));
     }
 }

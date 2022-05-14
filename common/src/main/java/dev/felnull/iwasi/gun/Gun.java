@@ -23,6 +23,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -123,8 +124,9 @@ public abstract class Gun {
 
     protected Bullet createBulletEntity(Level level, Player player) {
         var bullet = new Bullet(level, player);
-        bullet.setPos(player.position().add(0, 1f, 0));
-        bullet.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5F, 1.0F);
+        bullet.setPos(new Vec3(player.position().x(), player.getEyeY() - 0.1d, player.position().z()));
+
+        bullet.shot(player.getLookAngle(), Bullet.DEFAULT_SPEED / 20f);
         return bullet;
     }
 
