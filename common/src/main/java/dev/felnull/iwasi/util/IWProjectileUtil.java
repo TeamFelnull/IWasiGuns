@@ -1,33 +1,37 @@
 package dev.felnull.iwasi.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class IWProjectileUtil {
-    public static void onContinuousHitResult(Entity entity, Predicate<Entity> predicate, Consumer<HitResult> hit) {
+    public static Vec3 onContinuousHitResult(Entity entity, Predicate<Entity> predicate, Function<HitResult, Boolean> hit, Consumer<HitResult> penetration) {
         var level = entity.level;
         var pre = entity.position();
         var post = nextPosition(pre, entity.getDeltaMovement());
+        Vec3 retPos = null;
         HitResult ret;
         BlockPos last = null;
 
+        boolean contHit;
+
         do {
+            contHit = false;
+
             var conted = new ClipContext(pre, post, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity);
             ret = level.clip(conted);
 
-            if (((BlockHitResult) ret).getBlockPos().equals(last))
-                ret = null;
+            if (((BlockHitResult) ret).getBlockPos().equals(last)) ret = null;
 
             if (ret != null) {
                 last = ((BlockHitResult) ret).getBlockPos();
@@ -36,25 +40,23 @@ public class IWProjectileUtil {
             if (ret != null) {
                 var state = level.getBlockState(((BlockHitResult) ret).getBlockPos());
                 var shape = conted.getBlockShape(state, level, ((BlockHitResult) ret).getBlockPos());
-                var rev = reversPosition(pre, ((BlockHitResult) ret).getDirection(), shape, ((BlockHitResult) ret).getBlockPos());
 
-                if (rev != null) {
-                    var retRev = level.clipWithInteractionOverride(rev, post, ((BlockHitResult) ret).getBlockPos(), shape, state);
-                    //  if (retRev != null) {
-                    if (!level.isClientSide()) {
-                        var t = new Turtle(EntityType.TURTLE, level);
-                        t.setPos(rev);
-                        t.setNoGravity(true);
-                        t.setNoAi(true);
-                        t.setBaby(true);
-                        level.addFreshEntity(t);
-                        //  }
+                contHit = hit.apply(ret);
+                if (contHit) {
+                    var retRev = level.clipWithInteractionOverride(post, ret.getLocation(), ((BlockHitResult) ret).getBlockPos(), shape, state);
+                    if (retRev != null) {
+                        pre = retRev.getLocation();
+                        penetration.accept(retRev);
+                    } else {
+                        pre = null;
                     }
+                } else {
+                    retPos = ret.getLocation();
                 }
-                pre = ret.getLocation();
-                hit.accept(ret);
             }
-        } while (entity.isAlive() && ret != null);
+        } while (contHit && pre != null);
+
+        return retPos != null ? retPos : post;
 
         /*var level = entity.level;
         var pre = entity.position();
@@ -71,36 +73,17 @@ public class IWProjectileUtil {
         hit.accept(ret);*/
     }
 
-    private static Vec3 reversPosition(Vec3 target, Direction direction, VoxelShape shape, BlockPos pos) {
-        if (shape.isEmpty()) return null;
-        double tdT = (shapeDirectionValue(shape, direction) + pos.get(direction.getAxis())) - target.get(direction.getAxis());
-        double ovT = shapeDirectionValue(shape, direction.getOpposite());
-
-        var dirR = Direction.values()[(direction.ordinal() + 2) % Direction.values().length];
-        var dirL = Direction.values()[(direction.ordinal() + 4) % Direction.values().length];
-
-        double tdR = (shapeDirectionValue(shape, dirR) + pos.get(dirR.getAxis())) - target.get(dirR.getAxis());
-        double ovR = shapeDirectionValue(shape, dirR.getOpposite());
-
-        double tdL = (shapeDirectionValue(shape, dirL) + pos.get(dirL.getAxis())) - target.get(dirL.getAxis());
-        double ovL = shapeDirectionValue(shape, dirL.getOpposite());
-
-        var vec = target.with(direction.getAxis(), pos.get(direction.getAxis()) + ovT + tdT);
-        vec = vec.with(dirR.getAxis(), pos.get(dirR.getAxis()) + ovR + tdR);
-        vec = vec.with(dirL.getAxis(), pos.get(dirL.getAxis()) + ovL + tdL);
-        return vec;
+    private static void testKame(Level level, Vec3 pos) {
+        if (!level.isClientSide()) {
+            var t = new Turtle(EntityType.TURTLE, level);
+            t.setPos(pos);
+            t.setNoGravity(true);
+            t.setNoAi(true);
+            t.setBaby(true);
+            level.addFreshEntity(t);
+        }
     }
 
-    private static double shapeDirectionValue(VoxelShape shape, Direction direction) {
-        return switch (direction) {
-            case DOWN -> shape.min(Direction.Axis.Y);
-            case UP -> shape.max(Direction.Axis.Y);
-            case NORTH -> shape.min(Direction.Axis.Z);
-            case SOUTH -> shape.max(Direction.Axis.Z);
-            case WEST -> shape.min(Direction.Axis.X);
-            case EAST -> shape.max(Direction.Axis.X);
-        };
-    }
 
     public static Vec3 nextPosition(Vec3 old, Vec3 move) {
         double x = old.x(), y = old.y(), z = old.z();

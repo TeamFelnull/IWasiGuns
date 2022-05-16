@@ -32,13 +32,12 @@ public class Bullet extends Projectile {
     @Override
     public void tick() {
         super.tick();
-        IWProjectileUtil.onContinuousHitResult(this, this::canHitEntity, this::onContinuousHit);
+        var nextPos = IWProjectileUtil.onContinuousHitResult(this, this::canHitEntity, this::onContinuousHit, this::onPenetration);
 
         this.checkInsideBlocks();
         this.updateRotation();
 
         var move = this.getDeltaMovement();
-        var np = IWProjectileUtil.nextPosition(position(), move);
 
         /* float h;
         if (this.isInWater()) {
@@ -57,7 +56,7 @@ public class Bullet extends Projectile {
             this.setDeltaMovement(vec32.x, vec32.y - (double) IWPhysicsUtil.getGravity(level), vec32.z);
         }*/
 
-        this.setPos(np);
+        this.setPos(nextPos);
     }
 
 
@@ -66,24 +65,33 @@ public class Bullet extends Projectile {
         super.onHit(hitResult);
         if (!level.isClientSide()) {
             var loc = hitResult.getLocation();
-           level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
+
+            if (hitResult.getType() == HitResult.Type.BLOCK) {
+                BlockHitResult bhr = (BlockHitResult) hitResult;
+                var bs = level.getBlockState(bhr.getBlockPos());
+                if (bs.is(Blocks.GLASS)) {
+                    level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
+                } else {
+                    discard();
+                }
+            }
+
+            //level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
             //discard();
             /*var vlg = new Villager(EntityType.VILLAGER, level);
             vlg.setPos(loc);
             level.addFreshEntity(vlg);*/
 
-          /*  var t = new Turtle(EntityType.TURTLE, level);
+            /*var t = new Turtle(EntityType.TURTLE, level);
             t.setPos(loc);
             t.setNoGravity(true);
             t.setNoAi(true);
             t.setBaby(true);
             level.addFreshEntity(t);*/
-
-
         }
     }
 
-    protected void onContinuousHit(HitResult hitResult) {
+    protected boolean onContinuousHit(HitResult hitResult) {
         boolean bl = false;
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult) hitResult).getBlockPos();
@@ -103,7 +111,14 @@ public class Bullet extends Projectile {
         if (hitResult.getType() != HitResult.Type.MISS && !bl) {
             this.onHit(hitResult);
         }
+
+        return isAlive();
     }
+
+    protected void onPenetration(HitResult hitResult) {
+
+    }
+
 
     @Override
     protected void defineSynchedData() {
