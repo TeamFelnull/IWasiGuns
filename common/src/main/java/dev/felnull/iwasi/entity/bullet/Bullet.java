@@ -1,18 +1,19 @@
 package dev.felnull.iwasi.entity.bullet;
 
 import dev.felnull.iwasi.entity.IWEntityType;
+import dev.felnull.iwasi.entity.MoreEntityHitResult;
 import dev.felnull.iwasi.util.IWProjectileUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -66,14 +67,27 @@ public class Bullet extends Projectile {
         if (!level.isClientSide()) {
             var loc = hitResult.getLocation();
 
+            if (hitResult instanceof MoreEntityHitResult entityHitResult)
+                loc = entityHitResult.getHitLocation();
+
             if (hitResult.getType() == HitResult.Type.BLOCK) {
                 BlockHitResult bhr = (BlockHitResult) hitResult;
                 var bs = level.getBlockState(bhr.getBlockPos());
                 if (bs.is(Blocks.GLASS)) {
-                    level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
-                } else {
+//                    level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
+                    level.destroyBlock(((BlockHitResult) hitResult).getBlockPos(), true);
+                } else if (!bs.isAir()) {
                     discard();
                 }
+                //   if (!bs.isAir()) {
+                //      level.destroyBlock(((BlockHitResult) hitResult).getBlockPos(), true);
+                //       discard();
+                //   }
+            } else if (hitResult.getType() == HitResult.Type.ENTITY && hitResult instanceof MoreEntityHitResult) {
+                EntityHitResult ehr = (EntityHitResult) hitResult;
+
+                ehr.getEntity().kill();
+                //  discard();
             }
 
             //level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
@@ -116,7 +130,19 @@ public class Bullet extends Projectile {
     }
 
     protected void onPenetration(HitResult hitResult) {
+        if (!level.isClientSide()) {
+            /*var loc = hitResult.getLocation();
 
+            if (hitResult instanceof MoreEntityHitResult entityHitResult)
+                loc = entityHitResult.getHitLocation();
+
+            var t = new Turtle(EntityType.TURTLE, level);
+            t.setPos(loc);
+            t.setNoGravity(true);
+            t.setNoAi(true);
+            t.setBaby(true);
+            level.addFreshEntity(t);*/
+        }
     }
 
 
