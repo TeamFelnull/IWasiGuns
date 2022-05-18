@@ -3,15 +3,14 @@ package dev.felnull.iwasi.util;
 import dev.felnull.iwasi.entity.MoreEntityHitResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -67,77 +66,51 @@ public class IWProjectileUtil {
     }
 
     private static Vec3 getContinuousEntityHitResult(Entity entity, Vec3 from, Vec3 to, Predicate<Entity> predicate, Function<HitResult, Boolean> hit, Consumer<HitResult> penetration) {
-        Vec3 retPos = null;
-        boolean contHit;
-        Entity last = null;
-        do {
-            contHit = false;
-            var neh = getMoreEntityHitResult(entity.getLevel(), entity, from, to, entity.getBoundingBox().expandTowards(entity.getDeltaMovement()).inflate(0.1f), predicate, 0.1f);
+        List<HitEntityResultEntry> entries = new ArrayList<>();
+        var aabb = entity.getBoundingBox().expandTowards(entity.getDeltaMovement());//.inflate(0.1f);
+        var level = entity.level;
 
-            if (neh != null && neh.getEntity() == last)
-                neh = null;
+        for (Entity entryEntity : level.getEntities(entity, aabb, predicate)) {
+            AABB aABB2 = entryEntity.getBoundingBox();//.inflate(0.3f);
+            Optional<Vec3> optional = aABB2.clip(from, to);
+            if (optional.isPresent()) {
+                double dist = from.distanceToSqr(optional.get());
 
-            if (neh != null) {
-                last = neh.getEntity();
-
-                contHit = hit.apply(neh);
-                if (contHit) {
-                    var retRev = getMoreEntityOnlyHitResult(last, to, neh.getHitLocation(), 0.1f);
-                    if (retRev != null) {
-                        from = retRev.getHitLocation();
-                        penetration.accept(retRev);
-                    } else {
-                        from = null;
-                    }
+                int num = -1;
+                for (int i = 0; i < entries.size(); i++) {
+                    var entry = entries.get(i);
+                    if (dist < entry.distance())
+                        num = i;
+                }
+                var retEntry = new HitEntityResultEntry(dist, entryEntity, optional.get());
+                if (num < 0) {
+                    entries.add(retEntry);
                 } else {
-                    retPos = neh.getLocation();
+                    entries.set(num, retEntry);
                 }
             }
-        } while (contHit && from != null);
+        }
 
-        return retPos;
+        for (HitEntityResultEntry entry : entries) {
+            var ret = new MoreEntityHitResult(entry.entity(), entry.hit());
+            boolean contHit = hit.apply(ret);
+            if (contHit) {
+                var retRev = getMoreEntityOnlyHitResult(entry.entity(), to, ret.getHitLocation(), 0.1f);
+                if (retRev != null)
+                    penetration.accept(retRev);
+            } else {
+                return ret.getHitLocation();
+            }
+        }
+
+        return null;
     }
 
     private static MoreEntityHitResult getMoreEntityOnlyHitResult(Entity entity, Vec3 from, Vec3 to, float inflate) {
-        AABB aABB2 = entity.getBoundingBox().inflate(inflate);
+        AABB aABB2 = entity.getBoundingBox();//.inflate(inflate);
         Optional<Vec3> optional = aABB2.clip(from, to);
         return optional.map(vec3 -> new MoreEntityHitResult(entity, vec3)).orElse(null);
     }
-
-    public static MoreEntityHitResult getMoreEntityHitResult(Level level, Entity entity, Vec3 from, Vec3 to, AABB aABB, Predicate<Entity> predicate, float inflate) {
-        double d = Double.MAX_VALUE;
-        Entity retEntity = null;
-        Vec3 loc = null;
-
-        for (Entity entryEntity : level.getEntities(entity, aABB, predicate)) {
-            AABB aABB2 = entryEntity.getBoundingBox().inflate(inflate);
-            Optional<Vec3> optional = aABB2.clip(from, to);
-            if (optional.isPresent()) {
-                double e = from.distanceToSqr(optional.get());
-                if (e < d) {
-                    retEntity = entryEntity;
-                    loc = optional.get();
-                    d = e;
-                }
-            }
-        }
-        if (retEntity == null)
-            return null;
-        return new MoreEntityHitResult(retEntity, loc);
-    }
-
-
-    private static void testKame(Level level, Vec3 pos) {
-        if (!level.isClientSide()) {
-            var t = new Turtle(EntityType.TURTLE, level);
-            t.setPos(pos);
-            t.setNoGravity(true);
-            t.setNoAi(true);
-            t.setBaby(true);
-            level.addFreshEntity(t);
-        }
-    }
-
 
     public static Vec3 nextPosition(Vec3 old, Vec3 move) {
         double x = old.x(), y = old.y(), z = old.z();
@@ -145,5 +118,9 @@ public class IWProjectileUtil {
         y += move.y();
         z += move.z();
         return new Vec3(x, y, z);
+    }
+
+    private static record HitEntityResultEntry(double distance, Entity entity, Vec3 hit) {
+
     }
 }

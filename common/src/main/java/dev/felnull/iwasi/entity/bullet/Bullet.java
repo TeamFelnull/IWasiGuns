@@ -1,7 +1,7 @@
 package dev.felnull.iwasi.entity.bullet;
 
 import dev.felnull.iwasi.entity.IWEntityType;
-import dev.felnull.iwasi.entity.MoreEntityHitResult;
+import dev.felnull.iwasi.util.IWPhysicsUtil;
 import dev.felnull.iwasi.util.IWProjectileUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
@@ -13,13 +13,12 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 public class Bullet extends Projectile {
     //速度(m/s);
-    public static double DEFAULT_SPEED = 1600;//340f;
+    public static double SPEED = 5f;//340f / 3.75f;
 
     public Bullet(EntityType<? extends Bullet> entityType, Level level) {
         super(entityType, level);
@@ -38,7 +37,7 @@ public class Bullet extends Projectile {
         this.checkInsideBlocks();
         this.updateRotation();
 
-        var move = this.getDeltaMovement();
+        this.setPos(nextPos);
 
         /* float h;
         if (this.isInWater()) {
@@ -51,57 +50,12 @@ public class Bullet extends Projectile {
             h = 0.99F;
         }
 
-       this.setDeltaMovement(move.scale(h));
+        this.setDeltaMovement(move.scale(h));
+        */
+
         if (!this.isNoGravity()) {
             Vec3 vec32 = this.getDeltaMovement();
-            this.setDeltaMovement(vec32.x, vec32.y - (double) IWPhysicsUtil.getGravity(level), vec32.z);
-        }*/
-
-        this.setPos(nextPos);
-    }
-
-
-    @Override
-    protected void onHit(HitResult hitResult) {
-        super.onHit(hitResult);
-        if (!level.isClientSide()) {
-            var loc = hitResult.getLocation();
-
-            if (hitResult instanceof MoreEntityHitResult entityHitResult)
-                loc = entityHitResult.getHitLocation();
-
-            if (hitResult.getType() == HitResult.Type.BLOCK) {
-                BlockHitResult bhr = (BlockHitResult) hitResult;
-                var bs = level.getBlockState(bhr.getBlockPos());
-                if (bs.is(Blocks.GLASS)) {
-//                    level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
-                    level.destroyBlock(((BlockHitResult) hitResult).getBlockPos(), true);
-                } else if (!bs.isAir()) {
-                    discard();
-                }
-                //   if (!bs.isAir()) {
-                //      level.destroyBlock(((BlockHitResult) hitResult).getBlockPos(), true);
-                //       discard();
-                //   }
-            } else if (hitResult.getType() == HitResult.Type.ENTITY && hitResult instanceof MoreEntityHitResult) {
-                EntityHitResult ehr = (EntityHitResult) hitResult;
-
-                ehr.getEntity().kill();
-                //  discard();
-            }
-
-            //level.explode(this, loc.x(), loc.y(), loc.z(), 4.0f, Explosion.BlockInteraction.BREAK);
-            //discard();
-            /*var vlg = new Villager(EntityType.VILLAGER, level);
-            vlg.setPos(loc);
-            level.addFreshEntity(vlg);*/
-
-            /*var t = new Turtle(EntityType.TURTLE, level);
-            t.setPos(loc);
-            t.setNoGravity(true);
-            t.setNoAi(true);
-            t.setBaby(true);
-            level.addFreshEntity(t);*/
+            this.setDeltaMovement(vec32.x, vec32.y - (double) IWPhysicsUtil.getMCGravity(level), vec32.z);
         }
     }
 
@@ -123,7 +77,9 @@ public class Bullet extends Projectile {
         }
 
         if (hitResult.getType() != HitResult.Type.MISS && !bl) {
+            boolean ret = BulletHit.hit(this, hitResult);
             this.onHit(hitResult);
+            return ret;
         }
 
         return isAlive();

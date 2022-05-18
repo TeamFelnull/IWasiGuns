@@ -126,7 +126,7 @@ public abstract class Gun {
         var bullet = new Bullet(level, player);
         bullet.setPos(new Vec3(player.position().x(), player.getEyeY() - 0.1d, player.position().z()));
 
-        bullet.shot(player.getLookAngle(), Bullet.DEFAULT_SPEED / 20f);
+        bullet.shot(player.getLookAngle(), Bullet.SPEED / 20f);
         return bullet;
     }
 

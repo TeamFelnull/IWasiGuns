@@ -18,6 +18,8 @@ public class IWModels {
 
     public static final ResourceLocation PKP_MAIN = new ResourceLocation(IWasi.MODID, "gun/pkp/main");
 
+    public static final ResourceLocation BULLET = new ResourceLocation(IWasi.MODID, "gun/bullet/bullet");
+
     public static void init(Consumer<ResourceLocation> addModel) {
         addModel.accept(ORIGIN);
 
@@ -30,5 +32,7 @@ public class IWModels {
         addModel.accept(AR_57_MAIN);
 
         addModel.accept(PKP_MAIN);
+
+        addModel.accept(BULLET);
     }
 }

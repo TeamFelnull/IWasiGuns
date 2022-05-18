@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 public class IWEntityType {
     private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(IWasi.MODID, Registry.ENTITY_TYPE_REGISTRY);
-    public static final RegistrySupplier<EntityType<Bullet>> BULLET = register("bullet", () -> EntityType.Builder.of((EntityType.EntityFactory<Bullet>) Bullet::new, MobCategory.MISC).sized(1f, 1f));
+    public static final RegistrySupplier<EntityType<Bullet>> BULLET = register("bullet", () -> EntityType.Builder.of((EntityType.EntityFactory<Bullet>) Bullet::new, MobCategory.MISC).sized(1f / 16f, 1f / 16f));
 
     private static <T extends Entity> RegistrySupplier<EntityType<T>> register(String name, Supplier<EntityType.Builder<T>> builderSupplier) {
         return ENTITY_TYPES.register(name, () -> builderSupplier.get().build(name));
