@@ -4,6 +4,8 @@ import dev.felnull.iwasi.entity.MoreEntityHitResult;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -67,7 +69,7 @@ public class IWProjectileUtil {
 
     private static Vec3 getContinuousEntityHitResult(Entity entity, Vec3 from, Vec3 to, Predicate<Entity> predicate, Function<HitResult, Boolean> hit, Consumer<HitResult> penetration) {
         List<HitEntityResultEntry> entries = new ArrayList<>();
-        var aabb = entity.getBoundingBox().expandTowards(entity.getDeltaMovement());//.inflate(0.1f);
+        var aabb = entity.getBoundingBox().expandTowards(entity.getDeltaMovement()).inflate(0.1f);
         var level = entity.level;
 
         for (Entity entryEntity : level.getEntities(entity, aabb, predicate)) {
@@ -121,6 +123,19 @@ public class IWProjectileUtil {
     }
 
     private static record HitEntityResultEntry(double distance, Entity entity, Vec3 hit) {
+    }
 
+    public static float getGravity(Level level) {
+        if (DimensionType.NETHER_LOCATION.location().equals(level.dimension().location())) return 11f;
+        if (DimensionType.END_LOCATION.location().equals(level.dimension().location())) return 9f;
+        return 9.80665f;
+    }
+
+    public static float getMCGravity(Level level) {
+        return getGravity(level) * (0.03f / 9.80665f);
+    }
+
+    public static float getDamage(double speed) {
+        return 0;
     }
 }

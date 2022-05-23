@@ -10,6 +10,7 @@ import dev.felnull.iwasi.gun.trans.player.IWGunPlayerTrans;
 import dev.felnull.iwasi.handler.CommonHandler;
 import dev.felnull.iwasi.item.IWItems;
 import dev.felnull.iwasi.networking.IWPackets;
+import dev.felnull.iwasi.particles.IWParticleTypes;
 import dev.felnull.iwasi.server.handler.ServerHandler;
 import dev.felnull.iwasi.sound.IWSounds;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -27,6 +28,7 @@ public class IWasi {
         IWGunItemTrans.init();
         IWSounds.init();
         IWEntityType.init();
+        IWParticleTypes.init();
         CommonHandler.init();
         ServerHandler.init();
         EnvExecutor.runInEnv(Env.CLIENT, () -> IWasiClient::preInit);

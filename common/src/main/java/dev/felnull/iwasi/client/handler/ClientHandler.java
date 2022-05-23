@@ -1,8 +1,10 @@
 package dev.felnull.iwasi.client.handler;
 
 import dev.architectury.event.EventResult;
+import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.common.TickEvent;
+import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.client.data.ClientAction;
 import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.entity.IClientItemHandRenderEntity;
@@ -21,6 +23,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
@@ -30,6 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ClientHandler {
     private static final Minecraft mc = Minecraft.getInstance();
@@ -43,6 +48,13 @@ public class ClientHandler {
         ClientEvent.EVALUATE_RENDER_HANDS.register(ClientHandler::onEvaluateRenderHands);
         TickEvent.PLAYER_PRE.register(ClientHandler::onPlayerTick);
         MoreEntityEvent.ENTITY_TICK.register(ClientHandler::onEntityTick);
+        ClientTextureStitchEvent.PRE.register(ClientHandler::onTextureStitch);
+    }
+
+    private static void onTextureStitch(TextureAtlas atlas, Consumer<ResourceLocation> spriteAdder) {
+        if (atlas.location().equals(TextureAtlas.LOCATION_PARTICLES)) {
+            spriteAdder.accept(new ResourceLocation(IWasi.MODID, "particle/test"));
+        }
     }
 
     private static EventResult onEntityTick(Entity entity) {

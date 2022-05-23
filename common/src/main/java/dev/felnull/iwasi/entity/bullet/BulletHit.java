@@ -2,7 +2,7 @@ package dev.felnull.iwasi.entity.bullet;
 
 import dev.felnull.iwasi.entity.IWDamageSource;
 import dev.felnull.iwasi.entity.MoreEntityHitResult;
-import dev.felnull.iwasi.util.IWPhysicsUtil;
+import dev.felnull.iwasi.util.IWProjectileUtil;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -48,7 +48,7 @@ public class BulletHit {
     private static boolean hitEntity(Level level, Bullet bullet, MoreEntityHitResult result) {
         var entity = result.getEntity();
         if (!level.isClientSide()) {
-            float dmg = IWPhysicsUtil.getDamage(0);
+            float dmg = IWProjectileUtil.getDamage(0);
             if (dmg >= 0)
                 entity.hurt(IWDamageSource.bullet(bullet, bullet.getOwner()), 3f);
             bullet.discard();
