@@ -4,10 +4,10 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.client.ClientTextureStitchEvent;
 import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.common.TickEvent;
-import dev.felnull.iwasi.IWasi;
 import dev.felnull.iwasi.client.data.ClientAction;
 import dev.felnull.iwasi.client.data.InfoGunTrans;
 import dev.felnull.iwasi.client.entity.IClientItemHandRenderEntity;
+import dev.felnull.iwasi.client.particles.IWClientParticles;
 import dev.felnull.iwasi.client.renderer.item.GunItemRenderer;
 import dev.felnull.iwasi.client.util.IWClientPlayerData;
 import dev.felnull.iwasi.data.HoldType;
@@ -52,9 +52,8 @@ public class ClientHandler {
     }
 
     private static void onTextureStitch(TextureAtlas atlas, Consumer<ResourceLocation> spriteAdder) {
-        if (atlas.location().equals(TextureAtlas.LOCATION_PARTICLES)) {
-            spriteAdder.accept(new ResourceLocation(IWasi.MODID, "particle/test"));
-        }
+        if (atlas.location().equals(TextureAtlas.LOCATION_PARTICLES))
+            IWClientParticles.addSprite(spriteAdder);
     }
 
     private static EventResult onEntityTick(Entity entity) {

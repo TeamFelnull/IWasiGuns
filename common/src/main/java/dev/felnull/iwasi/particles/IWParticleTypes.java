@@ -11,6 +11,7 @@ import net.minecraft.core.particles.SimpleParticleType;
 public class IWParticleTypes {
     private static final DeferredRegister<ParticleType<?>> PARTICLE_TYPES = DeferredRegister.create(IWasi.MODID, Registry.PARTICLE_TYPE_REGISTRY);
     public static final RegistrySupplier<SimpleParticleType> TEST = register("test", false);
+    public static final RegistrySupplier<SimpleParticleType> BULLET_TRAJECTORY = register("bullet_trajectory", false);
 
     private static RegistrySupplier<SimpleParticleType> register(String name, boolean overrideLimiter) {
         return PARTICLE_TYPES.register(name, () -> OERegistryUtil.createSimpleParticleType(overrideLimiter));
