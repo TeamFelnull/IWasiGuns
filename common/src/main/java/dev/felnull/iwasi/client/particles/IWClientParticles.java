@@ -9,8 +9,8 @@ import java.util.function.Consumer;
 
 public class IWClientParticles {
     public static void init(ParticleRegister register) {
-        register.register(IWParticleTypes.TEST.get(), TestParticle.TestParticleProvider::new);
-        // register.register(IWParticleTypes.BULLET_TRAJECTORY.get(), BulletTrajectoryParticle.Provider::new);
+        register.registerParticle(IWParticleTypes.TEST.get(), TestParticle.TestParticleProvider::new);
+        register.registerParticle(IWParticleTypes.BULLET_TRAJECTORY.get(), new BulletTrajectoryParticle.Provider());
     }
 
     public static void addSprite(Consumer<ResourceLocation> spriteAdder) {

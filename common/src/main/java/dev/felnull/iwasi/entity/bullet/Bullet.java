@@ -1,7 +1,8 @@
 package dev.felnull.iwasi.entity.bullet;
 
+import com.mojang.math.Vector3f;
 import dev.felnull.iwasi.entity.IWEntityType;
-import dev.felnull.iwasi.particles.IWParticleTypes;
+import dev.felnull.iwasi.particles.BulletTrajectoryParticleOption;
 import dev.felnull.iwasi.util.IWProjectileUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
@@ -18,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class Bullet extends Projectile {
     //速度(m/s);
-    public static double SPEED = 100f; // 340f;
+    public static double SPEED = 0f;//100f; // 340f;
 
     public Bullet(EntityType<? extends Bullet> entityType, Level level) {
         super(entityType, level);
@@ -38,9 +39,9 @@ public class Bullet extends Projectile {
         this.updateRotation();
 
         if (level.isClientSide) {
-            level.addParticle(IWParticleTypes.TEST.get(), position().x(), position().y(), position().z(), 0.0, 0.0, 0.0);
+            //level.addParticle(IWParticleTypes.TEST.get(), position().x(), position().y(), position().z(), 0.0, 0.0, 0.0);
             //       level.addParticle(new BlockParticleOption(ParticleTypes.BLOCK_MARKER, Blocks.DIAMOND_BLOCK.defaultBlockState()), position().x(), position().y(), position().z(), 0.0D, 0.0D, 0.0D);
-
+            level.addParticle(new BulletTrajectoryParticleOption(new Vector3f((float) getDeltaMovement().x(), (float) getDeltaMovement().y(), (float) getDeltaMovement().z()), 1f), position().x(), position().y(), position().z(), 0.0D, 0.0D, 0.0D);
         }
 
         this.setPos(nextPos);
@@ -61,7 +62,7 @@ public class Bullet extends Projectile {
 
         if (!this.isNoGravity()) {
             Vec3 vec32 = this.getDeltaMovement();
-            this.setDeltaMovement(vec32.x, vec32.y - (double) IWProjectileUtil.getMCGravity(level), vec32.z);
+            //  this.setDeltaMovement(vec32.x, vec32.y - (double) IWProjectileUtil.getMCGravity(level), vec32.z);
         }
     }
 
