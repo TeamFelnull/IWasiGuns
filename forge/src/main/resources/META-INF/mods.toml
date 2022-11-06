@@ -1,36 +1,35 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
-issueTrackerURL = "https://github.com/TeamFelnull/IWasi/issues"
-license = "GNU LGPLv3"
+loaderVersion = "[43,)"
+#issueTrackerURL = ""
+license = "Insert License Here"
 
 [[mods]]
-modId = "iwasi"
+modId = "iwasiguns"
 version = "${version}"
-displayName = "IWasi"
-authors = "MORIMORI0317, Alfort121R"
-credits = "FelNull developers"
+displayName = "IWasi Guns"
+authors = "Me!"
 description = '''
-The Ikisugi MOD...
+This is an example description! Tell everyone what your mod is about!
 '''
 #logoFile = ""
 
-[[dependencies.iwasi]]
+[[dependencies.iwasiguns]]
 modId = "forge"
 mandatory = true
-versionRange = "[40,)"
+versionRange = "[43,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.iwasi]]
+[[dependencies.iwasiguns]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.18.2,)"
+versionRange = "[1.19.2,)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.iwasi]]
+[[dependencies.iwasiguns]]
 modId = "architectury"
 mandatory = true
-versionRange = "[4.1.32,)"
+versionRange = "[6.2.43,)"
 ordering = "AFTER"
 side = "BOTH"

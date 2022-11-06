@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "dev.felnull.iwasi.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

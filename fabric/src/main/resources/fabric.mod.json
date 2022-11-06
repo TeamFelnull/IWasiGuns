@@ -1,43 +1,37 @@
 {
   "schemaVersion": 1,
-  "id": "iwasi",
+  "id": "iwasiguns",
   "version": "${version}",
-  "name": "IWasi",
-  "description": "The Ikisugi mod...",
+  "name": "IWasi Guns",
+  "description": "This is an example description! Tell everyone what your mod is about!",
   "authors": [
-    "MORIMORI0317",
-    "Alfort121R",
-    "FelNull developers"
+    "Me!"
   ],
   "contact": {
-    "sources": "https://github.com/TeamFelnull/IWasi"
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
   },
-  "license": "GNU LGPLv3",
-  "icon": "assets/iwasi/icon.png",
+  "license": "Insert License Here",
+  "icon": "assets/examplemod/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "dev.felnull.iwasi.fabric.IWasiFabric"
+      "dev.felnull.iwasi.fabric.IWasiGunsFabric"
     ],
     "client": [
-      "dev.felnull.iwasi.fabric.client.IWasiClientFabric"
+      "dev.felnull.iwasi.fabric.client.IWasiGunsClientFabric"
     ],
-    "otyacraftengine_client": [
-      "dev.felnull.iwasi.client.entrypoint.IWOEClientEntryPoint"
-    ],
-    "modmenu": [
-      "dev.felnull.iwasi.fabric.integration.ModMenuIntegration"
+    "fabric-datagen": [
+      "dev.felnull.iwasi.fabric.data.IWasiGunsDataGeneratorFabric"
     ]
   },
   "mixins": [
-    "iwasi.mixins.json",
-    "iwasi-common.mixins.json"
+    "iwasiguns.mixins.json",
+    "iwasiguns-common.mixins.json"
   ],
   "depends": {
     "fabric": "*",
-    "minecraft": ">=1.18.2",
-    "architectury": ">=4.1.32",
-    "cloth-config2": ">=6.2.57",
-    "otyacraftengine": ">=2.11-build5"
+    "minecraft": ">=1.19.2",
+    "architectury": ">=6.2.43"
   }
 }

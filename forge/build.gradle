@@ -1,12 +1,6 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
-loom {
-    forge {
-        mixinConfig "iwasi-common.mixins.json"
-        mixinConfig "iwasi.mixins.json"
-    }
-}
 
 architectury {
     platformSetupLoomIde()
@@ -19,13 +13,25 @@ loom {
     forge {
         convertAccessWideners = true
         extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+
+        mixinConfig "iwasiguns-common.mixins.json"
+        mixinConfig "iwasiguns.mixins.json"
+
+        dataGen {
+            mod project.archives_base_name
+        }
+    }
+
+    launches {
+        data {
+            arg "--existing", file("src/main/resources").absolutePath
+        }
     }
 }
 
 configurations {
     common
-    shadowCommon
-    shadowIn
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentForge.extendsFrom common
@@ -35,15 +41,15 @@ configurations {
 
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    // Remove the next line if you don't want to depend on the API
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    modApi "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
-    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}"
     modApi "${rootProject.oe_repo_pre}dev.felnull:otyacraftengine-forge:${rootProject.oe_version}"
-
+    modApi "me.shedaniel.cloth:cloth-config-forge:8.0.75"
+    modApi "me.shedaniel:RoughlyEnoughItems-forge:9.1.528"
     shadowIn "dev.felnull:felnull-java-library:${rootProject.felnull_version}"
 }
 
@@ -54,10 +60,12 @@ processResources {
         expand "version": project.version
     }
 }
+
 shadowJar {
     configurations = [project.configurations.shadowIn]
-    relocate 'dev.felnull.fnjl', 'dev.felnull.iwasi.include.dev.felnull.fnjl'
+    relocate 'dev.felnull.fnjl', 'dev.felnull.imp.include.dev.felnull.fnjl'
 }
+
 shadowJar {
     exclude "fabric.mod.json"
     exclude "architectury.common.json"
@@ -69,8 +77,8 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
-    archiveBaseName = "${rootProject.archives_base_name}-${project.name}-${rootProject.minecraft_version}"
     classifier null
+    setArchivesBaseName("${rootProject.archives_base_name}-${project.name}-mc${rootProject.minecraft_version}")
 }
 
 jar {
@@ -97,6 +105,8 @@ publishing {
         }
     }
 
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
     repositories {
+        // Add repositories to publish to here.
     }
 }
