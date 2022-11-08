@@ -1,15 +1,16 @@
 modLoader = "javafml"
 loaderVersion = "[43,)"
-#issueTrackerURL = ""
-license = "Insert License Here"
+issueTrackerURL = "https://github.com/TeamFelnull/IWasi/issues"
+license = "GNU LGPLv3"
 
 [[mods]]
 modId = "iwasiguns"
 version = "${version}"
 displayName = "IWasi Guns"
-authors = "Me!"
+authors = "MORIMORI0317, Alfort121R"
+credits = "FelNull developers"
 description = '''
-This is an example description! Tell everyone what your mod is about!
+The ikisugi gun mod...
 '''
 #logoFile = ""
 

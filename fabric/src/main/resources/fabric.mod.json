@@ -3,16 +3,21 @@
   "id": "iwasiguns",
   "version": "${version}",
   "name": "IWasi Guns",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "The ikisugi gun mod...",
   "authors": [
-    "Me!"
+    "MORIMORI0317",
+    "Alfort121R"
+  ],
+  "contributors": [
+    "FelNull developers"
   ],
   "contact": {
+    "email": "teamfelnull@felnull.dev",
     "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "sources": "https://github.com/TeamFelnull/IWasiGuns"
   },
-  "license": "Insert License Here",
-  "icon": "assets/examplemod/icon.png",
+  "license": "GNU LGPLv3",
+  "icon": "assets/iwasiguns/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -32,6 +37,8 @@
   "depends": {
     "fabric": "*",
     "minecraft": ">=1.19.2",
-    "architectury": ">=6.2.43"
+    "architectury": ">=6.2.43",
+    "cloth-config2": ">=8.0.75",
+    "otyacraftengine": ">=3.1.0"
   }
 }
