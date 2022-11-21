@@ -1,3 +1,6 @@
 {
-  "item.examplemod.example_item": "Example Item"
+  "item.iwasiguns.ration_can": "Ration Can",
+  "item.iwasiguns.ration": "Ration",
+  "item.iwasiguns.ration.desc": "Contain %s",
+  "item.iwasiguns.ration.desc.multiple": "Contains %s and %s"
 }

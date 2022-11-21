@@ -3,6 +3,7 @@ package dev.felnull.iwasi.recipe.crafting;
 import dev.felnull.iwasi.item.IWGItems;
 import dev.felnull.iwasi.item.RationItem;
 import dev.felnull.iwasi.recipe.IWGRecipeSerializers;
+import dev.felnull.otyacraftengine.util.OEItemUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.BowlFoodItem;
@@ -36,12 +37,12 @@ public class RationRecipe extends CustomRecipe {
                     return false;
                 }
 
-                if (ration > 1 || food > 3)
+                if (ration > 1 || food > getMaxFoodCount())
                     return false;
             }
         }
 
-        return ration == 1 && food == 3;
+        return ration == 1 && food >= 1 && food <= getMaxFoodCount();
     }
 
     @Override
@@ -58,19 +59,23 @@ public class RationRecipe extends CustomRecipe {
         }
 
         ItemStack ret = new ItemStack(IWGItems.RATION.get());
-        RationItem.setFoods(ret, foods);
+        RationItem.setFoods(ret, OEItemUtils.overlapItemStacks(foods));
 
         return ret;
     }
 
     @Override
     public boolean canCraftInDimensions(int w, int h) {
-        return w * h >= 4;
+        return w * h >= getMaxFoodCount() + 1;
     }
 
     @Override
     public RecipeSerializer<?> getSerializer() {
         return IWGRecipeSerializers.RATION.get();
+    }
+
+    private static int getMaxFoodCount() {
+        return 8;
     }
 
     private static boolean isCanningFood(ItemStack stack) {
