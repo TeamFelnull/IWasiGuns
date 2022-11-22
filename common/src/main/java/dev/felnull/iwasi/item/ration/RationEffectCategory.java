@@ -18,7 +18,7 @@ import java.util.List;
 public enum RationEffectCategory implements StringRepresentable {
     HEALTHY("healthy", 0xEE2124),
     MEDIOCRE("mediocre", 0xA9602C),
-    UNHEALTHY("unhealthy", 0x2cc3ac);
+    UNHEALTHY("unhealthy", 0x2CC3AC);
     private final String name;
     private final int color;
 
@@ -36,7 +36,7 @@ public enum RationEffectCategory implements StringRepresentable {
         return color;
     }
 
-    public static Pair<RationEffectCategory, Float> getByFoodItemStack(ItemStack stack) {
+    public static Pair<RationEffectCategory, Float> getByItemStack(ItemStack stack) {
         if (stack.is(Items.POTION)) {
             Potion potion = PotionUtils.getPotion(stack);
             return getByMobEffects(potion.getEffects().stream().map(n -> Pair.of(n, 1f)).toList());

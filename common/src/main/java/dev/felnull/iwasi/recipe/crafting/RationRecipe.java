@@ -2,12 +2,11 @@ package dev.felnull.iwasi.recipe.crafting;
 
 import dev.felnull.iwasi.item.IWGItems;
 import dev.felnull.iwasi.item.RationItem;
+import dev.felnull.iwasi.item.ration.Ration;
 import dev.felnull.iwasi.recipe.IWGRecipeSerializers;
 import dev.felnull.otyacraftengine.util.OEItemUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
-import net.minecraft.world.item.BowlFoodItem;
-import net.minecraft.world.item.HoneyBottleItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -59,7 +58,7 @@ public class RationRecipe extends CustomRecipe {
         }
 
         ItemStack ret = new ItemStack(IWGItems.RATION.get());
-        RationItem.setFoods(ret, OEItemUtils.overlapItemStacks(foods));
+        Ration.setFoods(ret, OEItemUtils.overlapItemStacks(foods));
 
         return ret;
     }
@@ -79,6 +78,6 @@ public class RationRecipe extends CustomRecipe {
     }
 
     private static boolean isCanningFood(ItemStack stack) {
-        return stack.isEdible() && !(stack.getItem() instanceof BowlFoodItem || stack.getItem() instanceof RationItem || stack.getItem() instanceof HoneyBottleItem);
+        return stack.isEdible() && !(stack.getItem() instanceof RationItem);
     }
 }
