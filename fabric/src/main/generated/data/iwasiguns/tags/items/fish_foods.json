@@ -1,10 +1,9 @@
 {
   "replace": false,
   "values": [
-    "minecraft:cod",
-    "minecraft:pufferfish",
-    "minecraft:cooked_cod",
-    "minecraft:salmon",
-    "minecraft:cooked_salmon"
+    {
+      "id": "#minecraft:fishes",
+      "required": false
+    }
   ]
 }
