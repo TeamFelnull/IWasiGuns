@@ -1,0 +1,74 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "#c:juices",
+      "required": false
+    },
+    {
+      "id": "#c:banana_smoothies",
+      "required": false
+    },
+    {
+      "id": "#c:strawberry_smoothies",
+      "required": false
+    },
+    {
+      "id": "#c:coffees",
+      "required": false
+    },
+    {
+      "id": "#c:lemonades",
+      "required": false
+    },
+    {
+      "id": "#c:limeades",
+      "required": false
+    },
+    {
+      "id": "#c:kale_smoothies",
+      "required": false
+    },
+    {
+      "id": "#c:fruit_smoothies",
+      "required": false
+    },
+    {
+      "id": "#c:chocolate_milkshakes",
+      "required": false
+    },
+    {
+      "id": "#c:beers",
+      "required": false
+    },
+    {
+      "id": "#c:wines",
+      "required": false
+    },
+    {
+      "id": "#c:meads",
+      "required": false
+    },
+    {
+      "id": "#c:rums",
+      "required": false
+    },
+    {
+      "id": "#c:pumpkin_spice_lattes",
+      "required": false
+    },
+    {
+      "id": "#c:water_bottles",
+      "required": false
+    },
+    {
+      "id": "#c:milk_bottles",
+      "required": false
+    },
+    {
+      "id": "#c:tea",
+      "required": false
+    },
+    "#c:milks"
+  ]
+}

@@ -1,5 +1,7 @@
 {
   "values": [
-    "#minecraft:fishes"
+    "#minecraft:fishes",
+    "#forge:raw_fishes",
+    "#forge:cooked_fishes"
   ]
 }

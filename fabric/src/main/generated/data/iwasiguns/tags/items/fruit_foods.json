@@ -1,11 +1,6 @@
 {
   "replace": false,
   "values": [
-    "minecraft:apple",
-    "minecraft:golden_apple",
-    "minecraft:enchanted_golden_apple",
-    "minecraft:melon",
-    "minecraft:sweet_berries",
-    "minecraft:glow_berries"
+    "#c:fruits"
   ]
 }

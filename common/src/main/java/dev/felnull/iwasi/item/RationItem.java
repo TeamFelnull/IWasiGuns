@@ -2,8 +2,10 @@ package dev.felnull.iwasi.item;
 
 import dev.felnull.iwasi.item.ration.Ration;
 import dev.felnull.otyacraftengine.util.OEPlayerUtils;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -50,10 +52,24 @@ public class RationItem extends Item {
 
         var superItem = super.finishUsingItem(itemStack, level, livingEntity);
 
+        if (livingEntity instanceof ServerPlayer serverPlayer) {
+            CriteriaTriggers.CONSUME_ITEM.trigger(serverPlayer, itemStack);
+            serverPlayer.awardStat(Stats.ITEM_USED.get(this));
+        }
+
         if (livingEntity instanceof Player player && player.getAbilities().instabuild)
             return superItem;
 
-        return new ItemStack(IWGItems.RATION_CAN.get());
+        if (itemStack.isEmpty())
+            return new ItemStack(IWGItems.RATION_CAN.get());
+
+        if (livingEntity instanceof Player player && !player.getAbilities().instabuild) {
+            ItemStack retStack = new ItemStack(IWGItems.RATION_CAN.get());
+            if (!player.getInventory().add(retStack))
+                player.drop(retStack, false);
+        }
+
+        return itemStack;
     }
 
     @Override

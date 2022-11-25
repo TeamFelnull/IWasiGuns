@@ -1,6 +1,5 @@
 {
   "values": [
-    "minecraft:potion",
-    "minecraft:honey_bottle"
+    "#forge:drinks"
   ]
 }

@@ -4,6 +4,8 @@
     {
       "id": "#minecraft:fishes",
       "required": false
-    }
+    },
+    "#c:raw_fishes",
+    "#c:cooked_fishes"
   ]
 }

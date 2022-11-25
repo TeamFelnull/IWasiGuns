@@ -1,11 +1,21 @@
-// 1.19.2	2022-11-23T03:28:39.8868507	Tags for minecraft:item
-051b4def317971935e1e8d2b8814c100ec62449a data/iwasiguns/tags/items/dark_foods.json
+// 1.19.2	2022-11-25T09:33:18.087425	Tags for minecraft:item
+3c97b80407cb369d06f88b8b31da41587486fa84 data/forge/tags/items/bread.json
+0bdc999a7f653eecbb3c513a0baf1b963a2587ab data/forge/tags/items/bread/wheat.json
+bc229f680fa773a41269c1569f5a700f669eb8e5 data/forge/tags/items/cooked_fishes.json
+fc9ee9e5d3a78e9203bfdc4f4936e6fd31ec5f75 data/forge/tags/items/cooked_meats.json
+be4c4d427a8542968f633be191f74cff00b1eba8 data/forge/tags/items/drinks.json
+f2f1a179419ddd7ad163fa9f8ef738799ce83730 data/forge/tags/items/fruits.json
+edb5947f84984a39ab47c98c6fb0b3c3a9a8cc39 data/forge/tags/items/milks.json
+4fa4ef3fee986b3a9f5d145b9430d8c911716691 data/forge/tags/items/raw_fishes.json
+29134ee44e5e413d4b8175b338b883b648a16b99 data/forge/tags/items/raw_meats.json
+f651379db3bd93084b50c5759f13066cb9859ee2 data/forge/tags/items/vegetables.json
+930b5856c11fa7e16bd1c74fafe59221f8ea909e data/iwasiguns/tags/items/dark_foods.json
 a62188adba8d65fe5971b95f4c552a1072086c31 data/iwasiguns/tags/items/dessert_foods.json
-b018bfbb37ba6ae1711a6e375323f2b227dc2255 data/iwasiguns/tags/items/drink_foods.json
-46917e7306850aedf22c53f9664894363b91fed9 data/iwasiguns/tags/items/fish_foods.json
-efa668b187d14e0c171fc2689b203f0cd8f923d4 data/iwasiguns/tags/items/fruit_foods.json
+591af341e0291388098741243a553da729d4a41b data/iwasiguns/tags/items/drink_foods.json
+159245e0de5cc9016dc75708c1dc2d264b99550f data/iwasiguns/tags/items/fish_foods.json
+8da3bf1486053efd5b44292800ad9c65d3553da6 data/iwasiguns/tags/items/fruit_foods.json
 931ba10af6728e02f926cfe614e01450102703e8 data/iwasiguns/tags/items/golden_foods.json
-0bdc999a7f653eecbb3c513a0baf1b963a2587ab data/iwasiguns/tags/items/grain_foods.json
-708762ee1098d9fb9dd1cd1b6d68285f7bc4e5d2 data/iwasiguns/tags/items/meat_foods.json
+cbd522a305804dfd260fe1fe2bf233ff8151075e data/iwasiguns/tags/items/grain_foods.json
+eeea9d980781b05f39fdc831a11b7be4fd04464f data/iwasiguns/tags/items/meat_foods.json
 dfeab4eedf88528e1cadaab4e1edd4adaaeefdf8 data/iwasiguns/tags/items/seaweed_foods.json
-8bd1b20e6055133cb1ae72cd51a5a4ef2387c417 data/iwasiguns/tags/items/vegetable_foods.json
+c07cd2a36f30cf7c9eaa596f33068ce777466faa data/iwasiguns/tags/items/vegetable_foods.json

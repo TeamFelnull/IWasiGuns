@@ -1,0 +1,73 @@
+{
+  "values": [
+    {
+      "id": "#forge:juices",
+      "required": false
+    },
+    {
+      "id": "#forge:banana_smoothies",
+      "required": false
+    },
+    {
+      "id": "#forge:strawberry_smoothies",
+      "required": false
+    },
+    {
+      "id": "#forge:coffees",
+      "required": false
+    },
+    {
+      "id": "#forge:lemonades",
+      "required": false
+    },
+    {
+      "id": "#forge:limeades",
+      "required": false
+    },
+    {
+      "id": "#forge:kale_smoothies",
+      "required": false
+    },
+    {
+      "id": "#forge:fruit_smoothies",
+      "required": false
+    },
+    {
+      "id": "#forge:chocolate_milkshakes",
+      "required": false
+    },
+    {
+      "id": "#forge:beers",
+      "required": false
+    },
+    {
+      "id": "#forge:wines",
+      "required": false
+    },
+    {
+      "id": "#forge:meads",
+      "required": false
+    },
+    {
+      "id": "#forge:rums",
+      "required": false
+    },
+    {
+      "id": "#forge:pumpkin_spice_lattes",
+      "required": false
+    },
+    {
+      "id": "#forge:water_bottles",
+      "required": false
+    },
+    {
+      "id": "#forge:milk_bottles",
+      "required": false
+    },
+    {
+      "id": "#forge:tea",
+      "required": false
+    },
+    "#forge:milks"
+  ]
+}

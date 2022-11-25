@@ -3,6 +3,9 @@ package dev.felnull.iwasi.item.ration;
 import dev.felnull.iwasi.utils.IWGItemUtils;
 import dev.felnull.otyacraftengine.util.OEItemUtils;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -104,12 +107,48 @@ public enum RationFoodCategory implements StringRepresentable {
     private static float darkContent(ItemStack stack) {
         if (IWGItemUtils.isDarkFood(stack))
             return 5f;
+
+        FoodProperties fp = OEItemUtils.getFoodProperties(stack, null);
+        if (fp != null) {
+            int p = 0;
+
+            var efs = fp.getEffects();
+            for (com.mojang.datafixers.util.Pair<MobEffectInstance, Float> ef : efs) {
+                var efc = ef.getFirst().getEffect();
+                if (efc.getCategory() == MobEffectCategory.BENEFICIAL)
+                    p--;
+                else if (efc.getCategory() == MobEffectCategory.HARMFUL)
+                    p++;
+            }
+
+            if (p > 0)
+                return p * 3;
+        }
+
         return 0f;
     }
 
     private static float goldenContent(ItemStack stack) {
         if (IWGItemUtils.isGoldenFood(stack))
             return 5f;
+
+        FoodProperties fp = OEItemUtils.getFoodProperties(stack, null);
+        if (fp != null) {
+            int p = 0;
+
+            var efs = fp.getEffects();
+            for (com.mojang.datafixers.util.Pair<MobEffectInstance, Float> ef : efs) {
+                var efc = ef.getFirst().getEffect();
+                if (efc.getCategory() == MobEffectCategory.BENEFICIAL)
+                    p++;
+                else if (efc.getCategory() == MobEffectCategory.HARMFUL)
+                    p--;
+            }
+
+            if (p > 0)
+                return p * 2;
+        }
+        
         return 0f;
     }
 

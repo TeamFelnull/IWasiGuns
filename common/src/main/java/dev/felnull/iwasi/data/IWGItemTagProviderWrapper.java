@@ -4,6 +4,7 @@ import dev.felnull.iwasi.item.IWGItemTags;
 import dev.felnull.otyacraftengine.data.CrossDataGeneratorAccess;
 import dev.felnull.otyacraftengine.data.provider.BlockTagProviderWrapper;
 import dev.felnull.otyacraftengine.data.provider.ItemTagProviderWrapper;
+import dev.felnull.otyacraftengine.tag.PlatformItemTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
@@ -15,15 +16,15 @@ public class IWGItemTagProviderWrapper extends ItemTagProviderWrapper {
 
     @Override
     public void generateTag(ItemTagProviderAccess providerAccess) {
-        providerAccess.tag(IWGItemTags.MEAT_FOODS).add(Items.PORKCHOP, Items.COOKED_PORKCHOP, Items.BEEF, Items.COOKED_BEEF, Items.CHICKEN, Items.COOKED_CHICKEN, Items.ROTTEN_FLESH, Items.RABBIT, Items.COOKED_RABBIT, Items.MUTTON, Items.COOKED_MUTTON);
-        //providerAccess.tag(IWGItemTags.FISH_FOODS).addVanillaTag(ItemTags.FISHES);
-        providerAccess.tag(IWGItemTags.GRAIN_FOODS).add(Items.BREAD);
-        providerAccess.tag(IWGItemTags.VEGETABLE_FOODS).add(Items.CARROT, Items.POTATO, Items.POISONOUS_POTATO, Items.BEETROOT);
+        providerAccess.tag(IWGItemTags.MEAT_FOODS).addTag(PlatformItemTags.rawMeats(), PlatformItemTags.cookedMeats());
+        providerAccess.tag(IWGItemTags.FISH_FOODS).addVanillaTag(ItemTags.FISHES).addTag(PlatformItemTags.rawFishes(), PlatformItemTags.cookedFishes());
+        providerAccess.tag(IWGItemTags.GRAIN_FOODS).addTag(PlatformItemTags.breads());
+        providerAccess.tag(IWGItemTags.VEGETABLE_FOODS).addTag(PlatformItemTags.vegetables(), PlatformItemTags.carrots(), PlatformItemTags.potatoes(), PlatformItemTags.beetroots());
         providerAccess.tag(IWGItemTags.SEAWEED_FOODS).add(Items.KELP);
-        providerAccess.tag(IWGItemTags.FRUIT_FOODS).add(Items.APPLE, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.MELON, Items.SWEET_BERRIES, Items.GLOW_BERRIES);
+        providerAccess.tag(IWGItemTags.FRUIT_FOODS).addTag(PlatformItemTags.fruits());
         providerAccess.tag(IWGItemTags.DESSERT_FOODS).add(Items.COOKIE);
-        providerAccess.tag(IWGItemTags.DRINK_FOODS).add(Items.POTION, Items.HONEY_BOTTLE);
-        providerAccess.tag(IWGItemTags.DARK_FOODS).add(Items.ROTTEN_FLESH, Items.SPIDER_EYE, Items.PUFFERFISH);
+        providerAccess.tag(IWGItemTags.DRINK_FOODS).addTag(PlatformItemTags.drinks());
+        providerAccess.tag(IWGItemTags.DARK_FOODS).add(Items.ROTTEN_FLESH, Items.SPIDER_EYE, Items.PUFFERFISH, Items.POISONOUS_POTATO);
         providerAccess.tag(IWGItemTags.GOLDEN_FOODS).add(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
     }
 }
