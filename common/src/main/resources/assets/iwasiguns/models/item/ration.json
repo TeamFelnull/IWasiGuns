@@ -1,8 +1,16 @@
 {
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "iwasiguns:item/ration_label_overlay",
-        "layer1": "iwasiguns:item/ration_overlay",
-        "layer2": "iwasiguns:item/ration"
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "iwasiguns:item/ration_label_overlay",
+    "layer1": "iwasiguns:item/ration_overlay",
+    "layer2": "iwasiguns:item/ration"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "iwasiguns:golden_ration": 1
+      },
+      "model": "iwasiguns:item/golden_ration"
     }
+  ]
 }

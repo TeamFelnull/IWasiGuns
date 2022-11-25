@@ -1,6 +1,10 @@
 {
+  "_comment.i": "Item",
   "item.iwasiguns.ration_can": "Ration Can",
   "item.iwasiguns.ration": "Ration",
-  "item.iwasiguns.ration.desc": "Contain %s",
-  "item.iwasiguns.ration.desc.multiple": "Contains %s and %s"
+  "item.iwasiguns.ration.contain": "Contain:",
+  "item.iwasiguns.ration.contains": "Contains:",
+  "_comment.cr": "CreativeTab",
+  "itemGroup.iwasiguns.iwasiguns": "IWasi Guns",
+  "_comment.la": "Last"
 }

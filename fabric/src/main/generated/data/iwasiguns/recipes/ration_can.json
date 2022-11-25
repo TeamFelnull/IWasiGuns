@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "tag": "c:iron_ingots"
+    },
+    "N": {
+      "tag": "c:iron_nuggets"
+    }
+  },
+  "pattern": [
+    " N ",
+    "I I",
+    " I "
+  ],
+  "result": {
+    "item": "iwasiguns:ration_can"
+  }
+}

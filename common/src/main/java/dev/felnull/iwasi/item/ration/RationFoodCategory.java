@@ -21,7 +21,7 @@ public enum RationFoodCategory implements StringRepresentable {
     SEAWEED("seaweed", RationFoodCategory::seaweedContent, 0x103E28),
     FRUIT("fruit", RationFoodCategory::fruitContent, 0xEA6E13),
     DESSERT("dessert", RationFoodCategory::dessertContent, 0xB5B5B5),
-    DRINK("drink", RationFoodCategory::drinkContent, 0x933333),
+    DRINK("drink", RationFoodCategory::drinkContent, 0x776b21),
     DARK("dark", RationFoodCategory::darkContent, 0x2D2D2D),
     GOLDEN("golden", RationFoodCategory::goldenContent, 0xE9B115);
     private final String name;
@@ -148,7 +148,7 @@ public enum RationFoodCategory implements StringRepresentable {
             if (p > 0)
                 return p * 2;
         }
-        
+
         return 0f;
     }
 

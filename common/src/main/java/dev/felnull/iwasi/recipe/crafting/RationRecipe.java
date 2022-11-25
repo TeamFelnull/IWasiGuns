@@ -1,7 +1,6 @@
 package dev.felnull.iwasi.recipe.crafting;
 
 import dev.felnull.iwasi.item.IWGItems;
-import dev.felnull.iwasi.item.RationItem;
 import dev.felnull.iwasi.item.ration.Ration;
 import dev.felnull.iwasi.recipe.IWGRecipeSerializers;
 import dev.felnull.otyacraftengine.util.OEItemUtils;
@@ -24,24 +23,31 @@ public class RationRecipe extends CustomRecipe {
     public boolean matches(CraftingContainer container, Level level) {
         int ration = 0;
         int food = 0;
+        int drink = 0;
+        int blockFood = 0;
 
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
             if (!stack.isEmpty()) {
                 if (stack.is(IWGItems.RATION_CAN.get())) {
                     ration++;
-                } else if (isCanningFood(stack)) {
+                } else if (Ration.canContainDrink(stack)) {
+                    drink++;
+                } else if (Ration.canContainBlockFood(stack)) {
+                    blockFood++;
+                } else if (Ration.canContainFood(stack)) {
                     food++;
                 } else {
                     return false;
                 }
 
-                if (ration > 1 || food > getMaxFoodCount())
+                if (ration > 1 || food > getMaxFoodCount() || drink > 1 || blockFood > 1)
                     return false;
             }
         }
 
-        return ration == 1 && food >= 1 && food <= getMaxFoodCount();
+        int foodCount = food + drink + blockFood;
+        return ration == 1 && foodCount >= 1 && foodCount <= getMaxFoodCount();
     }
 
     @Override
@@ -50,17 +56,14 @@ public class RationRecipe extends CustomRecipe {
 
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
-            if (!stack.is(IWGItems.RATION_CAN.get()) && isCanningFood(stack)) {
+            if (!stack.is(IWGItems.RATION_CAN.get()) && (Ration.canContainFood(stack) || Ration.canContainDrink(stack) || Ration.canContainBlockFood(stack))) {
                 ItemStack food = stack.copy();
                 food.setCount(1);
                 foods.add(food);
             }
         }
 
-        ItemStack ret = new ItemStack(IWGItems.RATION.get());
-        Ration.setFoods(ret, OEItemUtils.overlapItemStacks(foods));
-
-        return ret;
+        return Ration.create(new ItemStack(IWGItems.RATION.get()), OEItemUtils.overlapItemStacks(foods));
     }
 
     @Override
@@ -75,9 +78,5 @@ public class RationRecipe extends CustomRecipe {
 
     private static int getMaxFoodCount() {
         return 8;
-    }
-
-    private static boolean isCanningFood(ItemStack stack) {
-        return stack.isEdible() && !(stack.getItem() instanceof RationItem);
     }
 }

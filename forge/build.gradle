@@ -63,7 +63,7 @@ processResources {
 
 shadowJar {
     configurations = [project.configurations.shadowIn]
-    relocate 'dev.felnull.fnjl', 'dev.felnull.imp.include.dev.felnull.fnjl'
+    relocate 'dev.felnull.fnjl', 'dev.felnull.iwasi.include.dev.felnull.fnjl'
 }
 
 shadowJar {

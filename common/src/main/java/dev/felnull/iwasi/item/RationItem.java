@@ -1,16 +1,15 @@
 package dev.felnull.iwasi.item;
 
 import dev.felnull.iwasi.item.ration.Ration;
-import dev.felnull.otyacraftengine.util.OEPlayerUtils;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.*;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,23 +31,28 @@ public class RationItem extends Item {
     }
 
     @Override
+    public Rarity getRarity(ItemStack itemStack) {
+        Rarity rarity = super.getRarity(itemStack);
+        var foods = Ration.getFoods(itemStack);
+
+        for (ItemStack food : foods) {
+            if (rarity == Rarity.EPIC)
+                break;
+            var fr = food.getRarity();
+
+            if (fr.ordinal() > rarity.ordinal())
+                rarity = fr;
+        }
+
+        return rarity;
+    }
+
+    @Override
     public ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity livingEntity) {
         List<ItemStack> stacks = Ration.getFoods(itemStack);
 
-        for (ItemStack stack : stacks) {
-            if (!stack.isEdible())
-                continue;
-
-            ItemStack food = stack.copy();
-            int count = food.getCount();
-
-            for (int i = 0; i < count; i++) {
-                var ret = food.finishUsingItem(level, livingEntity);
-
-                if (ret != food && livingEntity instanceof ServerPlayer player)
-                    OEPlayerUtils.giveItem(player, ret);
-            }
-        }
+        for (ItemStack stack : stacks)
+            Ration.eatFood(stack, level, livingEntity);
 
         var superItem = super.finishUsingItem(itemStack, level, livingEntity);
 
@@ -76,32 +80,34 @@ public class RationItem extends Item {
     public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> list, TooltipFlag tooltipFlag) {
         List<ItemStack> foods = Ration.getFoods(itemStack);
 
-        for (ItemStack food : foods) {
-            list.add(Component.empty().append(food.getDisplayName()).append(" × " + food.getCount()));
-        }
-
-       /* if (foods.isEmpty())
+        if (foods.isEmpty())
             return;
 
         if (foods.size() == 1) {
-            list.add(Component.translatable("item.iwasiguns.ration.desc", foods.get(0).getHoverName()));
-        } else {
-            List<Item> items = new ArrayList<>();
-            MutableComponent comp = Component.empty();
+            list.add(Component.translatable("item.iwasiguns.ration.contain").append(" ").append(getContainDisplay(foods.get(0))));
+            return;
+        }
 
-            for (int i = 0; i < foods.size() - 1; i++) {
-                ItemStack food = foods.get(i);
-                if (items.contains(food.getItem()))
-                    continue;
-                items.add(food.getItem());
-                comp = comp.append(food.getHoverName());
-                if (i < foods.size() - 2)
-                    comp.append(", ");
-            }
+        list.add(Component.translatable("item.iwasiguns.ration.contains"));
 
-            list.add(Component.translatable("item.iwasiguns.ration.desc.multiple", comp, foods.get(foods.size() - 1).getHoverName()));
-        }*/
+        for (ItemStack food : foods) {
+            list.add(Component.literal(" ").append(getContainDisplay(food)));
+        }
     }
 
+    private static MutableComponent getContainDisplay(ItemStack stack) {
+        MutableComponent mutableComponent = stack.getDisplayName().copy();
+        mutableComponent.append(" x").append(String.valueOf(stack.getCount()));
+        return mutableComponent;
+    }
 
+    @Override
+    public void fillItemCategory(CreativeModeTab creativeModeTab, NonNullList<ItemStack> nonNullList) {
+        if (!this.allowedIn(creativeModeTab))
+            return;
+
+        nonNullList.add(Ration.createB1Unit(new ItemStack(this)));
+        nonNullList.add(Ration.createB2Unit(new ItemStack(this)));
+        nonNullList.add(Ration.createB3Unit(new ItemStack(this)));
+    }
 }

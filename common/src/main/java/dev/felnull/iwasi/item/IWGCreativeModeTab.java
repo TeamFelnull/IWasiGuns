@@ -8,5 +8,5 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
 public class IWGCreativeModeTab {
-    public static final CreativeModeTab MOD_TAB = CreativeTabRegistry.create(new ResourceLocation(IWasiGuns.MODID, IWasiGuns.MODID), () -> new ItemStack(Items.APPLE));
+    public static final CreativeModeTab MOD_TAB = CreativeTabRegistry.create(new ResourceLocation(IWasiGuns.MODID, IWasiGuns.MODID), () -> new ItemStack(IWGItems.RATION_CAN.get()));
 }

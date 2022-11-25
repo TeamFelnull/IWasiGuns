@@ -1,0 +1,10 @@
+{
+  "_comment.i": "Item",
+  "item.iwasiguns.ration_can": "レーション缶",
+  "item.iwasiguns.ration": "レーション",
+  "item.iwasiguns.ration.contain": "内容物：",
+  "item.iwasiguns.ration.contains": "内容物：",
+  "_comment.cr": "CreativeTab",
+  "itemGroup.iwasiguns.iwasiguns": "IWasi Guns",
+  "_comment.la": "Last"
+}

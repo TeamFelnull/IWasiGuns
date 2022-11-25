@@ -6,6 +6,6 @@ public class IWasiGunsClient {
     }
 
     public static void init() {
-
+        IWGItemProperties.init();
     }
 }

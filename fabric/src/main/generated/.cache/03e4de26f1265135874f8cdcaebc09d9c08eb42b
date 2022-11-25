@@ -1,5 +1,5 @@
-// 1.19.2	2022-11-25T09:31:59.088274	Tags for minecraft:item
-163bafd8a40dd2ed2e4fce543b4dd118338a07eb data\iwasiguns\tags\items\seaweed_foods.json
+// 1.19.2	2022-11-25T16:05:38.8829924	Tags for minecraft:item
+75da3bef6cf8fe932af5ef27a97e019bc293ad3e data\iwasiguns\tags\items\seaweed_foods.json
 268d8891931d90bf7acc2d1af9c526cdda347efd data\c\tags\items\milks.json
 563e48555b21a7572210bebfc13becc3e9a455c6 data\c\tags\items\cooked_meats.json
 cfca9565230a25ddf9a70d5508d7acea3d9bc7b4 data\iwasiguns\tags\items\grain_foods.json
@@ -21,4 +21,5 @@ fdba2eea2bbbb7830c9504dc317fc9d4211e6042 data\c\tags\items\cooked_fishes.json
 a2ed2149d2cc9390657e43257903d4fe88f768c6 data\iwasiguns\tags\items\fish_foods.json
 31190e3375e0d28e42829947cde88fc587eb03a1 data\c\tags\items\wheat_breads.json
 414374cc2135595d1de771cb3c34d4d050fabcc1 data\iwasiguns\tags\items\vegetable_foods.json
+989b799a247e595b14e76a145d6ff3566337b58f data\c\tags\items\iron_nuggets.json
 7d157805b7b81f9c3cf568870c1719a08f224384 data\iwasiguns\tags\items\dessert_foods.json

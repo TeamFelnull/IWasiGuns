@@ -1,0 +1,6 @@
+{
+  "parent": "iwasiguns:item/ration",
+  "textures": {
+    "layer1": "iwasiguns:item/golden_ration_overlay"
+  }
+}

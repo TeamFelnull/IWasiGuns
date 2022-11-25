@@ -1,4 +1,4 @@
-// 1.19.2	2022-11-25T09:33:18.087425	Tags for minecraft:item
+// 1.19.2	2022-11-25T16:06:06.1899021	Tags for minecraft:item
 3c97b80407cb369d06f88b8b31da41587486fa84 data/forge/tags/items/bread.json
 0bdc999a7f653eecbb3c513a0baf1b963a2587ab data/forge/tags/items/bread/wheat.json
 bc229f680fa773a41269c1569f5a700f669eb8e5 data/forge/tags/items/cooked_fishes.json
@@ -17,5 +17,5 @@ a62188adba8d65fe5971b95f4c552a1072086c31 data/iwasiguns/tags/items/dessert_foods
 931ba10af6728e02f926cfe614e01450102703e8 data/iwasiguns/tags/items/golden_foods.json
 cbd522a305804dfd260fe1fe2bf233ff8151075e data/iwasiguns/tags/items/grain_foods.json
 eeea9d980781b05f39fdc831a11b7be4fd04464f data/iwasiguns/tags/items/meat_foods.json
-dfeab4eedf88528e1cadaab4e1edd4adaaeefdf8 data/iwasiguns/tags/items/seaweed_foods.json
+a3b172140b26116cb88b9881f6dc7003b74902ba data/iwasiguns/tags/items/seaweed_foods.json
 c07cd2a36f30cf7c9eaa596f33068ce777466faa data/iwasiguns/tags/items/vegetable_foods.json
