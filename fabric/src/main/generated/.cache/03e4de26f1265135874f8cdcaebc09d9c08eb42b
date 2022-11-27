@@ -1,4 +1,4 @@
-// 1.19.2	2022-11-27T03:06:17.906634	Tags for minecraft:item
+// 1.19.2	2022-11-27T21:43:15.3788965	Tags for minecraft:item
 75da3bef6cf8fe932af5ef27a97e019bc293ad3e data\iwasiguns\tags\items\seaweed_foods.json
 268d8891931d90bf7acc2d1af9c526cdda347efd data\c\tags\items\milks.json
 563e48555b21a7572210bebfc13becc3e9a455c6 data\c\tags\items\cooked_meats.json
@@ -7,11 +7,11 @@ cfca9565230a25ddf9a70d5508d7acea3d9bc7b4 data\iwasiguns\tags\items\grain_foods.j
 106a0dda2250360eb0c2480469db671210ece0c5 data\c\tags\items\fruits.json
 cd6b17f7d816a47e6547c6d9fa5e587a83c4a821 data\iwasiguns\tags\items\fruit_foods.json
 d4a774fbbd050b19d597df3568d5ad7e7bd7ec7f data\c\tags\items\raw_meats.json
+3abd34d4ef8e79143ed2583e7c4e048bc3e41e7b data\iwasiguns\tags\items\drinks.json
 50aacaa3285a2b5769f4601a5b74f731379028a9 data\c\tags\items\raw_fishes.json
 4808567825536a29bddf641864aab07a20644cf8 data\iwasiguns\tags\items\dark_foods.json
 b6e26ea76a9bcbbbb3805f3a362989680b7030d8 data\c\tags\items\potatoes.json
 2b8c2b2e500fe683a2a1245d86824ed06859cc56 data\c\tags\items\beetroots.json
-ab2a85afaec8544c451cc107903479cf70e250e5 data\iwasiguns\tags\items\drink_foods.json
 bee081948590a526e31e35201248612fe882c257 data\c\tags\items\breads.json
 fdba2eea2bbbb7830c9504dc317fc9d4211e6042 data\c\tags\items\cooked_fishes.json
 637fac6a51bef533cfc4a9db7755c0328d2c5f91 data\c\tags\items\vegetables.json

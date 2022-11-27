@@ -14,9 +14,9 @@ public class IWGItemTags {
     public static final TagKey<Item> SEAWEED_FOODS = bind("seaweed_foods");
     public static final TagKey<Item> FRUIT_FOODS = bind("fruit_foods");
     public static final TagKey<Item> DESSERT_FOODS = bind("dessert_foods");
-    public static final TagKey<Item> DRINK_FOODS = bind("drink_foods");
     public static final TagKey<Item> DARK_FOODS = bind("dark_foods");
     public static final TagKey<Item> GOLDEN_FOODS = bind("golden_foods");
+    public static final TagKey<Item> DRINKS = bind("drinks");
 
     private static TagKey<Item> bind(String name) {
         return TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(IWasiGuns.MODID, name));

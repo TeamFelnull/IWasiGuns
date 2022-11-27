@@ -10,8 +10,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
 
-    //modCompileOnly  "me.shedaniel:RoughlyEnoughItems-api:9.1.558"
-    //modCompileOnly  "me.shedaniel:RoughlyEnoughItems-default-plugin:9.1.558"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:9.1.558"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-default-plugin:9.1.558"
     modCompileOnly "mezz.jei:jei-1.19.2-common-api:11.4.0.286"
 
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"

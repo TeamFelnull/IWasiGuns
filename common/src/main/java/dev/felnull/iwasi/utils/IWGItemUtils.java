@@ -5,7 +5,6 @@ import dev.felnull.otyacraftengine.tag.PlatformItemTags;
 import dev.felnull.otyacraftengine.util.OEItemUtils;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.level.block.CakeBlock;
 
@@ -43,10 +42,7 @@ public class IWGItemUtils {
     }
 
     public static boolean isDrinkFood(ItemStack stack) {
-        if (stack.is(Items.POTION))
-            return true;
-
-        return stack.is(IWGItemTags.DRINK_FOODS);
+        return stack.is(IWGItemTags.DRINKS);
     }
 
     public static boolean isDarkFood(ItemStack stack) {

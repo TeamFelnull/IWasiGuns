@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RationJEIRecipeMaker {
-    public static List<CraftingRecipe> createRecipes() {
+    public static List<CraftingRecipe> create() {
         List<CraftingRecipe> ret = new ArrayList<>();
         Item[] foods = Registry.ITEM.stream().filter(n -> n.getFoodProperties() != null).toArray(Item[]::new);
 

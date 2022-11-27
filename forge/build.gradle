@@ -47,7 +47,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    modApi "${rootProject.oe_repo_pre}dev.felnull:otyacraftengine-forge:${rootProject.oe_version}"
+    modApi("${rootProject.oe_repo_pre}dev.felnull:otyacraftengine-forge:${rootProject.oe_version}") { transitive = false }
     modApi "me.shedaniel.cloth:cloth-config-forge:8.0.75"
 //    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-forge:9.1.558"
 //    modRuntimeOnly("mezz.jei:jei-1.19.2-forge:11.4.0.286")

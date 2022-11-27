@@ -1,15 +1,12 @@
 package dev.felnull.iwasi.integration.jei;
 
 import dev.felnull.iwasi.IWasiGuns;
-import dev.felnull.iwasi.item.IWGItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -47,7 +44,7 @@ public class IWasiGunsJEIPlugin implements IModPlugin {
     private List<CraftingRecipe> specialCraftingRecipe(RecipeManager recipeManager) {
         Map<Class<? extends CraftingRecipe>, Supplier<List<CraftingRecipe>>> recipes = new IdentityHashMap<>();
 
-        recipes.put(ShulkerBoxColoring.class, RationJEIRecipeMaker::createRecipes);
+        recipes.put(ShulkerBoxColoring.class, RationJEIRecipeMaker::create);
 
         var allRecipe = recipeManager.getAllRecipesFor(RecipeType.CRAFTING);
         return allRecipe.stream()

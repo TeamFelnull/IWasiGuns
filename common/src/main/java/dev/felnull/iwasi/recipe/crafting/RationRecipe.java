@@ -23,7 +23,6 @@ public class RationRecipe extends CustomRecipe {
         int ration = 0;
         int food = 0;
         int drink = 0;
-        int blockFood = 0;
 
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
@@ -32,20 +31,18 @@ public class RationRecipe extends CustomRecipe {
                     ration++;
                 } else if (Ration.canContainDrink(stack)) {
                     drink++;
-                } else if (Ration.canContainBlockFood(stack)) {
-                    blockFood++;
                 } else if (Ration.canContainFood(stack)) {
                     food++;
                 } else {
                     return false;
                 }
 
-                if (ration > 1 || food > getMaxFoodCount() || drink > 1 || blockFood > 1)
+                if (ration > 1 || food > getMaxFoodCount() || drink > 1)
                     return false;
             }
         }
 
-        int foodCount = food + drink + blockFood;
+        int foodCount = food + drink;
         return ration == 1 && foodCount >= 1 && foodCount <= getMaxFoodCount();
     }
 
@@ -55,7 +52,7 @@ public class RationRecipe extends CustomRecipe {
 
         for (int i = 0; i < container.getContainerSize(); i++) {
             ItemStack stack = container.getItem(i);
-            if (!stack.is(IWGItems.RATION_CAN.get()) && (Ration.canContainFood(stack) || Ration.canContainDrink(stack) || Ration.canContainBlockFood(stack))) {
+            if (!stack.is(IWGItems.RATION_CAN.get()) && (Ration.canContainFood(stack) || Ration.canContainDrink(stack))) {
                 ItemStack food = stack.copy();
                 food.setCount(1);
                 foods.add(food);

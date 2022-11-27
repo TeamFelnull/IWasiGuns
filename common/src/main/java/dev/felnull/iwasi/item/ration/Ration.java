@@ -1,8 +1,8 @@
 package dev.felnull.iwasi.item.ration;
 
 import com.google.common.collect.ImmutableList;
+import dev.felnull.iwasi.item.IWGItemTags;
 import dev.felnull.iwasi.item.RationItem;
-import dev.felnull.otyacraftengine.tag.PlatformItemTags;
 import dev.felnull.otyacraftengine.util.OEItemUtils;
 import dev.felnull.otyacraftengine.util.OENbtUtils;
 import dev.felnull.otyacraftengine.util.OEPlayerUtils;
@@ -14,9 +14,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MilkBucketItem;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
@@ -70,8 +70,6 @@ public class Ration {
         ret.sort(Comparator.comparingInt(value -> {
             if (canContainDrink(value))
                 return 1;
-            if (canContainBlockFood(value))
-                return -1;
             return 0;
         }));
         return ret;
@@ -117,7 +115,7 @@ public class Ration {
     }
 
     public static void eatFood(ItemStack stack, Level level, LivingEntity livingEntity) {
-        if (!canContainBlockFood(stack)) {
+        if (OEItemUtils.getFoodProperties(stack, livingEntity) != null || stack.is(IWGItemTags.DRINKS)) {
             ItemStack food = stack.copy();
             int count = food.getCount();
 
@@ -127,36 +125,44 @@ public class Ration {
                 if (ret != food && livingEntity instanceof ServerPlayer player)
                     OEPlayerUtils.giveItem(player, ret);
             }
-        } else {
-            if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof CakeBlock) {
-                if (!level.isClientSide() && livingEntity instanceof Player player) {
-                    for (int i = 0; i < CakeBlock.MAX_BITES + 1; i++) {
-                        player.awardStat(Stats.EAT_CAKE_SLICE);
-                        player.getFoodData().eat(2, 0.1F);
-                    }
+        } else if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof CakeBlock) {
+            if (!level.isClientSide() && livingEntity instanceof Player player) {
+                for (int i = 0; i < CakeBlock.MAX_BITES + 1; i++) {
+                    player.awardStat(Stats.EAT_CAKE_SLICE);
+                    player.getFoodData().eat(2, 0.1F);
                 }
             }
         }
     }
 
     public static boolean canContainDrink(ItemStack stack) {
-        if (stack.is(Items.POTION))
-            return true;
-
-        if (stack.getItem() instanceof MilkBucketItem)
-            return true;
-
-        FoodProperties fp = OEItemUtils.getFoodProperties(stack, null);
-        return fp != null && stack.is(PlatformItemTags.drinks().getKey());
-    }
-
-    public static boolean canContainBlockFood(ItemStack stack) {
-        return stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof CakeBlock;
+        return stack.is(IWGItemTags.DRINKS);
     }
 
     public static boolean canContainFood(ItemStack stack) {
+        if (canContainDrink(stack))
+            return false;
+
+        if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof CakeBlock)
+            return true;
+
         FoodProperties fp = OEItemUtils.getFoodProperties(stack, null);
         return fp != null && !(stack.getItem() instanceof RationItem);
+    }
+
+    public static boolean canContainDrink(Item item) {
+        return item.builtInRegistryHolder().is(IWGItemTags.DRINKS);
+    }
+
+    public static boolean canContainFood(Item item) {
+        if (canContainDrink(item))
+            return false;
+
+        if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof CakeBlock)
+            return true;
+
+        FoodProperties fp = item.getFoodProperties();
+        return fp != null && !(item instanceof RationItem);
     }
 
     public static ItemStack createB1Unit(ItemStack stack) {

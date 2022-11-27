@@ -29,6 +29,9 @@
     "fabric-datagen": [
       "dev.felnull.iwasi.fabric.data.IWasiGunsDataGeneratorFabric"
     ],
+    "rei_client": [
+      "dev.felnull.iwasi.integration.rei.IWasiGunsREIPlugin"
+    ],
     "jei_mod_plugin": [
       "dev.felnull.iwasi.integration.jei.IWasiGunsJEIPlugin"
     ]
