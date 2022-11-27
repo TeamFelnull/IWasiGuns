@@ -16,6 +16,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MilkBucketItem;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
@@ -64,6 +65,18 @@ public class Ration {
         return stack;
     }
 
+    public static List<ItemStack> sortFoods(List<ItemStack> foods) {
+        List<ItemStack> ret = new ArrayList<>(List.copyOf(OEItemUtils.overlapItemStacks(foods)));
+        ret.sort(Comparator.comparingInt(value -> {
+            if (canContainDrink(value))
+                return 1;
+            if (canContainBlockFood(value))
+                return -1;
+            return 0;
+        }));
+        return ret;
+    }
+
     public static void setFoods(ItemStack stack, List<ItemStack> foodStacks) {
         var tag = stack.getOrCreateTag();
         var rationTag = tag.getCompound("ration");
@@ -93,7 +106,8 @@ public class Ration {
     }
 
     public static Pair<RationFoodCategory, RationEffectCategory> getCategory(ItemStack stack) {
-        if (!stack.hasTag()) return Pair.of(RationFoodCategory.NONE, RationEffectCategory.MEDIOCRE);
+        if (!stack.hasTag())
+            return Pair.of(RationFoodCategory.NONE, RationEffectCategory.MEDIOCRE);
 
         var tag = stack.getTag().getCompound("ration");
         var food = OENbtUtils.readEnum(tag, "food_category", RationFoodCategory.class, RationFoodCategory.NONE);
@@ -115,7 +129,7 @@ public class Ration {
             }
         } else {
             if (stack.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof CakeBlock) {
-                if(!level.isClientSide()&& livingEntity instanceof Player player){
+                if (!level.isClientSide() && livingEntity instanceof Player player) {
                     for (int i = 0; i < CakeBlock.MAX_BITES + 1; i++) {
                         player.awardStat(Stats.EAT_CAKE_SLICE);
                         player.getFoodData().eat(2, 0.1F);
@@ -127,6 +141,9 @@ public class Ration {
 
     public static boolean canContainDrink(ItemStack stack) {
         if (stack.is(Items.POTION))
+            return true;
+
+        if (stack.getItem() instanceof MilkBucketItem)
             return true;
 
         FoodProperties fp = OEItemUtils.getFoodProperties(stack, null);

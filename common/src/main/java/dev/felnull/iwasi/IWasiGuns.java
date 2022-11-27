@@ -7,6 +7,7 @@ import dev.architectury.utils.EnvExecutor;
 import dev.felnull.iwasi.client.IWasiGunsClient;
 import dev.felnull.iwasi.item.IWGItems;
 import dev.felnull.iwasi.recipe.IWGRecipeSerializers;
+import dev.felnull.iwasi.server.handler.ServerHandler;
 import dev.felnull.otyacraftengine.util.OEDataGenUtils;
 
 import java.util.function.Supplier;
@@ -18,6 +19,8 @@ public class IWasiGuns {
     public static void init() {
         IWGItems.init();
         IWGRecipeSerializers.init();
+
+        ServerHandler.init();
 
         if (!OEDataGenUtils.isDataGenerating())
             EnvExecutor.runInEnv(Env.CLIENT, () -> IWasiGunsClient::preInit);

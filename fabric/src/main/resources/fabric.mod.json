@@ -28,6 +28,9 @@
     ],
     "fabric-datagen": [
       "dev.felnull.iwasi.fabric.data.IWasiGunsDataGeneratorFabric"
+    ],
+    "jei_mod_plugin": [
+      "dev.felnull.iwasi.integration.jei.IWasiGunsJEIPlugin"
     ]
   },
   "mixins": [

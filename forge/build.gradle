@@ -49,7 +49,10 @@ dependencies {
 
     modApi "${rootProject.oe_repo_pre}dev.felnull:otyacraftengine-forge:${rootProject.oe_version}"
     modApi "me.shedaniel.cloth:cloth-config-forge:8.0.75"
-    modApi "me.shedaniel:RoughlyEnoughItems-forge:9.1.528"
+//    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-forge:9.1.558"
+//    modRuntimeOnly("mezz.jei:jei-1.19.2-forge:11.4.0.286")
+    modRuntimeOnly "curse.maven:ctm-238222:4087658"
+
     shadowIn "dev.felnull:felnull-java-library:${rootProject.felnull_version}"
 }
 

@@ -9,9 +9,15 @@ loom {
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
 
+
+    //modCompileOnly  "me.shedaniel:RoughlyEnoughItems-api:9.1.558"
+    //modCompileOnly  "me.shedaniel:RoughlyEnoughItems-default-plugin:9.1.558"
+    modCompileOnly "mezz.jei:jei-1.19.2-common-api:11.4.0.286"
+
     modApi "dev.architectury:architectury:${rootProject.architectury_version}"
     modApi "${rootProject.oe_repo_pre}dev.felnull:otyacraftengine:${rootProject.oe_version}"
     modApi "me.shedaniel.cloth:cloth-config:8.0.75"
+
 
     implementation "dev.felnull:felnull-java-library:${rootProject.felnull_version}"
 }

@@ -3,7 +3,6 @@ package dev.felnull.iwasi.recipe.crafting;
 import dev.felnull.iwasi.item.IWGItems;
 import dev.felnull.iwasi.item.ration.Ration;
 import dev.felnull.iwasi.recipe.IWGRecipeSerializers;
-import dev.felnull.otyacraftengine.util.OEItemUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
@@ -63,7 +62,7 @@ public class RationRecipe extends CustomRecipe {
             }
         }
 
-        return Ration.create(new ItemStack(IWGItems.RATION.get()), OEItemUtils.overlapItemStacks(foods));
+        return Ration.create(new ItemStack(IWGItems.RATION.get()), Ration.sortFoods(foods));
     }
 
     @Override
