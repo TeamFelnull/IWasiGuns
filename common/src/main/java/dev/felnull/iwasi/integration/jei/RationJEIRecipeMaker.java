@@ -10,7 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +18,15 @@ import java.util.List;
 public class RationJEIRecipeMaker {
     public static List<CraftingRecipe> create() {
         List<CraftingRecipe> ret = new ArrayList<>();
-        Item[] foods = Registry.ITEM.stream().filter(n -> n.getFoodProperties() != null).toArray(Item[]::new);
 
-        Ingredient foodIngredient = Ingredient.of(foods);
-        Ingredient rationCanIngredient = Ingredient.of(new ItemStack(IWGItems.RATION_CAN.get()));
+        String group = "jei." + IWasiGuns.MODID + ".ration";
+        Ingredient foods = Ingredient.of(Registry.ITEM.stream().filter(Ration::canContainFood).toArray(Item[]::new));
+        Ingredient drinks = Ingredient.of(Ration.containDrinkTags());
+        Ingredient rationCan = Ingredient.of(IWGItems.RATION_CAN.get());
+        ItemStack output = new ItemStack(IWGItems.RATION.get());
 
-        NonNullList<Ingredient> inputs = NonNullList.of(Ingredient.EMPTY,
-                foodIngredient, foodIngredient, foodIngredient,
-                foodIngredient, rationCanIngredient, foodIngredient,
-                foodIngredient, foodIngredient, foodIngredient);
-
-        ret.add(new ShapedRecipe(new ResourceLocation(IWasiGuns.MODID, "ration.jei"), "jei.ration", 3, 3, inputs, Ration.createB1Unit(new ItemStack(IWGItems.RATION.get()))));
+        ret.add(new ShapelessRecipe(new ResourceLocation(IWasiGuns.MODID, "jei.ration.food_only"), group, output, NonNullList.of(Ingredient.EMPTY, rationCan, foods, foods, foods, foods, foods, foods, foods, foods)));
+        ret.add(new ShapelessRecipe(new ResourceLocation(IWasiGuns.MODID, "jei.ration.drink"), group, output, NonNullList.of(Ingredient.EMPTY, rationCan, drinks, foods, foods, foods, foods, foods, foods, foods)));
 
         return ret;
     }

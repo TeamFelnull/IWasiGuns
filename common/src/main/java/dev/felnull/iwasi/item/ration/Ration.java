@@ -10,6 +10,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodProperties;
@@ -150,12 +151,12 @@ public class Ration {
         return fp != null && !(stack.getItem() instanceof RationItem);
     }
 
-    public static boolean canContainDrink(Item item) {
-        return item.builtInRegistryHolder().is(IWGItemTags.DRINKS);
+    public static TagKey<Item> containDrinkTags() {
+        return IWGItemTags.DRINKS;
     }
 
     public static boolean canContainFood(Item item) {
-        if (canContainDrink(item))
+        if (item.builtInRegistryHolder().is(containDrinkTags()))
             return false;
 
         if (item instanceof BlockItem blockItem && blockItem.getBlock() instanceof CakeBlock)
