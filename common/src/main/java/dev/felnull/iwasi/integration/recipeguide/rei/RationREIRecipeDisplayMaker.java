@@ -1,4 +1,4 @@
-package dev.felnull.iwasi.integration.rei;
+package dev.felnull.iwasi.integration.recipeguide.rei;
 
 import com.google.common.collect.ImmutableList;
 import dev.felnull.iwasi.item.IWGItems;

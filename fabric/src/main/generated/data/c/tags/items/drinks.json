@@ -58,10 +58,6 @@
       "required": false
     },
     {
-      "id": "#c:water_bottles",
-      "required": false
-    },
-    {
       "id": "#c:milk_bottles",
       "required": false
     },

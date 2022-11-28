@@ -1,0 +1,6 @@
+{
+  "loader": "forge:obj",
+  "model": "iwasiguns:models/item/skewer/kusi.obj",
+  "flip_v": true,
+  "emissive_ambient": false
+}

@@ -1,4 +1,4 @@
-package dev.felnull.iwasi.integration.jei;
+package dev.felnull.iwasi.integration.recipeguide.jei;
 
 import dev.felnull.iwasi.IWasiGuns;
 import dev.felnull.iwasi.item.IWGItems;

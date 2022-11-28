@@ -57,10 +57,6 @@
       "required": false
     },
     {
-      "id": "#forge:water_bottles",
-      "required": false
-    },
-    {
       "id": "#forge:milk_bottles",
       "required": false
     },

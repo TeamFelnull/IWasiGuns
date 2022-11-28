@@ -1,4 +1,4 @@
-package dev.felnull.iwasi.client;
+package dev.felnull.iwasi.client.renderer.item;
 
 import dev.architectury.registry.client.rendering.ColorHandlerRegistry;
 import dev.felnull.iwasi.item.IWGItems;

@@ -12,6 +12,7 @@ public class IWGItems {
     private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(IWasiGuns.MODID, Registry.ITEM_REGISTRY);
     public static final RegistrySupplier<Item> RATION_CAN = register("ration_can");
     public static final RegistrySupplier<Item> RATION = register("ration", () -> new RationItem(new Item.Properties().tab(IWGCreativeModeTab.MOD_TAB).stacksTo(4).food(IWGFoods.RATION)));
+    public static final RegistrySupplier<Item> SKEWER = register("skewer");
 
     private static RegistrySupplier<Item> register(String name) {
         return register(name, () -> new Item(new Item.Properties().tab(IWGCreativeModeTab.MOD_TAB)));

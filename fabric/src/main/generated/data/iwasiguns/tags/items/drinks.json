@@ -3,6 +3,7 @@
   "values": [
     "#c:drinks",
     "minecraft:potion",
-    "minecraft:milk_bucket"
+    "minecraft:milk_bucket",
+    "minecraft:honey_bottle"
   ]
 }
