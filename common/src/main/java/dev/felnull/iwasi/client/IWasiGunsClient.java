@@ -1,5 +1,6 @@
 package dev.felnull.iwasi.client;
 
+import dev.felnull.iwasi.client.gun.IWGClientGuns;
 import dev.felnull.iwasi.client.handler.ClientHandler;
 import dev.felnull.iwasi.client.renderer.item.IWGItemColors;
 import dev.felnull.iwasi.client.renderer.item.IWGItemProperties;
@@ -13,6 +14,7 @@ public class IWasiGunsClient {
     public static void init() {
         ClientHandler.init();
 
+        IWGClientGuns.init();
         IWGItemProperties.init();
         IWGItemRenderers.init();
     }

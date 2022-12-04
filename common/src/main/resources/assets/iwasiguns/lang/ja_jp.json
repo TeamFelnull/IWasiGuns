@@ -4,6 +4,9 @@
   "item.iwasiguns.ration": "レーション",
   "item.iwasiguns.ration.contain": "内容物：",
   "item.iwasiguns.ration.contains": "内容物：",
+  "_comment.r": "RecipeGuide",
+  "jei.iwasiguns.ration.info": "レーション缶に食べ物と飲み物を詰めることで作成可能です。",
+  "jei.iwasiguns.ration.info2": "食べ物は最大８個、飲み物は１個まで含めることができます。",
   "_comment.cr": "CreativeTab",
   "itemGroup.iwasiguns.iwasiguns": "IWasi Guns",
   "_comment.la": "Last"

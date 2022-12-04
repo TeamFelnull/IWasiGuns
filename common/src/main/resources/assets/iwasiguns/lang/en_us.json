@@ -4,6 +4,9 @@
   "item.iwasiguns.ration": "Ration",
   "item.iwasiguns.ration.contain": "Contain:",
   "item.iwasiguns.ration.contains": "Contains:",
+  "_comment.r": "RecipeGuide",
+  "jei.iwasiguns.ration.info": "Crafted by filling a ration can with food and drink.",
+  "jei.iwasiguns.ration.info2": "Can contain up to 8 food items and 1 drink item.",
   "_comment.cr": "CreativeTab",
   "itemGroup.iwasiguns.iwasiguns": "IWasi Guns",
   "_comment.la": "Last"

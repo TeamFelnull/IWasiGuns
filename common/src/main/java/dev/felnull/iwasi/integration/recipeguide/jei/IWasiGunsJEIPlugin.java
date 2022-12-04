@@ -1,13 +1,13 @@
 package dev.felnull.iwasi.integration.recipeguide.jei;
 
 import dev.felnull.iwasi.IWasiGuns;
+import dev.felnull.iwasi.integration.recipeguide.RecipeGuideInfos;
 import dev.felnull.iwasi.item.IWGItems;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingRecipe;
@@ -41,7 +41,7 @@ public class IWasiGunsJEIPlugin implements IModPlugin {
 
         registration.addRecipes(RecipeTypes.CRAFTING, specialCraftingRecipe(recipeManager));
 
-        registration.addItemStackInfo(new ItemStack(IWGItems.RATION.get()), Component.literal("FCOH"));
+        registration.addItemStackInfo(new ItemStack(IWGItems.RATION.get()), RecipeGuideInfos.RATION_INFO, RecipeGuideInfos.RATION_INFO2);
     }
 
 
