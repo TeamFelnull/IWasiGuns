@@ -190,5 +190,4 @@ public class Ration {
         setCategory(stack, RationFoodCategory.DRINK, RationEffectCategory.MEDIOCRE);
         return stack;
     }
-
 }

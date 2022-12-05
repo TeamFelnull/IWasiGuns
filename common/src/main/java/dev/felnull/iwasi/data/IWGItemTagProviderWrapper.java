@@ -26,7 +26,7 @@ public class IWGItemTagProviderWrapper extends ItemTagProviderWrapper {
         providerAccess.tag(IWGItemTags.DESSERT_FOODS).add(Items.COOKIE);
         providerAccess.tag(IWGItemTags.DRINKS).addTagHolder(PlatformItemTags.drinks()).add(Items.POTION, Items.MILK_BUCKET, Items.HONEY_BOTTLE);
         providerAccess.tag(IWGItemTags.DARK_FOODS).add(Items.ROTTEN_FLESH, Items.SPIDER_EYE, Items.PUFFERFISH, Items.POISONOUS_POTATO);
-        providerAccess.tag(IWGItemTags.GOLDEN_FOODS).add(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
+        providerAccess.tag(IWGItemTags.GOLDEN_FOODS).add(Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE, Items.GOLDEN_CARROT);
 
         PlatformItemTags.ironNuggets().registering(providerAccess);
     }

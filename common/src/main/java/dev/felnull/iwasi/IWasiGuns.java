@@ -9,6 +9,7 @@ import dev.felnull.iwasi.gun.IWGGuns;
 import dev.felnull.iwasi.item.IWGItems;
 import dev.felnull.iwasi.recipe.IWGRecipeSerializers;
 import dev.felnull.iwasi.server.handler.ServerHandler;
+import dev.felnull.iwasi.server.loot.functions.IWGLootItemFunctions;
 import dev.felnull.otyacraftengine.util.OEDataGenUtils;
 
 import java.util.function.Supplier;
@@ -20,6 +21,7 @@ public class IWasiGuns {
     public static void init() {
         IWGGuns.init();
         IWGItems.init();
+        IWGLootItemFunctions.init();
 
         IWGRecipeSerializers.init();
 
